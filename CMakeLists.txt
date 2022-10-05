@@ -14,5 +14,5 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
 find_package(HEaaN REQUIRED)
 
-add_executable(convtools convtools.cpp)
-target_link_libraries(convtools PUBLIC HEaaN::HEaaN)
+add_executable(convtoolstest convtoolstest.cpp)
+target_link_libraries(convtoolstest PUBLIC HEaaN::HEaaN)
