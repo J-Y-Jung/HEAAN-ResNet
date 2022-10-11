@@ -1,14 +1,15 @@
 
 #pragma once
 #include <iostream>
-#include "HEaaN/heaan.hpp"
 #include <cmath>
+#include "HEaaN/heaan.hpp"
 
+// Construct BabyStep basis and GiantStep basis.
 void SetUp(HEaaN::HomEvaluator eval, HEaaN::Context context, HEaaN::Ciphertext ctxt,
-           std::vector<HEaaN::Ciphertext>& BS_basis,
-           std::vector<HEaaN::Ciphertext>& GS_basis,
+           std::vector<HEaaN::Ciphertext> &BS_basis,
+           std::vector<HEaaN::Ciphertext> &GS_basis,
            const int length, const int m) {
-    vec[0] = 1;
+    vec[0] = 1; 
     vec[1] = ctxt;
     for (int i = 2; i < length; ++i) {
         if (i % 2 == 0) {
@@ -26,20 +27,20 @@ void SetUp(HEaaN::HomEvaluator eval, HEaaN::Context context, HEaaN::Ciphertext c
         if (j == 0) {
             HEaaN::Ciphertext ctxt_out(context);
             eval.mult(BS_basis[length - 1], BS_basis[length - 1], ctxt_out);
-            GS_basis[j] = ctxt_out;
+            GS_basis[length + j] = ctxt_out;
         }
         else {
             HEaaN::Ciphertext ctxt_out(context);
-            eval.mult(GS_basis[j], GS_basis[j], ctxt_out);
-            GS_basis[j] = ctxt_out;
+            eval.mult(GS_basis[legnth + j], GS_basis[length + j], ctxt_out);
+            GS_basis[length + j] = ctxt_out;
         }
     }
 }
 
 //BabyStep algo in Han-Ki.
 HEaaN::Ciphertext BabyStep(HEaaN::Context context, HEaaN::HomEvaluator eval,
-                           std::vector<double> polynomial,
-                           std::vector<HEaaN::Ciphertext> & vec,
+                           const std::vector<double> &polynomial,
+                           const std::vector<HEaaN::Ciphertext> &vec,
                            const int length) {
 
     HEaaN::Ciphertext ctxt_out(context);
@@ -53,10 +54,13 @@ HEaaN::Ciphertext BabyStep(HEaaN::Context context, HEaaN::HomEvaluator eval,
 }
 
 
+// For vector slicing. slice vector from a_index to b_index
 std::vector<double> vecSlice(vector<double> input, int a, int b) {
     return vector<double>(input.begin() + a, inp.begin() + b);
 }
 
+
+// GiantStep algo in Han-Ki
 HEaaN::Ciphertext GiantStep(HEaaN::Context context, HEaaN::HomEvaluator eval, 
                             std::vector<double> &polynomial, 
                             const std::vector<HEaaN::Ciphertext> &BS_basis, 
@@ -65,15 +69,15 @@ HEaaN::Ciphertext GiantStep(HEaaN::Context context, HEaaN::HomEvaluator eval,
 
     HEaaN::Ciphertext ctxt_result(context);
 
-    if (polynomial.size() < 2**length) {
+    if (polynomial.size() < pow(2,length)) {
         ctxt_result = BabyStep(context, eval, polynomial, BS_basis, l);
         return ctxt_result
     }
 
     int k = floor(log2(polynomial.size()));
 
-    std::vector<double> quotient = vecSlice(2**k, polynomial.size());
-    std::vector<double> remainder = vecSlice(p, 0, 2**k);
+    std::vector<double> quotient = vecSlice(pow(2,k), polynomial.size());
+    std::vector<double> remainder = vecSlice(p, 0, pow(2,k));
 
     HEaaN::Ciphertext ctxt_quotient(context);
     HEaaN::Ciphertext ctxt_remainder(context);
@@ -85,10 +89,10 @@ HEaaN::Ciphertext GiantStep(HEaaN::Context context, HEaaN::HomEvaluator eval,
     eval.mult(ctxt_quotient, GS_basis[k - l], ctxt_temp);
     eval.add(ctxt_temp, ctxt_remainder, ctxt_result);
 
-    return ctxt_result
+    return ctxt_result;
 }
 
-
+// Evaluating poly by using BSGS.
 HEaaN::Ciphertext evalPolynomial(HEaaN::Ciphertext ctxt, std::vector<double> &polynomial) {
 
     HEaaN::ParameterPreset preset = HEaaN::ParameterPreset::FGb;
@@ -100,13 +104,6 @@ HEaaN::Ciphertext evalPolynomial(HEaaN::Ciphertext ctxt, std::vector<double> &po
 
     // Generate a new secret key
     HEaaN::SecretKey sk(context);
-
-    /*
-    You can also use the constuctors
-    SecretKey(const Context &context, std::istream &stream) or
-    SecretKey(const Context &context, const std::string &key_dir_path)
-    if you have the saved secret key file.
-    */
 
     HEaaN::KeyPack pack(context);
     HEaaN::KeyGenerator keygen(context, sk, pack);
@@ -127,38 +124,38 @@ HEaaN::Ciphertext evalPolynomial(HEaaN::Ciphertext ctxt, std::vector<double> &po
     HEaaN::Decryptor dec(context);
     HEaaN::HomEvaluator eval(context, pack);
 
-    int l = ceil(log2(polynomial.size() + 1));
-    int m = m / 2;
+    int m = ceil(log2(polynomial.size() + 1));
+    int l = m / 2;
 
-    std::vector<HEaaN::Ciphertext>& BS_basis = [];
-    std::vector<HEaaN::Ciphertext>& GS_basis = [];
+    std::vector<HEaaN::Ciphertext>& BS_basis(l);
+    std::vector<HEaaN::Ciphertext>& GS_basis(m-log(l));
 
     Setup(context, eval, BS_basis, GS_basis, l, m);
     
     HEaaN::Ciphertext ctxt_out(context);
     
     ctxt_out = GiantStep(context, eval, polynomial, BS_basis, GS_basis, l, m);
-
 }
 
+//Aproximated ReLU function.
 HEaaN::Ciphertext AReLU(HEaaN::Ciphertext) {
     const std::vector<double>& polynomial_1 = {
-    -3.38572283433492e-47, 2.49052143193754e01, 7.67064296707865e-45,
-    -6.82383057582430e02, -1.33318527258859e-43, 6.80942845390599e03,
-    9.19464568002043e-43, -3.12507100017105e04, -3.02547883089949e-42,
-    7.47659388363757e04, 5.02426027571770e-42, -9.65076838475839e04,
-    -4.05931240321443e-42, 6.36977923778246e04, 1.26671427827897e-42,
-    -1.68602621347190e04 };
+    -3.38572283433492e-47, 2.49052143193754e01 , 7.67064296707865e-45,
+    -6.82383057582430e02 ,-1.33318527258859e-43, 6.80942845390599e03 ,
+     9.19464568002043e-43,-3.12507100017105e04 ,-3.02547883089949e-42,
+     7.47659388363757e04 , 5.02426027571770e-42,-9.65076838475839e04 ,
+    -4.05931240321443e-42, 6.36977923778246e04 , 1.26671427827897e-42,
+    -1.68602621347190e04   };
 
     const std::vector<double> &polynomial_2 = {
     -9.27991756967991e-46, 1.68285511926011e01  , 8.32408114686671e-44,
-    -3.3981175049s5659e02 ,-1.27756566628511e-42 , 2.79069998793847e03 ,
-    7.70152836729131e-42,-1.13514151573790e04  ,-2.41159918805990e-41,
-    2.66230010283745e04 , 4.48807056213874e-41 ,-3.93840628661975e04 ,
+    -3.3981175049s5659e02,-1.27756566628511e-42 , 2.79069998793847e03 ,
+     7.70152836729131e-42,-1.13514151573790e04  ,-2.41159918805990e-41,
+     2.66230010283745e04 , 4.48807056213874e-41 ,-3.93840628661975e04 ,
     -5.34821622972202e-41, 3.87884230348060e04  , 4.25722502798559e-41,
     -2.62395303844988e04 ,-2.31146624263347e-41 , 1.23656207016532e04 ,
-    8.58571463533718e-42,-4.05336460089999e03  ,-2.14564940301255e-42,
-    9.06042880951087e02 , 3.44803367899992e-43 ,-1.31687649208388e02 ,
+     8.58571463533718e-42,-4.05336460089999e03  ,-2.14564940301255e-42,
+     9.06042880951087e02 , 3.44803367899992e-43 ,-1.31687649208388e02 ,
     -3.21717059336602e-44, 1.12176079033623e01  , 1.32425600403445e-45,
     -4.24938020467471e-01 };
 
