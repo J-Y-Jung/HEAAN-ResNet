@@ -139,7 +139,10 @@ HEaaN::Ciphertext evalPolynomial(HEaaN::Ciphertext ctxt, std::vector<double> &po
 
 //Aproximated ReLU function.
 HEaaN::Ciphertext AReLU(HEaaN::Ciphertext) {
-    const std::vector<double>& polynomial_1 = {
+
+    HEaaN::Ciphertext ctxt_out(context);
+    
+    const std::vector<double> &polynomial_1 = {
     -3.38572283433492e-47, 2.49052143193754e01 , 7.67064296707865e-45,
     -6.82383057582430e02 ,-1.33318527258859e-43, 6.80942845390599e03 ,
      9.19464568002043e-43,-3.12507100017105e04 ,-3.02547883089949e-42,
@@ -158,6 +161,11 @@ HEaaN::Ciphertext AReLU(HEaaN::Ciphertext) {
      9.06042880951087e02 , 3.44803367899992e-43 ,-1.31687649208388e02 ,
     -3.21717059336602e-44, 1.12176079033623e01  , 1.32425600403445e-45,
     -4.24938020467471e-01 };
+
+    // product 1/2 to coeff of p_2 because we need to calculate 1/2(x+bar(x)) to do BTS.
+    for(int  i = 0 ; i < polynomial_2.size() ; ++i){
+        polynomial_2[i] = polynomial_2[i]*0.5;
+    }
 
     const std::vector<double> &polynomial_3 = { 
      6.72874968716530e-48, 5.31755497689391     , 5.68199275801086e-46,
@@ -178,10 +186,34 @@ HEaaN::Ciphertext AReLU(HEaaN::Ciphertext) {
     HEaaN::Ciphertext ctxt_out2(context);
     ctxt_out2 = evalPolynomial(ctxt_out1, polynomial_2);
 
-    // may need bootstrapping once
+    // Imaginary Removing BTS.
+    HEaaN::Ciphertext ctxt_conj(context);
+    eval.conjugate(ctxt_out2 , ctxt_conj);
+    HEaaN::Ciphertext ctxt_im_remove(context);
+    eval.add(ctxt_out2, ctxt_conj, ctxt_im_remove);
+    HEaaN::Ciphertext ctxt_out_for_BTS(context);
+    eval.mul(ctxt_im_remove, 0.5, ctxt_out_for_BTS);
+    
+    std::cout << "Result ciphertext - level " << ctxt_out_for_BTS.getLevel()
+                  << std::endl
+                  << std::endl;
+    
+    HEaaN::Ciphertext ctxt_boot(context);
+    std::cout << "Bootstrapping ... " << std::endl;
+    eval.bootstrap(ctxt_out_for_BTS,ctxt_boot);
 
-    HEaaN::Ciphertext ctxt_out(context);
-    ctxt_out = evalPolynomial(ctxt_out2, polynomial_3);
+
+    std::cout << "Result ciphertext after bootstrapping - level "
+                  << ctxt_boot.getLevel() << std::endl
+                  << std::endl;
+
+
+    HEaaN::Ciphertext ctxt_out3(context);
+    ctxt_out3 = evalPolynomial(ctxt_BTS, polynomial_3);
+
+    HEaaN::Ciphertext ctxt_out_1(context);
+    eval.add(ctxt , ctxt_out3 , ctxt_out_1);
+    eval.mul(ctxt_out_1,0.5,ctxt_out);
 
     return ctxt_out;
 }
