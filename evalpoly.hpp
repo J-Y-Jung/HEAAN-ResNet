@@ -138,7 +138,7 @@ HEaaN::Ciphertext evalPolynomial(HEaaN::Ciphertext ctxt, std::vector<double> &po
 }
 
 //Aproximated ReLU function.
-HEaaN::Ciphertext AReLU(HEaaN::Ciphertext) {
+HEaaN::Ciphertext AReLU(HEaaN::Ciphertext,HEaaN::HomEvaluator eval) {
 
     HEaaN::Ciphertext ctxt_out(context);
     
