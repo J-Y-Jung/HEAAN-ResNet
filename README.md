@@ -8,7 +8,7 @@ how to add cpp files:
 how to build the project: 
 
 
-cmake -B cnn                   
-cmake --build cnn        
-cd cnn/bin              
-./***********
+cmake -B (원하는 디렉토리 이름)                  
+cmake --build (원하는 디렉토리 이름)      
+cd (원하는 디렉토리 이름)/bin              
+./(실행 파일 이름)
