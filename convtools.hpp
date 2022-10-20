@@ -170,3 +170,73 @@ void Weight2Msg(Message &msg, vector<vector<double>> weights,
     }
     return;
 }
+
+//weight for the first conv layer
+void Weight2Msg1stConv(Message &msg, vector<vector<double>> weights, 
+                    u64 weight_row_idx, u64 weight_col_idx) {
+    auto num_slots = msg.getSize();
+    u64 multiplicity = 8; 
+    u64 channels_in = 4;
+    
+    if (weights.size() != multiplicity){
+        cout << "Number of input kernel values does not match!" << endl;
+        return;
+    }
+   
+    if (weights[0].size() != channels_in){
+        cout << "Number of input channels does not match!" << endl;
+        return;
+    }
+    
+    //zeroize message first
+    for (size_t j = 0; j < num_slots; ++j){
+        msg[j].real(0.0);
+        msg[j].imag(0.0);   
+    }
+
+    //define useful variables
+    u64 slots_per_input = num_slots/multiplicity;
+    u64 slots_per_block = 1024; //32*32 for cifar10
+    size_t idx;
+
+    //pack kernel values into message in each case
+    
+    for (size_t j = 0; j < multiplicity; ++j){
+        for (size_t k = 0; k < channels_in; ++k){
+            for (size_t i = 0; i < slots_per_block; ++i){
+                idx = j*slots_per_input+k*slots_per_block+i;
+                msg[idx].real(weights[j][k]);
+            }
+        }
+    }
+    
+    if (weight_row_idx == 0){
+        for (size_t j = 0; j < 32; ++j){
+            for (size_t i = 0; i < 32; ++i) {
+                msg[j*1024+i].real(0.0);
+            }
+        }
+    }
+    else if (weight_row_idx == 2){
+        for (size_t j = 0; j < 32; ++j){
+            for (size_t i = 0; i < 32; ++i) {
+                msg[j*1024+(1024-32)+i].real(0.0);
+            }
+        }
+    }
+    if (weight_col_idx == 0){
+        for (size_t j = 0; j < 32; ++j){
+            for (size_t i = 0; i < 32; ++i) {
+                msg[j*1024+i*32].real(0.0);
+            }
+        }
+    }
+    else if (weight_col_idx == 2){
+        for (size_t j = 0; j < 32; ++j){
+            for (size_t i = 0; i < 32; ++i) {
+                msg[j*1024+i*32+31].real(0.0);
+            }
+        }
+    }
+    return;
+}
