@@ -34,7 +34,7 @@ int main() {
     keygen.genEncryptionKey();
     cout << "done" << endl << endl;
 
-    makeBootstrappable(context);
+    //makeBootstrappable(context);
 
     /*cout << "Generate commonly used keys (mult key, rotation keys, "
                  "conjugation key) ... "
@@ -45,22 +45,46 @@ int main() {
     Encryptor enc(context);
     Decryptor dec(context);
 
-    cout << "Generate HomEvaluator (including pre-computing constants for "
-                 "bootstrapping) ..."
+    cout << "Generate HomEvaluator ..."
               << endl;
     timer.start("* ");
     HomEvaluator eval(context, pack);
-    timer.end();
+    timer.end(); 
 
     {
         Message wgt(log_slots);
-        vector<double> v(2);
-        v[0]=1.2; v[1]=3.4;
-        u64 gap_in = 1;
-        bool isDownsampling = true;
-        u64 weight_row_idx = 1; 
-        u64 weight_col_idx = 1;
-        Weight2Msg(wgt, v, gap_in, isDownsampling, weight_row_idx, weight_col_idx);
+        vector<double> v0(32);
+        for (size_t i = 0; i < 32; ++i) {
+            v0[i] = i+1;
+        }
+        vector<vector<double>> v(4, v0);
+        vector<double> v1(16);
+        for (size_t i = 0; i < 16; ++i) {
+            v1[i] = i+1;
+        }
+        vector<vector<double>> w(2, v1);
+        vector<double> v2(64);
+        for (size_t i = 0; i < 64; ++i) {
+            v2[i] = i+1;
+        }
+        vector<vector<double>> y(8, v2);
+        Weight2Msg(wgt, w, 1,1,0,0);
+        cout << endl << "output weight vector: " << endl;
+        printMessage(wgt);
+        cout << endl;
+        Weight2Msg(wgt, w, 1,2,0,0);
+        cout << endl << "output weight vector: " << endl;
+        printMessage(wgt);
+        cout << endl;
+        Weight2Msg(wgt, v, 2,1,1,1);
+        cout << endl << "output weight vector: " << endl;
+        printMessage(wgt);
+        cout << endl;
+        Weight2Msg(wgt, y, 4,1,1,1);
+        cout << endl << "output weight vector: " << endl;
+        printMessage(wgt);
+        cout << endl;
+        Weight2Msg(wgt, v, 2,2,1,1);
         cout << endl << "output weight vector: " << endl;
         printMessage(wgt);
         cout << endl;
