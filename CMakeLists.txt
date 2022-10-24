@@ -24,3 +24,6 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 add_executable(convtoolstest convtoolstest.cpp)
 target_link_libraries(convtoolstest PUBLIC HEaaN::HEaaN)
+
+add_executable(rotsumtest rotsumtest.cpp)
+target_link_libraries(rotsumtest PUBLIC HEaaN::HEaaN)
