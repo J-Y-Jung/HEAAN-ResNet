@@ -1,146 +1,155 @@
-
 #pragma once
 #include <iostream>
 #include <cmath>
 #include "HEaaN/heaan.hpp"
 
 // Construct BabyStep basis and GiantStep basis.
-void SetUp(HEaaN::HomEvaluator eval, HEaaN::Context context, HEaaN::Ciphertext ctxt,
+void SetUp(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphertext ctxt,
            std::vector<HEaaN::Ciphertext> &BS_basis,
            std::vector<HEaaN::Ciphertext> &GS_basis,
-           const int length, const int m) {
-    vec[0] = 1; 
-    vec[1] = ctxt;
-    for (int i = 2; i < length; ++i) {
-        if (i % 2 == 0) {
+           const int k, const int l) {
+
+    //this is garbage value
+    BS_basis.push_back(ctxt);
+    
+    //BS_basis consists of x, x, x^2, ... ,x^{k-1}; first entry is useless
+    BS_basis.push_back(ctxt);
+    
+    for (int i = 2; i < k; ++i) {
+        if (i% 2 == 0) {
             HEaaN::Ciphertext ctxt_out(context);
-            eval.mult(BS_basis[i / 2], BS_basis[i / 2], ctxt_out);
-            BS_basis[i] = ctxt_out;
+            eval.mult(BS_basis[i/2], BS_basis[i/2], ctxt_out);
+            BS_basis.push_back(ctxt_out);
         }
         else {
             HEaaN::Ciphertext ctxt_out(context);
-            eval.mult(BS_basis[(i - 1) / 2], BS_basis[(i + 1) / 2], ctxt_out);
-            BS_basis[i] = ctxt_out;
+            eval.mult(BS_basis[(i-1)/2], BS_basis[(i+1)/2], ctxt_out);
+            BS_basis.push_back(ctxt_out);
         }
     }
-    for (int j = 0; j < m - log2(length); ++j) {
-        if (j == 0) {
-            HEaaN::Ciphertext ctxt_out(context);
-            eval.mult(BS_basis[length - 1], BS_basis[length - 1], ctxt_out);
-            GS_basis[length + j] = ctxt_out;
-        }
-        else {
-            HEaaN::Ciphertext ctxt_out(context);
-            eval.mult(GS_basis[legnth + j], GS_basis[length + j], ctxt_out);
-            GS_basis[length + j] = ctxt_out;
-        }
+
+    HEaaN::Ciphertext ctxt_gs_init(context);
+    eval.mult(BS_basis[k - 1], BS_basis[k - 1], ctxt_gs_init);
+    GS_basis.push_back(ctxt_gs_init);
+
+    for (int j = 1; j < l; ++j) {
+        HEaaN::Ciphertext ctxt_out(context);
+        eval.mult(GS_basis[j-1], GS_basis[j-1], ctxt_out);
+        GS_basis.push_back(ctxt_out);
     }
 }
 
 //BabyStep algo in Han-Ki.
 HEaaN::Ciphertext BabyStep(HEaaN::Context context, HEaaN::HomEvaluator eval,
+                           const std::vector<HEaaN::Ciphertext> &basis,
                            const std::vector<double> &polynomial,
-                           const std::vector<HEaaN::Ciphertext> &vec,
                            const int length) {
 
     HEaaN::Ciphertext ctxt_out(context);
+    eval.mult(basis[length-1], polynomial[length-1], ctxt_out);
 
-    for (int i = 0; i < length; ++i) {
-        HEaaN::Ciphertext ctxt_temp(context);
-        eval.mul(polynomial[i], vec[i], ctxt_temp);
-        eval.add(ctxt_out, ctxt_temp, ctxt_out);
+    if (length >2) {
+        for (int i = 1; i < length-1; ++i) {
+            HEaaN::Ciphertext ctxt_temp(context);
+            eval.mult(basis[i], polynomial[i], ctxt_temp);
+            eval.add(ctxt_out, ctxt_temp, ctxt_out);
+        }
     }
+
+    eval.add(ctxt_out, polynomial[0], ctxt_out);
+
     return ctxt_out;
 }
 
 
 // For vector slicing. slice vector from a_index to b_index
-std::vector<double> vecSlice(vector<double> input, int a, int b) {
-    return vector<double>(input.begin() + a, inp.begin() + b);
+std::vector<double> vectorSlice(const std::vector<double> &input, int a, int b) {
+    auto first = input.cbegin() + a;
+    auto last = input.cbegin() + b;
+    return std::vector<double>(first, last);
 }
 
 
-// GiantStep algo in Han-Ki
+// GiantStep algorithm in Han-Ki
 HEaaN::Ciphertext GiantStep(HEaaN::Context context, HEaaN::HomEvaluator eval, 
-                            std::vector<double> &polynomial, 
                             const std::vector<HEaaN::Ciphertext> &BS_basis, 
                             const std::vector<HEaaN::Ciphertext> &GS_basis, 
-                            int length, int m) {
+                            const std::vector<double> &polynomial, 
+                            int k, int l) {
 
     HEaaN::Ciphertext ctxt_result(context);
 
-    if (polynomial.size() < pow(2,length)) {
-        ctxt_result = BabyStep(context, eval, polynomial, BS_basis, l);
-        return ctxt_result
+    if (polynomial.size() < k) {
+        ctxt_result = BabyStep(context, eval, BS_basis, polynomial, k);
+        return ctxt_result;
     }
 
-    int k = floor(log2(polynomial.size()));
+    // integer exp s.t. 2^exp <= n/k < 2^(exp+1)
 
-    std::vector<double> quotient = vecSlice(pow(2,k), polynomial.size());
-    std::vector<double> remainder = vecSlice(p, 0, pow(2,k));
+    int exp = (int)floor(log2((double)polynomial.size()/(double)k));
+
+    std::vector<double> quotient = vectorSlice(polynomial, k*pow(2,exp), polynomial.size());
+    std::vector<double> remainder = vectorSlice(polynomial, 0, k*pow(2,exp));
 
     HEaaN::Ciphertext ctxt_quotient(context);
     HEaaN::Ciphertext ctxt_remainder(context);
 
-    ctxt_quotient = GiantStep(context, eval, quotient, BS_basis, GS_basis, int l, int m);
-    ctxt_remainder = GiantStep(context, eval, remainder, BS_basis, GS_basis, int l, int m);
+    ctxt_quotient = GiantStep(context, eval, BS_basis, GS_basis, quotient, k, l);
+    ctxt_remainder = GiantStep(context, eval, BS_basis, GS_basis, remainder, k, l);
 
     HEaaN::Ciphertext ctxt_temp(context);
-    eval.mult(ctxt_quotient, GS_basis[k - l], ctxt_temp);
+    eval.mult(ctxt_quotient, GS_basis[exp], ctxt_temp);
     eval.add(ctxt_temp, ctxt_remainder, ctxt_result);
 
     return ctxt_result;
 }
 
 // Evaluating poly by using BSGS.
-HEaaN::Ciphertext evalPolynomial(HEaaN::Ciphertext ctxt, std::vector<double> &polynomial) {
-
-    HEaaN::ParameterPreset preset = HEaaN::ParameterPreset::FGb;
-    HEaaN::Context context = makeContext(preset);
-    std::cout << "Parameter : " << presetNamer(preset) << std::endl
-        << std::endl;
-
-    const auto log_slots = getLogFullSlots(context);
-
-    // Generate a new secret key
-    HEaaN::SecretKey sk(context);
-
-    HEaaN::KeyPack pack(context);
-    HEaaN::KeyGenerator keygen(context, sk, pack);
-
-    std::cout << "Generate encryption key ... ";
-    keygen.genEncryptionKey();
-    std::cout << "done" << std::endl;
-
-    std::cout << "Generate multiplication key ... ";
-    keygen.genMultiplicationKey();
-    std::cout << "done" << std::endl;
-
-    std::cout << "Generate rotation key ... ";
-    keygen.genRotationKeyBundle();
-    std::cout << "done" << std::endl;
-
-    HEaaN::Encryptor enc(context);
-    HEaaN::Decryptor dec(context);
-    HEaaN::HomEvaluator eval(context, pack);
-
+HEaaN::Ciphertext evalPolynomial(HEaaN::Context context, HEaaN::HomEvaluator eval, 
+                                HEaaN::Ciphertext ctxt, const std::vector<double> &polynomial) {
+                                    
     int m = ceil(log2(polynomial.size() + 1));
-    int l = m / 2;
+    int a = m / 2;
 
-    std::vector<HEaaN::Ciphertext>& BS_basis(l);
-    std::vector<HEaaN::Ciphertext>& GS_basis(m-log(l));
+    int k = pow(2,a);
+    int l = m -a;
 
-    Setup(context, eval, BS_basis, GS_basis, l, m);
-    
+    HEaaN::Ciphertext ctxt_trash(context);
+
+    std::vector<HEaaN::Ciphertext> BS_basis;
+    std::vector<HEaaN::Ciphertext> GS_basis;
+
+    std::cout << "SetUp begin ..." << std::endl << std:endl;
+    SetUp(context, eval, ctxt, BS_basis, GS_basis, k, l);
     HEaaN::Ciphertext ctxt_out(context);
-    
-    ctxt_out = GiantStep(context, eval, polynomial, BS_basis, GS_basis, l, m);
+    std::cout << "done" << std::endl << std:endl;  
+
+    std::cout << "Giant Step begin ..." << std::endl << std:endl;
+    ctxt_out = GiantStep(context, eval, BS_basis, GS_basis, polynomial, k, l);
+
+    return ctxt_out;
 }
 
 //Aproximated ReLU function.
-HEaaN::Ciphertext AReLU(HEaaN::Ciphertext,HEaaN::HomEvaluator eval) {
+HEaaN::Ciphertext ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphertext ctxt) {
 
-    HEaaN::Ciphertext ctxt_out(context);
+    HEaaN::Ciphertext ctxt_temp(context);
+    eval.conjugate(ctxt, ctxt_temp);
+    eval.add(ctxt_temp, ctxt, ctxt_temp);
+    eval.mult(ctxt_temp, 0.5, ctxt_temp);
+
+    std::cout << "Result ciphertext - level " << ctxt_temp.getLevel()
+                  << std::endl
+                  << std::endl;
+    
+    HEaaN::Ciphertext ctxt_real_BTS(context);
+    std::cout << "Imaginary Removal Bootstrapping ... " << std::endl;
+
+    eval.bootstrap(ctxt_temp, ctxt_real_BTS, true);
+
+    std::cout << "Result ciphertext after imaginary removal bootstrapping - level "
+                  << ctxt_real_BTS.getLevel() << std::endl
+                  << std::endl;
     
     const std::vector<double> &polynomial_1 = {
     -3.38572283433492e-47, 2.49052143193754e01 , 7.67064296707865e-45,
@@ -152,7 +161,7 @@ HEaaN::Ciphertext AReLU(HEaaN::Ciphertext,HEaaN::HomEvaluator eval) {
 
     const std::vector<double> &polynomial_2 = {
     -9.27991756967991e-46, 1.68285511926011e01  , 8.32408114686671e-44,
-    -3.3981175049s5659e02,-1.27756566628511e-42 , 2.79069998793847e03 ,
+    -3.39811750495659e02,-1.27756566628511e-42 , 2.79069998793847e03 ,
      7.70152836729131e-42,-1.13514151573790e04  ,-2.41159918805990e-41,
      2.66230010283745e04 , 4.48807056213874e-41 ,-3.93840628661975e04 ,
     -5.34821622972202e-41, 3.87884230348060e04  , 4.25722502798559e-41,
@@ -162,11 +171,12 @@ HEaaN::Ciphertext AReLU(HEaaN::Ciphertext,HEaaN::HomEvaluator eval) {
     -3.21717059336602e-44, 1.12176079033623e01  , 1.32425600403445e-45,
     -4.24938020467471e-01 };
 
+/*
     // product 1/2 to coeff of p_2 because we need to calculate 1/2(x+bar(x)) to do BTS.
     for(int  i = 0 ; i < polynomial_2.size() ; ++i){
         polynomial_2[i] = polynomial_2[i]*0.5;
     }
-
+*/
     const std::vector<double> &polynomial_3 = { 
      6.72874968716530e-48, 5.31755497689391     , 5.68199275801086e-46,
     -3.54371531531577e01 ,-1.35187813155454e-44 , 1.84122441329140e02 ,
@@ -180,40 +190,53 @@ HEaaN::Ciphertext AReLU(HEaaN::Ciphertext,HEaaN::HomEvaluator eval) {
     -3.49349374506190    ,-2.89849811206637e-47 , 1.78142156956495e-01
     };
 
-    HEaaN::Ciphertext ctxt_out1(context);
-    ctxt_out1 = evalPolynomial(ctxt, polynomial_1);
+    std::cout << "first polynomial evaluation ... " << std::endl;
+    HEaaN::Ciphertext ctxt_temp2(context);
+    ctxt_temp2 = evalPolynomial(context, eval, ctxt_real_BTS, polynomial_1);
+    std::cout << "done" << std::endl << std:endl;
 
-    HEaaN::Ciphertext ctxt_out2(context);
-    ctxt_out2 = evalPolynomial(ctxt_out1, polynomial_2);
+
+    std::cout << "second polynomial evaluation ... " << std::endl;
+
+    HEaaN::Ciphertext ctxt_temp3(context);
+    ctxt_temp3 = evalPolynomial(context, eval, ctxt_temp2, polynomial_2);
+
+    std::cout << "done" << std::endl << std:endl;
+
 
     // Imaginary Removing BTS.
-    HEaaN::Ciphertext ctxt_conj(context);
-    eval.conjugate(ctxt_out2 , ctxt_conj);
-    HEaaN::Ciphertext ctxt_im_remove(context);
-    eval.add(ctxt_out2, ctxt_conj, ctxt_im_remove);
-    HEaaN::Ciphertext ctxt_out_for_BTS(context);
-    eval.mul(ctxt_im_remove, 0.5, ctxt_out_for_BTS);
-    
-    std::cout << "Result ciphertext - level " << ctxt_out_for_BTS.getLevel()
+    // may need not...?
+    //HEaaN::Ciphertext ctxt_conj(context);
+    //eval.conjugate(ctxt_out2 , ctxt_conj);
+    //HEaaN::Ciphertext ctxt_im_remove(context);
+    //eval.add(ctxt_out2, ctxt_conj, ctxt_im_remove);
+    //HEaaN::Ciphertext ctxt_out_for_BTS(context);
+
+    //dividing by 2 in x+conj(x) will be precomputed in BN
+    //eval.mul(ctxt_im_remove, 0.5, ctxt_out_for_BTS);
+
+    std::cout << "Result ciphertext after evaluating p1 and p2 - level " << ctxt_temp3.getLevel()
                   << std::endl
                   << std::endl;
     
-    HEaaN::Ciphertext ctxt_boot(context);
     std::cout << "Bootstrapping ... " << std::endl;
-    eval.bootstrap(ctxt_out_for_BTS,ctxt_boot);
 
+    HEaaN::Ciphertext ctxt_BTS(context);
+    eval.bootstrap(ctxt_temp3, ctxt_BTS, true);
 
     std::cout << "Result ciphertext after bootstrapping - level "
-                  << ctxt_boot.getLevel() << std::endl
+                  << ctxt_BTS.getLevel() << std::endl
                   << std::endl;
 
+    //ctxt_out3 = eval.sign(ctxt)
+    
+    HEaaN::Ciphertext ctxt_result(context);
+    ctxt_result = evalPolynomial(context, eval, ctxt_BTS, polynomial_3);
 
-    HEaaN::Ciphertext ctxt_out3(context);
-    ctxt_out3 = evalPolynomial(ctxt_BTS, polynomial_3);
+    //ReLU(x)= 0.5(x+x*sign(x))
+    eval.mult(ctxt_real_BTS, ctxt_result, ctxt_result);
+    eval.add(ctxt_real_BTS, ctxt_result, ctxt_result);
+    eval.mult(ctxt_result, 0.5, ctxt_result);
 
-    HEaaN::Ciphertext ctxt_out_1(context);
-    eval.add(ctxt , ctxt_out3 , ctxt_out_1);
-    eval.mul(ctxt_out_1,0.5,ctxt_out);
-
-    return ctxt_out;
+    return ctxt_result;
 }
