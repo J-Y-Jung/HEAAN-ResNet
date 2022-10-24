@@ -15,15 +15,15 @@ void SetUp(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphertext c
     //BS_basis consists of x, x, x^2, ... ,x^{k-1}; first entry is useless
     BS_basis.push_back(ctxt);
     
+    HEaaN::Ciphertext ctxt_temp(context);
+
     for (int i = 2; i < k; ++i) {
         if (i% 2 == 0) {
-            HEaaN::Ciphertext ctxt_out(context);
-            eval.mult(BS_basis[i/2], BS_basis[i/2], ctxt_out);
+            eval.mult(BS_basis[i/2], BS_basis[i/2], ctxt_temp);
             BS_basis.push_back(ctxt_out);
         }
         else {
-            HEaaN::Ciphertext ctxt_out(context);
-            eval.mult(BS_basis[(i-1)/2], BS_basis[(i+1)/2], ctxt_out);
+            eval.mult(BS_basis[(i-1)/2], BS_basis[(i+1)/2], ctxt_temp);
             BS_basis.push_back(ctxt_out);
         }
     }
@@ -33,8 +33,7 @@ void SetUp(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphertext c
     GS_basis.push_back(ctxt_gs_init);
 
     for (int j = 1; j < l; ++j) {
-        HEaaN::Ciphertext ctxt_out(context);
-        eval.mult(GS_basis[j-1], GS_basis[j-1], ctxt_out);
+        eval.mult(GS_basis[j-1], GS_basis[j-1], ctxt_temp);
         GS_basis.push_back(ctxt_out);
     }
 }
@@ -48,9 +47,10 @@ HEaaN::Ciphertext BabyStep(HEaaN::Context context, HEaaN::HomEvaluator eval,
     HEaaN::Ciphertext ctxt_out(context);
     eval.mult(basis[length-1], polynomial[length-1], ctxt_out);
 
+    HEaaN::Ciphertext ctxt_temp(context);
+
     if (length >2) {
         for (int i = 1; i < length-1; ++i) {
-            HEaaN::Ciphertext ctxt_temp(context);
             eval.mult(basis[i], polynomial[i], ctxt_temp);
             eval.add(ctxt_out, ctxt_temp, ctxt_out);
         }
@@ -133,10 +133,13 @@ HEaaN::Ciphertext evalPolynomial(HEaaN::Context context, HEaaN::HomEvaluator eva
 //Aproximated ReLU function.
 HEaaN::Ciphertext ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphertext ctxt) {
 
+    //imaginary removal BTS
     HEaaN::Ciphertext ctxt_temp(context);
     eval.conjugate(ctxt, ctxt_temp);
     eval.add(ctxt_temp, ctxt, ctxt_temp);
-    eval.mult(ctxt_temp, 0.5, ctxt_temp);
+    //eval.mult(ctxt_temp, 0.5, ctxt_temp);
+    //instead, we apply 0.5*p1 after imaginary removal BTS
+
 
     std::cout << "Result ciphertext - level " << ctxt_temp.getLevel()
                   << std::endl
@@ -150,7 +153,7 @@ HEaaN::Ciphertext ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, H
     std::cout << "Result ciphertext after imaginary removal bootstrapping - level "
                   << ctxt_real_BTS.getLevel() << std::endl
                   << std::endl;
-    
+
     const std::vector<double> &polynomial_1 = {
     -3.38572283433492e-47, 2.49052143193754e01 , 7.67064296707865e-45,
     -6.82383057582430e02 ,-1.33318527258859e-43, 6.80942845390599e03 ,
@@ -158,6 +161,11 @@ HEaaN::Ciphertext ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, H
      7.47659388363757e04 , 5.02426027571770e-42,-9.65076838475839e04 ,
     -4.05931240321443e-42, 6.36977923778246e04 , 1.26671427827897e-42,
     -1.68602621347190e04   };
+
+    // product 1/2 to coeff of p_1 because we need to calculate 1/2(x+bar(x)) to do BTS.
+    for (int i = 0; i < polynomial_1.size(); ++i) {
+        polynomial_1[i] = polynomial_1[i] * 0.5;
+    }
 
     const std::vector<double> &polynomial_2 = {
     -9.27991756967991e-46, 1.68285511926011e01  , 8.32408114686671e-44,
@@ -171,12 +179,7 @@ HEaaN::Ciphertext ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, H
     -3.21717059336602e-44, 1.12176079033623e01  , 1.32425600403445e-45,
     -4.24938020467471e-01 };
 
-/*
-    // product 1/2 to coeff of p_2 because we need to calculate 1/2(x+bar(x)) to do BTS.
-    for(int  i = 0 ; i < polynomial_2.size() ; ++i){
-        polynomial_2[i] = polynomial_2[i]*0.5;
-    }
-*/
+
     const std::vector<double> &polynomial_3 = { 
      6.72874968716530e-48, 5.31755497689391     , 5.68199275801086e-46,
     -3.54371531531577e01 ,-1.35187813155454e-44 , 1.84122441329140e02 ,
@@ -191,38 +194,27 @@ HEaaN::Ciphertext ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, H
     };
 
     std::cout << "first polynomial evaluation ... " << std::endl;
-    HEaaN::Ciphertext ctxt_temp2(context);
-    ctxt_temp2 = evalPolynomial(context, eval, ctxt_real_BTS, polynomial_1);
+    ctxt_temp = evalPolynomial(context, eval, ctxt_real_BTS, polynomial_1);
     std::cout << "done" << std::endl << std:endl;
 
 
     std::cout << "second polynomial evaluation ... " << std::endl;
 
-    HEaaN::Ciphertext ctxt_temp3(context);
-    ctxt_temp3 = evalPolynomial(context, eval, ctxt_temp2, polynomial_2);
+    HEaaN::Ciphertext ctxt_result(context);
+    ctxt_result = evalPolynomial(context, eval, ctxt_temp2, polynomial_2);
 
     std::cout << "done" << std::endl << std:endl;
 
 
-    // Imaginary Removing BTS.
-    // may need not...?
-    //HEaaN::Ciphertext ctxt_conj(context);
-    //eval.conjugate(ctxt_out2 , ctxt_conj);
-    //HEaaN::Ciphertext ctxt_im_remove(context);
-    //eval.add(ctxt_out2, ctxt_conj, ctxt_im_remove);
-    //HEaaN::Ciphertext ctxt_out_for_BTS(context);
 
-    //dividing by 2 in x+conj(x) will be precomputed in BN
-    //eval.mul(ctxt_im_remove, 0.5, ctxt_out_for_BTS);
-
-    std::cout << "Result ciphertext after evaluating p1 and p2 - level " << ctxt_temp3.getLevel()
+    std::cout << "Result ciphertext after evaluating p1 and p2 - level " << ctxt_result.getLevel()
                   << std::endl
                   << std::endl;
     
     std::cout << "Bootstrapping ... " << std::endl;
 
     HEaaN::Ciphertext ctxt_BTS(context);
-    eval.bootstrap(ctxt_temp3, ctxt_BTS, true);
+    eval.bootstrap(ctxt_result, ctxt_BTS, true);
 
     std::cout << "Result ciphertext after bootstrapping - level "
                   << ctxt_BTS.getLevel() << std::endl
@@ -230,7 +222,6 @@ HEaaN::Ciphertext ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, H
 
     //ctxt_out3 = eval.sign(ctxt)
     
-    HEaaN::Ciphertext ctxt_result(context);
     ctxt_result = evalPolynomial(context, eval, ctxt_BTS, polynomial_3);
 
     //ReLU(x)= 0.5(x+x*sign(x))
