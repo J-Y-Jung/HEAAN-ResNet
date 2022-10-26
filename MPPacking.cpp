@@ -56,18 +56,18 @@ int main() {
     HEaaN::Message msg(log_slots);
     // fillRandomComplex(msg);
     std::optional<size_t> num;
-    size_t length = num.has_value() ? num.value() : msg.getSize();
+    // size_t length = num.has_value() ? num.value() : msg.getSize();
     size_t idx = 0;
-    for (; idx < length; ++idx) {
+    for (; idx < msg.getSize(); ++idx) {
         msg[idx].real(1.0);
         msg[idx].imag(0.0);
     }
-    // If num is less than the size of msg,
-    // all remaining slots are zero.
-    for (; idx < msg.getSize(); ++idx) {
-        msg[idx].real(0.0);
-        msg[idx].imag(0.0);
-    }
+    // // If num is less than the size of msg,
+    // // all remaining slots are zero.
+    // for (; idx < msg.getSize(); ++idx) {
+    //     msg[idx].real(0.0);
+    //     msg[idx].imag(0.0);
+    // }
 
     printMessage(msg);
 
@@ -80,16 +80,16 @@ int main() {
     HEaaN::Message msg2(log_slots);
     // fillRandomComplex(msg2);
     size_t idx2 = 0;
-    for (; idx2 < length; ++idx2) {
+    for (; idx2 < msg2.getSize(); ++idx2) {
         msg2[idx2].real(7.0);
         msg2[idx2].imag(0.0);
     }
-    // If num is less than the size of msg,
-    // all remaining slots are zero.
-    for (; idx2 < msg2.getSize(); ++idx2) {
-        msg2[idx2].real(0.0);
-        msg2[idx2].imag(0.0);
-    }
+    // // If num is less than the size of msg,
+    // // all remaining slots are zero.
+    // for (; idx2 < msg2.getSize(); ++idx2) {
+    //     msg2[idx2].real(0.0);
+    //     msg2[idx2].imag(0.0);
+    // }
 
     printMessage(msg2);
 
@@ -98,20 +98,37 @@ int main() {
     enc.encrypt(msg2, pack, ctxt22); // public key encryption
     std::cout << "done" << std::endl;
 
-    
-    // ctxt read
-    HEaaN::Ciphertext ctxt0(context), ctxt1(context), ctxt2(context), ctxt3(context);
-    ctxt0 = ctxt;
-    ctxt1 = ctxt22;
-    ctxt2 = ctxt;
-    ctxt3 = ctxt;
 
+    // Save as ctxt bundle
+    std::vector<HEaaN::Ciphertext> ctxt_bundle;
+    ctxt_bundle.push_back(ctxt);
+    ctxt_bundle.push_back(ctxt22);
+    ctxt_bundle.push_back(ctxt);
+    ctxt_bundle.push_back(ctxt);
+
+    std::vector<HEaaN::Ciphertext> ctxt_bundle2;
+    ctxt_bundle2.push_back(ctxt);
+    ctxt_bundle2.push_back(ctxt22);
+    ctxt_bundle2.push_back(ctxt22);
+    ctxt_bundle2.push_back(ctxt);
+    ctxt_bundle2.push_back(ctxt);
+    ctxt_bundle2.push_back(ctxt);
+    ctxt_bundle2.push_back(ctxt);
+    ctxt_bundle2.push_back(ctxt22);
+    ctxt_bundle2.push_back(ctxt);
+    ctxt_bundle2.push_back(ctxt22);
+    ctxt_bundle2.push_back(ctxt22);
+    ctxt_bundle2.push_back(ctxt);
+    ctxt_bundle2.push_back(ctxt);
+    ctxt_bundle2.push_back(ctxt);
+    ctxt_bundle2.push_back(ctxt22);
+    ctxt_bundle2.push_back(ctxt22);
 
 
 
     // MPPacking
     HEaaN::Ciphertext ctxt_out(context);
-    ctxt_out = MPPacking(context, pack, eval, 32, 2, ctxt0, ctxt1, ctxt2, ctxt3);
+    ctxt_out = MPPacking(context, pack, eval, 32, ctxt_bundle);
 
 
 
