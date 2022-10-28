@@ -38,18 +38,17 @@ void SetUp(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphertext& 
     std::vector<HEaaN::Ciphertext>& BS_basis,
     std::vector<HEaaN::Ciphertext>& GS_basis,
     const int k, const int l);
-void BabyStep(HEaaN::Context context, HEaaN::HomEvaluator eval,
+void linearMult(HEaaN::Context context, HEaaN::HomEvaluator eval,
                            const std::vector<HEaaN::Ciphertext> &basis,
                            const std::vector<double> &polynomial,
-                           HEaaN::Ciphertext &ctxt_result,
-                           const int length);
+                           HEaaN::Ciphertext &ctxt_result);
 std::vector<double> vectorSlice(const std::vector<double> &input, int a, int b);
 void GiantStep(HEaaN::Context context, HEaaN::HomEvaluator eval, 
                             const std::vector<HEaaN::Ciphertext> &BS_basis, 
                             const std::vector<HEaaN::Ciphertext> &GS_basis, 
                             const std::vector<double> &polynomial,
                             HEaaN::Ciphertext &ctxt_result,
-                            int k, int l);
+                            int k, int l,int value);
 void evalPolynomial(HEaaN::Context context, HEaaN::HomEvaluator eval, 
                                 HEaaN::Ciphertext &ctxt, HEaaN::Ciphertext &ctxt_poly,
                                 const std::vector<double> &polynomial);
