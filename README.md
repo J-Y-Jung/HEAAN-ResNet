@@ -27,11 +27,5 @@ MPPacking : gap이 벌어진 ctxt들(4개 혹은 16개)을 다시 묶어주는 �
 
 #### ReLU
 
-Chebyshev basis에 따른 coeff는 현실적으로 시간이 많이 소요(remez algorithm을 바탕으로 직접 찾아야 함)
-
-Odd BSGS따로 구현, 차후에 시간,error비교
-
-polynomial size에 따라서 최적화된 k,l사용( deg = 15에서는 level을 줄이고, deg=27에서는 mult를 최적화)
-
 Lazy BSGS구현 
 
