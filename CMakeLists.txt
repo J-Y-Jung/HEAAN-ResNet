@@ -27,3 +27,6 @@ target_link_libraries(convtoolstest PUBLIC HEaaN::HEaaN)
 
 add_executable(rotsumtest rotsumtest.cpp)
 target_link_libraries(rotsumtest PUBLIC HEaaN::HEaaN)
+
+add_executable(oddLazyBSGStest oddLazyBSGStest.cpp) 
+target_link_libraries(oddLazyBSGStest PUBLIC HEaaN::HEaaN)
