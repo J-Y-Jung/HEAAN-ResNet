@@ -27,5 +27,3 @@ MPPacking : gap이 벌어진 ctxt들(4개 혹은 16개)을 다시 묶어주는 �
 
 #### ReLU
 
-Lazy BSGS구현 
-
