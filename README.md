@@ -27,7 +27,7 @@ MPPacking : gap이 벌어진 ctxt들(4개 혹은 16개)을 다시 묶어주는 �
 
 #### ReLU
 
-CKKS 최신 논문에서 소개된 주어진 (odd) polynomial f 와 ctxt 에 대해 f(ctxt)를 evaluate 하는 알고리즘 구현,
+CKKS 최신 논문에서 소개된 주어진 (odd) polynomial f 와 ctxt 에 대해 f(ctxt)를 evaluate 하는 lazy BSGS 알고리즘 구현,
 
 이를 응용해 ReLU 함수를 ||ReLU - f||_{infty} <2^{-13} 인 근사 다항식 f로 근사해 evaluate 하는 알고리즘 구현 완료.
 
