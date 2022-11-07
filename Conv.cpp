@@ -77,7 +77,7 @@ int main() {
 
     /////////////// Kernel ////////////////
     std::vector<HEaaN::Message> kernel_bundle;
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 9; ++i) {
         HEaaN::Message kernel(log_slots);
         idx = 0;
         for (; idx < length; ++idx) {

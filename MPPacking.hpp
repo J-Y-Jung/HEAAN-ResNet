@@ -19,7 +19,7 @@ std::vector<HEaaN::Ciphertext> ctxt_bundle) {
         exit(1);
     }
     int gap = (int)sqrt(num_ctxt);
-    std::cout << gap << "\n";
+    // std::cout << gap << "\n";
 
     const auto log_slots = getLogFullSlots(context);
     
@@ -46,8 +46,8 @@ std::vector<HEaaN::Ciphertext> ctxt_bundle) {
             // std::cout << i << '\n';
         }
     }
-    printMessage(mask);
-    std::cout << mask[0] << mask[imgsize] << mask[2*imgsize] << mask[3*imgsize] << "\n";
+    // printMessage(mask);
+    // std::cout << mask[0] << mask[imgsize] << mask[2*imgsize] << mask[3*imgsize] << "\n";
     // mask_bundle.push_back(mask);
 
 
