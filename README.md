@@ -31,6 +31,6 @@ CKKS 최신 논문에서 소개된 주어진 (odd) polynomial f 와 ctxt 에 대
 
 이를 응용해 ReLU 함수를 ||ReLU - f||_[-1, 1] <2^{-13} 인 근사 다항식 f로 근사해 evaluate 하는 알고리즘 구현 완료.
 
-추후에 ResNet input들의 절대값 upper bound B에 대해 (B=40), ) 대신 B*f(x/B) 로 evaluate 해야함
+추후에 ResNet input들의 절대값 upper bound B에 대해 (B=40), f(x) 대신 B*f(x/B) 로 evaluate 해야함
 
 그 외에 다른 구성요소와 결합할 때 고려해야 하는 부분은 추후에 생각날 때 마다 기입함
