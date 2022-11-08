@@ -29,7 +29,7 @@ DSB.cpp 구동 확인 완료.
 
 함수 이름 : DSB
 
-인자 : context, pack, eval, ctxt_bundle (MPP를 함으로서 4개의 ctxt(32개 이미지)를 동시에 처리함.), kernel_bundle <- 수정 필요. 1by1 kernel도 따로 받아야 함.
+인자 : context, pack, eval, ctxt_bundle (MPP를 함으로서 4개의 ctxt(32개 이미지)를 동시에 처리함.), kernel_bundle(처음 3 by 3 kernel), kernel_bundle2(두번째 3 by 3 kernel), kernel_residual_bundle(residual flow의 bundle).
 
 
 ---------------------------------------------------------------------------------------------------
