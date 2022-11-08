@@ -109,6 +109,8 @@ int main() {
         }
         kernel_bundle.push_back(kernel);
     }
+    std::vector<HEaaN::Message> kernel_residual_bundle;
+    kernel_residual_bundle.push_back(kernel_bundle[0]);
 
     HEaaN::Ciphertext ctxt0(context);
     HEaaN::Ciphertext ctxt1(context);
@@ -127,7 +129,7 @@ int main() {
     ctxt_bundle.push_back(ctxt3);
 
     HEaaN::Ciphertext ctxt_out(context);
-    ctxt_out = DSB(context, pack, eval, ctxt_bundle, kernel_bundle, kernel_bundle, kernel_bundle);
+    ctxt_out = DSB(context, pack, eval, ctxt_bundle, kernel_bundle, kernel_bundle, kernel_residual_bundle);
 
 
 
