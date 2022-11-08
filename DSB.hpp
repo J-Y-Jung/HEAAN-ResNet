@@ -10,7 +10,9 @@
 
 
 HEaaN::Ciphertext DSB(HEaaN::Context context, HEaaN::KeyPack pack,
-HEaaN::HomEvaluator eval, std::vector<HEaaN::Ciphertext> ctxt_bundle, std::vector<HEaaN::Message> kernel_bundle) {
+HEaaN::HomEvaluator eval, std::vector<HEaaN::Ciphertext> ctxt_bundle, 
+std::vector<HEaaN::Message> kernel_bundle, std::vector<HEaaN::Message> kernel_bundle2, 
+std::vector<HEaaN::Message> kernel_residual_bundle) {
 
     // Main flow
     std::vector<HEaaN::Ciphertext> ctxt_conv_out_bundle;
@@ -35,7 +37,7 @@ HEaaN::HomEvaluator eval, std::vector<HEaaN::Ciphertext> ctxt_bundle, std::vecto
     ApproxReLU(context, eval, ctxt_MPP_out, ctxt_relu_out);
 
     HEaaN::Ciphertext ctxt_conv_out2(context);
-    ctxt_conv_out2 = Conv(context, pack, eval, 32, 1, 1, ctxt_relu_out, kernel_bundle);
+    ctxt_conv_out2 = Conv(context, pack, eval, 32, 1, 1, ctxt_relu_out, kernel_bundle2);
 
     
 
@@ -44,7 +46,7 @@ HEaaN::HomEvaluator eval, std::vector<HEaaN::Ciphertext> ctxt_bundle, std::vecto
     std::vector<HEaaN::Ciphertext> ctxt_residual_out;
     HEaaN::Ciphertext ctxt_residual_out_cache(context);
     for (int i = 0; i < 4; ++i) {
-        ctxt_residual_out_cache = Conv(context, pack, eval, 32, 2, 1, ctxt_bundle[i], kernel_bundle);
+        ctxt_residual_out_cache = Conv(context, pack, eval, 32, 2, 1, ctxt_bundle[i], kernel_residual_bundle);
         ctxt_residual_out.push_back(ctxt_residual_out_cache);
     }
 

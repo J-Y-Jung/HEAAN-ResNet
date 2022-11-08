@@ -127,7 +127,7 @@ int main() {
     ctxt_bundle.push_back(ctxt3);
 
     HEaaN::Ciphertext ctxt_out(context);
-    ctxt_out = DSB(context, pack, eval, ctxt_bundle, kernel_bundle);
+    ctxt_out = DSB(context, pack, eval, ctxt_bundle, kernel_bundle, kernel_bundle, kernel_bundle);
 
 
 
