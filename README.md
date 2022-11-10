@@ -54,3 +54,10 @@ ResNet input들의 절대값 upper bound B에 대해 (B=40), f(x) 대신 B*f(x/B
 그 외에 다른 구성요소와 결합할 때 고려해야 하는 부분은 추후에 생각날 때 마다 기입함
 
 void ApproximateReLU(context, eval, ctxt_in, ctxt_out) 꼴로 정의되어 있음
+
+---------------------------------------------------------------------------------------------------
+#### resnet_conv_param.zip
+
+original renset20 에 따른 parameter의 전처리.
+
+구현하는 resnet20의 flow는 MPP와 함께 수정이 되었기 때문에 각 block별 param들을 정리하는 과정이 필요.
