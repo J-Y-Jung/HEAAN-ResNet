@@ -86,7 +86,8 @@ void ApproximateReLU(context, eval, ctxt_in, ctxt_out) 꼴로 정의되어 있�
 
 <hr/>
 
-#### Weight2Vec
+#### Weight2Vec 
+
 
 1개의 열로 구성된 weight를 cpp에서 vector화 시키는 함수.
 
@@ -97,6 +98,8 @@ e.g) number of output_channel = 16 , number of input_channel = 3 , kernel_size =
 ###### < output1{ [input_1],[inpu_2],[input_3] }, output2{ [input_1],[input_2],[input_3] } ,  ... ,output16{ [input_1],[input_2],[input_3]} > 
 
 
+### Summand2Vec
+summand part의 data를 vector화 시키는 함수.
 
 <hr/>
   
