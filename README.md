@@ -102,3 +102,16 @@ layer_downsample은 downsample block에 포함되어있는 conv에 해당.
 
 TODO : 구현하는 resnet20의 flow는 MPP와 함께 수정이 되었기 때문에 각 block별 param들을 정리하는 과정이 필요. 
 
+---------------------------------------------------------------------------------------------------
+#### Parameters (Filters and batch normalizations blended)
+
+filter 와 batch normalization 을 통합한 파라미터.
+
+block 0 은 3채널 -> 16채널 convolution 레이어 하나.
+block 1~3 은 regular blocks.
+block 4 는 downsampling block 이고 block 5~6 은 regular blocks.
+block 7 은 downsampling block 이고 block 8~9 는 regular blocks.
+
+conv 를 통과시킬 때, multiplicands 를 filter 로 보고 summands 를 bias 로 보면 됨.
+그러면 filter + batch normalization 을 한꺼번에 한 결과가 나옴.
+
