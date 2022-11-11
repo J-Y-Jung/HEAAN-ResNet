@@ -95,7 +95,10 @@ conv의 labeling은 conv가 나오는 순서대로 배정.
 
 layer_downsample은 downsample block에 포함되어있는 conv에 해당.
 
-각 파일의 value column이 weight/sqrt(var + epsilon) 값에 해당.
+각 파일의 column
+* value : weight/sqrt(var + epsilon) 값에 해당.
+* bias : 각 conv의 bias
+* mean : 각 conv의 mean
 
 TODO : 구현하는 resnet20의 flow는 MPP와 함께 수정이 되었기 때문에 각 block별 param들을 정리하는 과정이 필요. 
 
