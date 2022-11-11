@@ -85,7 +85,8 @@ ResNet input들의 절대값 upper bound B에 대해 (B=40), f(x) 대신 B*f(x/B
 void ApproximateReLU(context, eval, ctxt_in, ctxt_out) 꼴로 정의되어 있음
 
 <hr/>
-#### Weith2vVec
+
+#### Weight2Vec
 
 1개의 열로 구성된 weight를 cpp에서 vector화 시키는 함수.
 
@@ -98,6 +99,8 @@ e.g) number of output_channel = 16 , number of input_channel = 3 , kernel_size =
 
 
 <hr/>
+  
+ 
 #### Parameters (Filters and batch normalizations blended)
 
 filter 와 batch normalization 을 통합한 파라미터들.
