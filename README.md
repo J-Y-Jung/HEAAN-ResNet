@@ -98,7 +98,7 @@ e.g) number of output_channel = 16 , number of input_channel = 3 , kernel_size =
 ###### < output1{ [input_1],[inpu_2],[input_3] }, output2{ [input_1],[input_2],[input_3] } ,  ... ,output16{ [input_1],[input_2],[input_3]} > 
 
 
-### Summand2Vec
+#### Summand2Vec
 summand part의 data를 vector화 시키는 함수.
 
 <hr/>
