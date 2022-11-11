@@ -117,7 +117,7 @@ block 4 는 downsampling block 이고 block 5~6 은 regular blocks.
 block 7 은 downsampling block 이고 block 8~9 는 regular blocks.
   
 
-conv 를 통과시킬 때, multiplicands 를 filter 로 보고 summands 를 bias 로 보면 됨.
+conv 레이어를 통과시킬 때, multiplicands 를 filter 로 보고 summands 를 bias 로 보면 됨.
   
 그러면 filter + batch normalization 을 한꺼번에 한 결과가 나옴.
 
