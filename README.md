@@ -89,8 +89,6 @@ void ApproximateReLU(context, eval, ctxt_in, ctxt_out) 꼴로 정의되어 있�
 
 original renset20 에 따른 parameter의 전처리.
 
-구현하는 resnet20의 flow는 MPP와 함께 수정이 되었기 때문에 각 block별 param들을 정리하는 과정이 필요.
-
 <img src = "https://user-images.githubusercontent.com/114977212/200970916-3be43395-d6f9-45a7-a72a-b2a0d627532a.png" width = "600" height = "300"/>
 
 conv의 labeling은 conv가 나오는 순서대로 배정.
@@ -98,3 +96,6 @@ conv의 labeling은 conv가 나오는 순서대로 배정.
 layer_downsample은 downsample block에 포함되어있는 conv에 해당.
 
 각 파일의 value column이 weight/sqrt(var + epsilon) 값에 해당.
+
+TODO : 구현하는 resnet20의 flow는 MPP와 함께 수정이 되었기 때문에 각 block별 param들을 정리하는 과정이 필요. 
+
