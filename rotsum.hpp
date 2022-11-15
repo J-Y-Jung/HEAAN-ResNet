@@ -20,7 +20,13 @@ HEaaN::Ciphertext RotSumToIdx(HEaaN::Context context, HEaaN::KeyPack pack, HEaaN
             eval.leftRotate(ctxt, (1<<i)*rot_interval, ctxt_temp);
             eval.add(ctxt, ctxt_temp, ctxt);
         }
-        eval.leftRotate(ctxt, -idx, ctxt);
+        eval.rightRotate(ctxt, idx, ctxt);
+    }
+    else if (idx == 0){
+        for (int i=log_rot_num-1 ; i>=0; i--){
+            eval.leftRotate(ctxt, (1<<i)*rot_interval, ctxt_temp);
+            eval.add(ctxt, ctxt_temp, ctxt);
+        }
     }
     else if (idx % rot_interval == 0){
         idx = idx/rot_interval;
@@ -31,3 +37,4 @@ HEaaN::Ciphertext RotSumToIdx(HEaaN::Context context, HEaaN::KeyPack pack, HEaaN
     }
     return ctxt;
 }
+
