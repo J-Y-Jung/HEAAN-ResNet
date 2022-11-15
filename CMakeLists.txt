@@ -30,3 +30,6 @@ target_link_libraries(rotsumtest PUBLIC HEaaN::HEaaN)
 
 add_executable(oddLazyBSGStest oddLazyBSGStest.cpp) 
 target_link_libraries(oddLazyBSGStest PUBLIC HEaaN::HEaaN)
+
+add_executable(AvgpoolFC64test AvgpoolFC64test.cpp) 
+target_link_libraries(AvgpoolFC64test PUBLIC HEaaN::HEaaN)
