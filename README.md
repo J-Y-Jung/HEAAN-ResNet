@@ -13,6 +13,13 @@ cmake --build (원하는 디렉토리 이름)
 cd (원하는 디렉토리 이름)/bin              
 ./(실행 파일 이름)
 
+## (사소한) ideas
+1. Packing : (용동) amortized time을 위해 하나의 이미지의 3ch을 4ch로 하나의 ctxt에 packing하지 않고, 3개의 ctxt에 packing하여 slot을 더 밀도 있게 사용함.
+
+2. Avgpool + FC64 : (준영)
+3. 
+
+
 ## Issues
 
 1. ctxt * msg 가 너무 오래 걸림. 인코딩과 리스케일링이 시간을 상당히 많이 잡아먹음. 커널 인코딩은 전부 전처리 단계에서 하는 것이 맞는 것 같음. HEaaN::EnDecoder를 사용하여 전부 ptxt(인코딩된 형태)로 바꾼 후 ctxt * ptxt 로 계산하되, 가능한 한 multWithoutRescale로 연산 후 나중에 한꺼번에 rescale해야 함.
@@ -21,9 +28,11 @@ cd (원하는 디렉토리 이름)/bin
 
 현재 convtools, conv, AvgpoolFC64 등을 전부 ctxt * ptxt 연산, hoisted rescaling을 사용하도록 변경 중 (용동, 준영)
 
+11/16 : Conv에서 ctxt * ptxt 연산으로 수정 완료. hoisting 구현 중.
+
 <hr/>
 
-#### Conv
+#### Conv (용동)
 
 Conv : 3 by 3 convolution만 구현 완료. 인자로 context, pack, eval, imgsize=32, gap, stride, ctxt, kernel_bundle(9개 커널 들어있는 묶음)을 받습니다.
 
@@ -31,9 +40,9 @@ MPPacking : gap이 벌어진 ctxt들(4개 혹은 16개)을 다시 묶어주는 �
 
 <hr/>
 
-#### DSB (Down Sampling Block)
+#### DSB (Down Sampling Block) (용동)
 
-DSB.cpp 구동 확인 완료.
+DSB.cpp 구동 확인 완료.(현재 구동 불가 상태. Conv 수정 중)
 
 함수 이름 : DSB
 
@@ -41,16 +50,18 @@ DSB.cpp 구동 확인 완료.
 
 수정 필요 : 16채널을 output으로 뱉는 것이 아니라 1채널 뱉음.
 
+Conv때문에 늦어지는 중.
+
 
 <hr/>
 
-#### RB (Residual Block)
+#### RB (Residual Block) (용동)
 
-11/11 이전 업데이트 예정.
+11/11 이전 업데이트 예정. Conv때문에 늦어지는 중.
 
 <hr/>
 
-#### convtools
+#### convtools (준영)
 
 vector<vector<double>>형태의 커널 값을 원하는 convolution의 메시지로 패킹해주는 함수.
 
@@ -66,7 +77,7 @@ TODO: heaan message 저장 기능을 추가하여 I/O랑 통합?
 
 <hr/>
 
-#### rotsum
+#### rotsum (준영)
 
 RotSum2Idx : 원하는 간격(power of 2)으로 원하는 원소 갯수(power of 2)만큼 rotation-sum 한 후 올바른 결과값이 지정한 Index에 해당하는 슬롯에 오도록 하는 함수. FC, Conv후 결과물을 합칠 때 사용 가능.
 
@@ -74,7 +85,7 @@ RotSum2Idx : 원하는 간격(power of 2)으로 원하는 원소 갯수(power of
 
 <hr/>
 
-#### Avgpool + FC64
+#### Avgpool + FC64 (준영)
 
 Avgpool : 8*8개의 각 픽셀 값들을 모두 더함 (1/64 는 곱하지 않음).
   
