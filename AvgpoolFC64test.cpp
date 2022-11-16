@@ -37,6 +37,7 @@ int main() {
     keygen.genCommonKeys();
     cout << "done" << endl << endl;
 
+    EnDecoder ecd(context);
     Encryptor enc(context);
     Decryptor dec(context);
 
@@ -49,8 +50,10 @@ int main() {
     {
         Message msg(log_slots), uni(log_slots, COMPLEX_ZERO), dmsg(log_slots), msg_tmp(log_slots), 
                 msg_tmp0(log_slots, COMPLEX_ZERO), msg_out(log_slots, COMPLEX_ZERO);
+        Plaintext ptxt(context);
+        vector<Plaintext> ptxt_vec;
         for (size_t i = 0; i < num_slots; ++i) {
-            msg[i] = i;
+            msg[i] = 1;
         }
         cout << "original message: " << endl;
         printMessage(msg, false, 64, 64);
@@ -65,13 +68,23 @@ int main() {
         printMessage(uni, false, 64, 64);
         Ciphertext ctxt(context), ctxt_out(context);
         enc.encrypt(msg, pack, ctxt);
+        ctxt.setLevel(5);
+        cout << "evaluating Avgpool" << endl;
+        timer.start("* ");
         ctxt = Avgpool(context, pack, eval, ctxt);
+        timer.end();
         dec.decrypt(ctxt, sk, dmsg);
         cout << "avgpool message: " << endl;
         printMessage(dmsg, false, 64, 64);
-        vector<Message> msg_vec(10, uni);
-        printMessage(msg_vec[0], false, 64, 64);
-        ctxt_out = FC64(context, pack, eval, ctxt, msg_vec);
+
+        ptxt = ecd.encode(uni, 5, 0);
+        for (size_t i = 0; i < 10; ++i) {
+            ptxt_vec.push_back(ptxt);
+        }
+        cout << "evaluating FC64" << endl;
+        timer.start("* ");
+        ctxt_out = FC64(context, pack, eval, ctxt, ptxt_vec);
+        timer.end();
         dec.decrypt(ctxt_out, sk, dmsg);
         cout << "decrypted message after FC64: " << endl;
         printMessage(dmsg, false, 64, 64);

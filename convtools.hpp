@@ -41,9 +41,10 @@ for 1-by-1 kernel, you must set
 weight index = |(1,1)|
 */
 
-void Weight2Msg(Message &msg, vector<vector<double>> weights,
+void weightToPtxt(Plaintext &ptxt, u64 level, vector<vector<double>> weights,
                     u64 gap_in, u64 stride, 
-                    u64 weight_row_idx, u64 weight_col_idx) {
+                    u64 weight_row_idx, u64 weight_col_idx, EnDecoder ecd) {
+    Message msg(15);                    
     auto num_slots = msg.getSize();
     u64 multiplicity = 2*gap_in; 
     u64 channels_in = 16*gap_in;
@@ -168,22 +169,19 @@ void Weight2Msg(Message &msg, vector<vector<double>> weights,
             }
         }
     }
+    ptxt = ecd.encode(msg, level, 0);
     return;
 }
 
 //weight for the first conv layer
-void Weight2Msg1stConv(Message &msg, vector<vector<double>> weights, 
-                    u64 weight_row_idx, u64 weight_col_idx) {
+void weightToPtxt1stConv(Plaintext &ptxt, u64 level, vector<double> weights, 
+                    u64 weight_row_idx, u64 weight_col_idx, EnDecoder ecd) {
+    Message msg(15);   
     auto num_slots = msg.getSize();
-    u64 multiplicity = 8; 
-    u64 channels_in = 4;
-    
-    if (weights.size() != multiplicity){
-        cout << "Number of input kernel values does not match!" << endl;
-        return;
-    }
+    u64 multiplicity = 32; 
+    u64 channels_in = 1;
    
-    if (weights[0].size() != channels_in){
+    if (weights.size() != channels_in){
         cout << "Number of input channels does not match!" << endl;
         return;
     }
@@ -205,7 +203,7 @@ void Weight2Msg1stConv(Message &msg, vector<vector<double>> weights,
         for (size_t k = 0; k < channels_in; ++k){
             for (size_t i = 0; i < slots_per_block; ++i){
                 idx = j*slots_per_input+k*slots_per_block+i;
-                msg[idx].real(weights[j][k]);
+                msg[idx].real(weights[j]);
             }
         }
     }
@@ -238,5 +236,6 @@ void Weight2Msg1stConv(Message &msg, vector<vector<double>> weights,
             }
         }
     }
+    ptxt = ecd.encode(msg, level, 0);
     return;
 }

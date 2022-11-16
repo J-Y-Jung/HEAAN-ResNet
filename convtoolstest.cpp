@@ -41,7 +41,7 @@ int main() {
               << endl;
     keygen.genCommonKeys();
     cout << "done" << endl << endl;*/
-
+    EnDecoder ecd(context);
     Encryptor enc(context);
     Decryptor dec(context);
 
@@ -52,6 +52,7 @@ int main() {
     timer.end(); 
 
     {
+        Plaintext ptxt(context);
         Message wgt(log_slots);
         vector<double> v0(32);
         for (size_t i = 0; i < 32; ++i) {
@@ -68,24 +69,29 @@ int main() {
             v2[i] = i+1;
         }
         vector<vector<double>> y(8, v2);
-        Weight2Msg(wgt, w, 1,1,0,0);
+        weightToPtxt(ptxt,13, w, 1,1,0,0, ecd);
         cout << endl << "output weight vector: " << endl;
+        wgt = ecd.decode(ptxt);
         printMessage(wgt);
         cout << endl;
-        Weight2Msg(wgt, w, 1,2,0,0);
+        weightToPtxt(ptxt,13, w, 1,2,0,0, ecd);
         cout << endl << "output weight vector: " << endl;
+        wgt = ecd.decode(ptxt);
         printMessage(wgt);
         cout << endl;
-        Weight2Msg(wgt, v, 2,1,1,1);
+        weightToPtxt(ptxt,13, v, 2,1,1,1, ecd);
         cout << endl << "output weight vector: " << endl;
+        wgt = ecd.decode(ptxt);
         printMessage(wgt);
         cout << endl;
-        Weight2Msg(wgt, y, 4,1,1,1);
+        weightToPtxt(ptxt,13, y, 4,1,1,1, ecd);
         cout << endl << "output weight vector: " << endl;
+        wgt = ecd.decode(ptxt);
         printMessage(wgt);
         cout << endl;
-        Weight2Msg(wgt, v, 2,2,1,1);
+        weightToPtxt(ptxt,13, v, 2,2,1,1, ecd);
         cout << endl << "output weight vector: " << endl;
+        wgt = ecd.decode(ptxt);
         printMessage(wgt);
         cout << endl;
 
@@ -102,7 +108,7 @@ int main() {
         cout << "done" << endl << endl;
 
         cout << "Evaluating weight * ctxt" << endl;
-        eval.mult(ctxt, wgt, ctxt_out);
+        eval.mult(ctxt, ptxt, ctxt_out);
         cout << "done" << endl << endl;
 
         cout << "Result ciphertext - level " << ctxt_out.getLevel()
