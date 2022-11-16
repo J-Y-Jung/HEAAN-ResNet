@@ -13,6 +13,14 @@ cmake --build (원하는 디렉토리 이름)
 cd (원하는 디렉토리 이름)/bin              
 ./(실행 파일 이름)
 
+## Issues
+
+1. ctxt * msg 가 너무 오래 걸림. 인코딩과 리스케일링이 시간을 상당히 많이 잡아먹음. 커널 인코딩은 전부 전처리 단계에서 하는 것이 맞는 것 같음. HEaaN::EnDecoder를 사용하여 전부 ptxt(인코딩된 형태)로 바꾼 후 ctxt * ptxt 로 계산하되, 가능한 한 multWithoutRescale로 연산 후 나중에 한꺼번에 rescale해야 함.
+
+(M1 맥북 기준: ctxt * msg : <300ms, ctxt * ptxt : <100ms, multWithoutRescale : <10ms)
+
+현재 convtools, conv, AvgpoolFC64 등을 전부 ctxt * ptxt 연산, hoisted rescaling을 사용하도록 변경 중 (용동, 준영)
+
 <hr/>
 
 #### Conv
