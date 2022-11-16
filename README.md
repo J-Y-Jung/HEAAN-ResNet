@@ -30,6 +30,10 @@ cd (원하는 디렉토리 이름)/bin
 
 11/16 : Conv에서 ctxt * ptxt 연산으로 수정 완료. hoisting 구현 중.
 
+AvgpoolFC64 ctxt * ptxt 연산으로 수정 완료. FC64의 경우 현재 구현이 sum(rot(mult(ct, pt), idx)) 형태로 되어 있어서 hoisting 아쉽게도 사용 불가. 
+
+convtools의 함수들을 ptxt를 출력하도록 변경. 함수명도 바뀜 (Weight2Msg -> weightToPtxt). 입력받는 변수들도 변경이 있음 (미리 정의된 HEaaN::EnDecoder를 넣어줘야함)
+
 <hr/>
 
 #### Conv (용동)
@@ -63,7 +67,7 @@ Conv때문에 늦어지는 중.
 
 #### convtools (준영)
 
-vector<vector<double>>형태의 커널 값을 원하는 convolution의 메시지로 패킹해주는 함수.
+vector<vector<double>>형태의 커널 값을 원하는 convolution의 ptxt로 패킹해주는 함수.
 
 vector<double>이 하나의 "output channel"에 해당하는 값이므로
 
@@ -96,6 +100,8 @@ FC64 : (bias 없음) 64*10 행렬의 각 행을 적절한 형태의 message[각 
 구현 상 이슈로 결과로 나온 ctxt의 (0, 8, 16, 24, 256, 264, 272, 280, 512, 520)에 해당하는 인덱스에만 올바른 값이 들어있음.
   
 나머지 인덱스에 trash값이 들어있으므로, 실제 사용 시에는 한번 masking해줘야 하지만, depth를 잡아먹으므로... 생략함
+  
+bias는 적절한 모양으로 변형 뒤 더해 주면 됨
 
 <hr/>
 
