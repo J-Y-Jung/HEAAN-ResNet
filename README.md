@@ -14,7 +14,7 @@ cd (원하는 디렉토리 이름)/bin
 ./(실행 파일 이름)
 
 ## (사소한) ideas
-1. Packing : (용동) amortized time을 위해 하나의 이미지의 3ch을 4ch로 하나의 ctxt에 packing하지 않고, 3개의 ctxt에 packing하여 slot을 더 밀도 있게 사용함.
+1. Packing : (용동) amortized time을 위해 하나의 이미지의 3ch을 4ch로 하나의 ctxt에 packing하지 않고, 3개의 ctxt에 packing하여 slot을 더 밀도 있게 사용함. conv에 불필요한 rot & sum을 없앨 수 있음.
 
 2. Avgpool + FC64 : (준영)
 3. 
@@ -26,9 +26,9 @@ cd (원하는 디렉토리 이름)/bin
 
 (M1 맥북 기준: ctxt * msg : <300ms, ctxt * ptxt : <100ms, multWithoutRescale : <10ms)
 
-현재 convtools, conv, AvgpoolFC64 등을 전부 ctxt * ptxt 연산, hoisted rescaling을 사용하도록 변경 중 (용동, 준영)
+현재 convtools, AvgpoolFC64 등을 전부 ctxt * ptxt 연산, hoisted rescaling을 사용하도록 변경 중 (준영)
 
-11/16 : Conv에서 ctxt * ptxt 연산으로 수정 완료. hoisting 구현 중.
+11/16 : Conv에서 ctxt * ptxt 연산으로 수정 완료. hoisting 구현 완료. 여전히 전체 시간에서 convolution이 차지하는 비율이 커서 불만족스럽지만 일단 구현해보기로 결정. (용동)
 
 AvgpoolFC64 ctxt * ptxt 연산으로 수정 완료. FC64의 경우 현재 구현이 sum(rot(mult(ct, pt), idx)) 형태로 되어 있어서 hoisting 아쉽게도 사용 불가. 
 
@@ -38,7 +38,7 @@ convtools의 함수들을 ptxt를 출력하도록 변경. 함수명도 바뀜 (W
 
 #### Conv (용동)
 
-Conv : 3 by 3 convolution만 구현 완료. 인자로 context, pack, eval, imgsize=32, gap, stride, ctxt, kernel_bundle(9개 커널 들어있는 묶음)을 받습니다.
+Conv : 3 by 3 convolution만 구현 완료. 인자로 context, pack, eval, imgsize=32, gap, stride, input channel, output channel, ctxt_bundle(input channel개 만큼), kernel_bundle을 받습니다.
 
 MPPacking : gap이 벌어진 ctxt들(4개 혹은 16개)을 다시 묶어주는 역할. 인자로 context, pack, eval, imgsize=32, 모을 ctxt묶음을 받습니다.
 
@@ -46,7 +46,7 @@ MPPacking : gap이 벌어진 ctxt들(4개 혹은 16개)을 다시 묶어주는 �
 
 #### DSB (Down Sampling Block) (용동)
 
-DSB.cpp 구동 확인 완료.(현재 구동 불가 상태. Conv 수정 중)
+DSB.cpp 구동 확인 완료.(현재 구동 불가 상태. 빠른 시일 내 업데이트 예정.)
 
 함수 이름 : DSB
 
@@ -54,14 +54,12 @@ DSB.cpp 구동 확인 완료.(현재 구동 불가 상태. Conv 수정 중)
 
 수정 필요 : 16채널을 output으로 뱉는 것이 아니라 1채널 뱉음.
 
-Conv때문에 늦어지는 중.
-
 
 <hr/>
 
 #### RB (Residual Block) (용동)
 
-11/11 이전 업데이트 예정. Conv때문에 늦어지는 중.
+11/11 이전 업데이트 예정. DSB 먼저 업데이트 예정.
 
 <hr/>
 
