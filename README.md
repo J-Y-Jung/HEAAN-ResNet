@@ -159,11 +159,16 @@ conv 레이어를 통과시킬 때, multiplicands 를 filter 로 보고 summands
   
   필요 : Putty , WinSCP
   
+  
   1.Putty , WinSCP 접속
   
-  2.WinSCP 폴더에 파일 올리기(hpp,cpp파일). (CMakeList.txt도 file에 따라서 update시켜줘야함)
+  2.WinSCP에 heaan-native-docker.tar.gz파일 올리기 
   
-  3.Putty 명렁어
+  3.Putty에 docker container image load 하기
+  
+  4.WinSCP 폴더에 파일 올리기(hpp,cpp파일). (CMakeList.txt도 file에 따라서 update시켜줘야함)
+  
+  5.Putty 명렁어
   
   > sudo docker cp /home/(WinSCP 폴더이름)/파일.hpp dockerID:/app/examples 
   
