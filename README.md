@@ -153,3 +153,27 @@ conv 레이어를 통과시킬 때, multiplicands 를 filter 로 보고 summands
   
 그러면 filter + batch normalization 을 한꺼번에 한 결과가 나옴.
 
+<hr/>
+  
+#### Server tutorial
+  
+  필요 : Putty , WinSCP
+  
+  1.Putty , WinSCP 접속
+  
+  2.WinSCP 폴더에 파일 올리기(hpp,cpp파일). (CMakeList.txt도 file에 따라서 update시켜줘야함)
+  
+  3.Putty 명렁어
+  
+  > sudo docker cp /home/(WinSCP 폴더이름)/파일.hpp dockerID:/app/examples 
+  
+  > sudo docker cp /home/(WinSCP 폴더이름)/파일test.cpp dockerID:/app/examples
+  
+  > sudo docker exec -it  dockerID /bin/bash
+
+  > cmake -B build
+  
+  > cmake --build build
+  
+  > cd build/bin -> ./실행파일이름
+  
