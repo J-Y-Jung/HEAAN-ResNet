@@ -182,3 +182,4 @@ conv 레이어를 통과시킬 때, multiplicands 를 filter 로 보고 summands
   
   > cd build/bin -> ./실행파일이름
   
+파일 업데이트 될 때마다 4번부터 반복 실행
