@@ -19,6 +19,11 @@ cd (원하는 디렉토리 이름)/bin
 2. Avgpool + FC64 : (준영)
 3. 
 
+## CryptoLab 미팅 때 확인해야 할 것들
+1. Thread 사용량 (BTS 몇 thread로 구동?, multi-thread 할당하는 법?, 등등)
+2. Bootstrapping 조작 가능 범위?
+3. BTS 구현 방식? (SOTA?)
+4. 만약 정식 HEaaN을 사용할 필요가 있다면, 문법이 얼마나 달라지는지?
 
 ## Issues
 
@@ -171,6 +176,7 @@ conv 레이어를 통과시킬 때, multiplicands 를 filter 로 보고 summands
   5.Putty 명렁어
   
   > sudo docker cp /home/(WinSCP 폴더이름)/파일.hpp dockerID:/app/examples 
+  폴더째로 넣으려 하면 안되는 듯 합니다... 번거롭지만 잘 안되신다면 파일 하나씩 넣어보세요.(용동)
   
   > sudo docker cp /home/(WinSCP 폴더이름)/파일test.cpp dockerID:/app/examples
   
