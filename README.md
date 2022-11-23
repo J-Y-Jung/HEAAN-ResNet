@@ -24,6 +24,7 @@ cd (원하는 디렉토리 이름)/bin
 2. Bootstrapping 조작 가능 범위?
 3. BTS 구현 방식? (SOTA?)
 4. 만약 정식 HEaaN을 사용할 필요가 있다면, 문법이 얼마나 달라지는지?
+5. 초기 enc 이후 level이 왜 full로 차있지 않고 BTS 이후의 레벨에서 시작하는지?
 
 ## Issues
 
