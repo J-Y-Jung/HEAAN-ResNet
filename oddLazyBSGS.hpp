@@ -3,7 +3,7 @@
 #include <cmath>
 #include "HEaaN/heaan.hpp"
 
-void multWithoutRelin(HEaaN::Context context, HEaaN::HomEvaluator eval, 
+void multWithoutRelin(HEaaN::Context context, HEaaN::HomEvaluator eval,
     const HEaaN::Ciphertext& ctxt1, const HEaaN::Ciphertext& ctxt2, HEaaN::Ciphertext& ctxt_out) {
 
     const HEaaN::u64 level1 = ctxt1.getLevel();
@@ -42,15 +42,15 @@ void oddSetUp(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphertex
     HEaaN::Ciphertext ctxt_temp(context);
 
     for (int i = 1; i <= log2(k); ++i) {
-        eval.mult(evenBS_basis[i-1], evenBS_basis[i-1], ctxt_temp);
+        eval.mult(evenBS_basis[i - 1], evenBS_basis[i - 1], ctxt_temp);
         evenBS_basis.push_back(ctxt_temp);
     }
 
 
     for (int i = 1; i < k / 2; ++i) {
 
-        int alpha = (int)floor(log2(2*i+1));
-        int ind = pow(2, alpha-1);
+        int alpha = (int)floor(log2(2 * i + 1));
+        int ind = pow(2, alpha - 1);
 
         eval.mult(evenBS_basis[alpha], oddBS_basis[i - ind], ctxt_temp);
         oddBS_basis.push_back(ctxt_temp);
@@ -95,8 +95,8 @@ void oddBabyStep(HEaaN::Context context, HEaaN::HomEvaluator eval,
     HEaaN::Ciphertext ctxt_temp(context);
 
     if (k > 2) {
-        for (int i = 1; i < k/2; ++i) {
-            eval.mult(oddBS_basis[i], polynomial[2*i+1], ctxt_temp);
+        for (int i = 1; i < k / 2; ++i) {
+            eval.mult(oddBS_basis[i], polynomial[2 * i + 1], ctxt_temp);
             eval.add(ctxt_result, ctxt_temp, ctxt_result);
             /*
             std::cout << "Current Ciphertext during odd Baby Step  - level "
@@ -155,7 +155,7 @@ void oddGiantStep(HEaaN::Context context, HEaaN::HomEvaluator eval,
                 << ctxt_quotient_relin.getLevel() << std::endl
                 << std::endl;
                 */
-                
+
         }
 
         else {
@@ -224,14 +224,14 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     eval.add(ctxt_temp, ctxt, ctxt_temp);
     eval.mult(ctxt_temp, 0.5, ctxt_temp);
 
-    HEaaN::Ciphertext ctxt_real_BTS(context);
-    std::cout << "Imaginary Removal Bootstrapping ... " << std::endl;
+    /*HEaaN::Ciphertext ctxt_real_BTS(context);
+    std::cout << "Imaginary Removal Bootstrapping ... " << std::endl;*/
 
     eval.bootstrap(ctxt_temp, ctxt_real_BTS, true);
 
-    std::cout << "Result ciphertext after imaginary removal bootstrapping - level "
+    /*std::cout << "Result ciphertext after imaginary removal bootstrapping - level "
         << ctxt_real_BTS.getLevel() << std::endl
-        << std::endl;
+        << std::endl;*/
 
     std::vector<double> polynomial_1 = {
     1.34595769293910e-33, 2.45589415425004e1, 4.85095667238242e-32, -6.69660449716894e2,
@@ -273,43 +273,43 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
 
     HEaaN::Ciphertext ctxt_temp1(context);
 
-    std::cout << "1st polynomial evaluation ... " << std::endl << std::endl;
+    /*std::cout << "1st polynomial evaluation ... " << std::endl << std::endl;*/
     evalOddPolynomial(context, eval, ctxt_real_BTS, ctxt_temp1, polynomial_1, 4, 2);
-    std::cout << "done" << std::endl << std::endl;
+    /*std::cout << "done" << std::endl << std::endl;
 
     std::cout << "Ciphertext after evaluating 1st polynomial - level " << ctxt_temp1.getLevel()
         << std::endl
         << std::endl;
 
-    std::cout << "2nd polynomial evaluation ... " << std::endl << std::endl;
+    std::cout << "2nd polynomial evaluation ... " << std::endl << std::endl;*/
 
     HEaaN::Ciphertext ctxt_temp2(context);
     evalOddPolynomial(context, eval, ctxt_temp1, ctxt_temp2, polynomial_2, 2, 3);
 
-    std::cout << "done" << std::endl << std::endl;
+    /*std::cout << "done" << std::endl << std::endl;
 
     std::cout << "Ciphertext after evaluating 2nd polynomial - level " << ctxt_temp2.getLevel()
         << std::endl
-        << std::endl;
+        << std::endl;*/
 
-    std::cout << "Bootstrapping ... " << std::endl;
+    /*std::cout << "Bootstrapping ... " << std::endl;*/
     HEaaN::Ciphertext ctxt_BTS(context);
     eval.bootstrap(ctxt_temp2, ctxt_BTS, true);
 
-    std::cout << "Result ciphertext after bootstrapping - level "
+    /*std::cout << "Result ciphertext after bootstrapping - level "
         << ctxt_BTS.getLevel() << std::endl
-        << std::endl;
+        << std::endl;*/
 
     //ctxt_out3 = eval.sign(ctxt)
 
-    std::cout << "3rd polynomial evaluation ... " << std::endl << std::endl;
+  /*  std::cout << "3rd polynomial evaluation ... " << std::endl << std::endl;*/
 
     HEaaN::Ciphertext ctxt_sign(context);
     evalOddPolynomial(context, eval, ctxt_BTS, ctxt_sign, polynomial_3, 4, 3);
 
-    std::cout << "Ciphertext after evaluating 3rd polynomial - level " << ctxt_sign.getLevel()
+  /*  std::cout << "Ciphertext after evaluating 3rd polynomial - level " << ctxt_sign.getLevel()
         << std::endl
-        << std::endl;
+        << std::endl;*/
 
     //ReLU(x)= 0.5(x+x*sign(x))
     eval.mult(ctxt_real_BTS, 0.5, ctxt_real_BTS);
