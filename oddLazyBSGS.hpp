@@ -224,8 +224,8 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     eval.add(ctxt_temp, ctxt, ctxt_temp);
     eval.mult(ctxt_temp, 0.5, ctxt_temp);
 
-    /*HEaaN::Ciphertext ctxt_real_BTS(context);
-    std::cout << "Imaginary Removal Bootstrapping ... " << std::endl;*/
+    HEaaN::Ciphertext ctxt_real_BTS(context);
+//     std::cout << "Imaginary Removal Bootstrapping ... " << std::endl;
 
     eval.bootstrap(ctxt_temp, ctxt_real_BTS, true);
 
