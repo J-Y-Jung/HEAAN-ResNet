@@ -83,7 +83,7 @@ int main() {
         }
         cout << "evaluating FC64" << endl;
         timer.start("* ");
-        ctxt_out = FC64(context, pack, eval, ctxt, ptxt_vec);
+        ctxt_out = FC64old(context, pack, eval, ctxt, ptxt_vec);
         timer.end();
         dec.decrypt(ctxt_out, sk, dmsg);
         cout << "decrypted message after FC64: " << endl;
