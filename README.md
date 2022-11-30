@@ -25,7 +25,7 @@ cd (원하는 디렉토리 이름)/bin
 3. BTS 구현 방식? (SOTA? EvalRound등으로 구현되었는지) 
 4. 만약 정식 HEaaN을 사용할 필요가 있다면, 문법이 얼마나 달라지는지?
 5. 초기 enc 이후 level이 왜 full로 차있지 않고 BTS 이후의 레벨에서 시작하는지?
-6. rescale factor !=0일때 rotation 가능한지?
+6. rescale factor !=0일때 미리 rotation 할수 없는지?
 
 ## Issues
 
