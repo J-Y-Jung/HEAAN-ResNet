@@ -16,15 +16,16 @@ cd (원하는 디렉토리 이름)/bin
 ## (사소한) ideas
 1. Packing : (용동) amortized time을 위해 하나의 이미지의 3ch을 4ch로 하나의 ctxt에 packing하지 않고, 3개의 ctxt에 packing하여 slot을 더 밀도 있게 사용함. conv에 불필요한 rot & sum을 없앨 수 있음.
 
-2. Avgpool + FC64 : (준영)
+2. FC64 : (준영) amortized time을 위해 최대 96개의 이미지를 한번에 모아서 계산 960<1024(1 block, 32\*32)
 3. 
 
 ## CryptoLab 미팅 때 확인해야 할 것들
 1. Thread 사용량 (BTS 몇 thread로 구동?, multi-thread 할당하는 법?, 등등)
-2. Bootstrapping 조작 가능 범위?
-3. BTS 구현 방식? (SOTA?)
+2. Bootstrapping 조작 가능 범위? (상수곱을 S2C와 통합 가능한가?, BTS의 evalmod와 ReLU의 앞부분을 통합해서 계산 가능한가?, 큰 성능 저하 없이 prime크기나 precision을 지정 가능한가?)
+3. BTS 구현 방식? (SOTA? EvalRound등으로 구현되었는지) 
 4. 만약 정식 HEaaN을 사용할 필요가 있다면, 문법이 얼마나 달라지는지?
 5. 초기 enc 이후 level이 왜 full로 차있지 않고 BTS 이후의 레벨에서 시작하는지?
+6. rescale factor !=0일때 rotation 가능한지?
 
 ## Issues
 
@@ -81,7 +82,7 @@ vector<double>이 하나의 "output channel"에 해당하는 값이므로
 
 [2. 의 경우 conv이후 MPpacking 시 적절한 mask와 추가적인 rotation을 사용하여 각 채널의 결과를 분리해준 후 모아야 함]
 
-TODO: heaan message 저장 기능을 추가하여 I/O랑 통합?
+TODO: heaan message 저장 기능을 추가하여 precomputing 해놓기
 
 <hr/>
 
@@ -109,11 +110,12 @@ bias는 적절한 모양으로 변형 뒤 더해 주면 됨
   
 update(22/11/30) : mppacking이 채널이 아닌 다른 이미지 데이터 16개를 받을 때로 업데이트. 기존 FC64는 FC64old로 이름만 변경.
   
-16개의 이미지의 채널 1-32에 해당하는 
+16개의 이미지의 채널 1-32에 해당하는 ctxt_1, ptxt_vec_1, 채널 33-64에 해당하는 ctxt_2, ptxt_vec_2를 받아 하나의 output을 내보냄.
   
 올바른 데이터는 optput ctxt의 (0, 4, 8, 12, 16, 20, 24, 28, 128, 132) + {0, 1, 2, 3, 32, 33, 34, 35, 64, 65, 66, 67, 96, 97, 98, 99} 번째 slot에 있음.
                            ㄴ 10개의 classification 에 해당하는 값        ㄴ16개의 이미지
 
+(추가 예정)원하는 경우 더 컴팩트하게 최대 96개의 이미지의 정보가 한번에 계산되게 변경 가능.
 
 <hr/>
 
