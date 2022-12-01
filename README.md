@@ -19,12 +19,12 @@ cd (원하는 디렉토리 이름)/bin
 3. rotsum : 결과가 원하는 인덱스에 오도록 하고 싶을 경우 rotation 1번 아낄 수 있음
 
 ## CryptoLab 미팅 때 확인해야 할 것들
-1. Thread 사용량 (BTS 몇 thread로 구동?, multi-thread 할당하는 법?, 등등)
-2. Bootstrapping 조작 가능 범위? (상수곱을 S2C와 통합 가능한가?, BTS의 evalmod와 ReLU의 앞부분을 통합해서 계산 가능한가?, 큰 성능 저하 없이 prime크기나 precision을 지정 가능한가?)
+1. Thread 사용량 (BTS 몇 thread로 구동?, multi-thread 할당하는 법?, 최대 몇 thread 지원? 등등)
+2. Bootstrapping 조작 가능 범위? (상수곱을 S2C와 통합 가능한가?, BTS의 evalmod와 ReLU의 앞부분을 통합해서 계산 가능한가?, 큰 성능 저하 없이 prime크기나 BTS 이후의 precision을 지정 가능한가?)
 3. BTS 구현 방식? (SOTA? EvalRound등으로 구현되었는지) 
 4. 만약 정식 HEaaN을 사용할 필요가 있다면, 문법이 얼마나 달라지는지?
 5. 초기 enc 이후 level이 왜 full로 차있지 않고 BTS 이후의 레벨에서 시작하는지?
-6. rescale factor !=0일때 미리 rotation 할수 없는지?
+6. rescale counter !=0일때 미리 rotation 할수 없는지?
 
 ## Issues
 
