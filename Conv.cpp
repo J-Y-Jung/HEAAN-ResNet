@@ -82,12 +82,12 @@ int main() {
     }
 
 
-
+    // std::cout << ctxt.getSize() << "\n";
 
 
     /////////////// Kernel ////////////////
     
-    
+    std::cout << "Kernel generation ... " << std::endl;
     HEaaN::EnDecoder ecd(context);
     HEaaN::Plaintext ptxt(context);
     ptxt = ecd.encode(msg, 12, 0);
@@ -119,6 +119,8 @@ int main() {
         }
         kernel_o.push_back(kernel_i);
     }
+    std::cout << "done" << std::endl;
+
     // std::cout << std::thread::hardware_concurrency() << "\n";
     HEaaN::HEaaNTimer timer(false);
     timer.start("* ");
@@ -126,13 +128,14 @@ int main() {
     ctxt_out_bundle = Conv(context, pack, eval, 32, 2, 2, 16, 32, ctxt_i, kernel_o);
     timer.end();
 
+    
 
 
 
 
 
     // TEST //
-    // HEaaN::Ciphertext ctxt_test(context);
+    HEaaN::Ciphertext ctxt_test(context);
 
 
 
@@ -145,10 +148,10 @@ int main() {
     HEaaN::Message dmsg;
 
     for (int i = 0; i < ctxt_out_bundle.size(); ++i) {
-        std::cout << "Decrypt ... ";
+        // std::cout << "Decrypt ... ";
         dec.decrypt(ctxt_out_bundle[i], sk, dmsg);
-        std::cout << "done" << std::endl;
-        printMessage(dmsg);
+        // std::cout << "done" << std::endl;
+        // printMessage(dmsg);
     }
 
     return 0;

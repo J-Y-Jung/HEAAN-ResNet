@@ -10,11 +10,13 @@
 
 
 std::vector<HEaaN::Ciphertext> Conv(HEaaN::Context context, HEaaN::KeyPack pack,
-HEaaN::HomEvaluator eval, int imgsize, int gap, int stride, int input_channel, int output_channel, std::vector<HEaaN::Ciphertext> ctxt_bundle, 
+HEaaN::HomEvaluator eval, int imgsize, int gap, int stride, int input_channel, int output_channel, 
+std::vector<HEaaN::Ciphertext> ctxt_bundle, 
 std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_o) {
     int kernelsize;
     kernelsize = kernel_o[0][0].size();
     std::vector<HEaaN::Ciphertext> ctxt_out_bundle;
+    // 비슷한 방법으로 input_channel은 ctxt_bundle에서 읽어올 수 있음.
 
     std::vector<std::vector<HEaaN::Ciphertext>> rotated_ctxts_bundle;
     for (int inputid = 0; inputid < (input_channel); ++inputid) {
