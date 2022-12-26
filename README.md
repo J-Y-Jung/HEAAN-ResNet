@@ -21,6 +21,7 @@ cd (원하는 디렉토리 이름)/bin
 
 ## CryptoLab 미팅 때 확인해야 할 것들
 1. Thread 사용량 (BTS 몇 thread로 구동?, multi-thread 할당하는 법?, 최대 몇 thread 지원? 등등)
+-> 최대로 사용 가능한 thread를 사용하도록 되어있을 것이다. 반복문에서 thread 할당하는 법은 간단하다. 구글링!
 2. Bootstrapping 조작 가능 범위? (상수곱을 S2C와 통합 가능한가?, BTS의 evalmod와 ReLU의 앞부분을 통합해서 계산 가능한가?, 큰 성능 저하 없이 prime크기나 BTS 이후의 precision을 지정 가능한가?)
 3. BTS 구현 방식? (SOTA? EvalRound등으로 구현되었는지) 
 4. 만약 정식 HEaaN을 사용할 필요가 있다면, 문법이 얼마나 달라지는지?
