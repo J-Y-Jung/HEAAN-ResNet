@@ -52,20 +52,19 @@ MPPacking : gap이 벌어진 ctxt들(4개 혹은 16개)을 다시 묶어주는 �
 
 #### DSB (Down Sampling Block) (용동)
 
-DSB.cpp 구동 확인 완료.(현재 구동 불가 상태. 빠른 시일 내 업데이트 예정.)
+DSB.cpp 구동 확인 완료.
 
 함수 이름 : DSB
 
-인자 : context, pack, eval, ctxt_bundle (MPP를 함으로서 4개의 ctxt(32개 이미지)를 동시에 처리함.), kernel_bundle(처음 3 by 3 kernel), kernel_bundle2(두번째 3 by 3 kernel), kernel_residual_bundle(residual flow의 bundle).
+인자 : context, pack, eval, ctxt_bundle, kernel_bundle(처음 3 by 3 kernel), kernel_bundle2(두번째 3 by 3 kernel), kernel_residual_bundle(residual flow의 bundle).
 
-수정 필요 : 16채널을 output으로 뱉는 것이 아니라 1채널 뱉음.
-
+수정 필요 : MPP 순서 변경으로 최적화 예정(설명 추가 예정)
 
 <hr/>
 
 #### RB (Residual Block) (용동)
 
-11/11 이전 업데이트 예정. DSB 먼저 업데이트 예정.
+완성 (설명 추가 예정)
 
 <hr/>
 
