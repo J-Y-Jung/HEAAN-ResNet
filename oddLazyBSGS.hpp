@@ -269,6 +269,12 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     -5.27439678020696e-44, 1.31278509256003e2, 9.47044937974786e-45, -2.69812576626115e1,
     -9.98181561763750e-46, 3.30651387315565, 4.69390466192199e-47, -1.82742944627533e-1
     };
+    
+    
+    //for optimization
+    for(int  i = 0 ; i < polynomial_3.size() ; ++i){
+        polynomial_3[i] = polynomial_3[i]*0.5;
+    }
 
 
     HEaaN::Ciphertext ctxt_temp1(context);
@@ -311,10 +317,18 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
         << std::endl
         << std::endl;*/
 
-    //ReLU(x)= 0.5(x+x*sign(x))
-    eval.mult(ctxt_real_BTS, 0.5, ctxt_real_BTS);
+    //ReLU(x)= 0.5(x+x*sign(x)) = 0.5x + x * (0.5 g3 ^ g2 ^g1)(x), x=ctxt_real_BTS;
+    //ctxt_sign = (0.5 g3 ^ g2 ^g1)(ctxt_real_BTS);
+    
+    HEaaN::Ciphertext ctxt_half(context);
+    eval.mult(ctxt_real_BTS, 0.5, ctxt_half);
     eval.mult(ctxt_real_BTS, ctxt_sign, ctxt_relu);
-    eval.add(ctxt_real_BTS, ctxt_relu, ctxt_relu);
+    eval.add(ctxt_half, ctxt_relu, ctxt_relu);
+    
+    
+    //eval.mult(ctxt_real_BTS, 0.5, ctxt_real_BTS);
+    //eval.mult(ctxt_real_BTS, ctxt_sign, ctxt_relu);
+    //eval.add(ctxt_real_BTS, ctxt_relu, ctxt_relu);
 
     std::cout << "Evaluating Apporximate ReLU done; Ciphertext after evaluating approximate ReLU - level " << ctxt_relu.getLevel()
         << std::endl
