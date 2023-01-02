@@ -15,7 +15,7 @@ cd (원하는 디렉토리 이름)/bin
 
 ## (사소한) ideas
 1. Packing : (용동) amortized time을 위해 하나의 이미지의 3ch을 4ch로 하나의 ctxt에 packing하지 않고, 3개의 ctxt에 packing하여 slot을 더 밀도 있게 사용함. conv에 불필요한 rot & sum을 없앨 수 있음.
-2. FC64 : (준영) amortized time을 위해 최대 96개의 이미지를 한번에 모아서 계산 960<1024(1 block, 32\*32)
+2. FC64 : (준영) amortized time을 위해 최대 96개의 이미지를 한번에 모아서 계산 960<1024(1 block, 32\*32) - 이제는 쓰이지 않음
 3. rotsum : (준영) 결과가 원하는 인덱스에 오도록 하고 싶을 경우 rotation 1번 아낄 수 있음
 4. MPP : (용동) DSB에서 MPP 순서를 바꾸면 MPP 횟수는 더 늘어나지만, 연산량 최적화 가능해 보임
 
