@@ -96,18 +96,21 @@ int main() {
     /////////////// Kernel ////////////////
     // timer.start(" Kernel generation ");
     std::cout << "Kernel generation ... " << std::endl;
-
+    timer.start("* ");
     HEaaN::EnDecoder ecd(context);
     HEaaN::Plaintext ptxt(context);
     ptxt = ecd.encode(msg, 12, 0);
 
-    std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_o;
+    std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_o(32);
+    #pragma omp parallel for
     for (int o = 0; o < 32; ++o) { // output channel 32
-        std::vector<std::vector<HEaaN::Plaintext>> kernel_i;
+        std::vector<std::vector<HEaaN::Plaintext>> kernel_i(16);
+        // #pragma omp parallel for
         for (int i = 0; i < 16; ++i) {   // input channel 16
             std::vector<HEaaN::Plaintext> kernel_bundle;
             HEaaN::Message kernel_msg(log_slots);
             HEaaN::Plaintext kernel(context);
+            // #pragma omp parallel for
             for (int k = 0; k < 9; ++k) {
                 idx = 0;
                 for (; idx < length; ++idx) {
@@ -123,14 +126,15 @@ int main() {
                 kernel = ecd.encode(kernel_msg, 12, 0);
                 kernel_bundle.push_back(kernel);
             }
-            kernel_i.push_back(kernel_bundle);
+            kernel_i[i] = kernel_bundle;
         }
-        kernel_o.push_back(kernel_i);
+        kernel_o[o] = kernel_i;
     }
 
-    std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_o2;
+    std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_o2(32);
+    #pragma omp parallel for
     for (int o = 0; o < 32; ++o) { // output channel 32
-        std::vector<std::vector<HEaaN::Plaintext>> kernel_i2;
+        std::vector<std::vector<HEaaN::Plaintext>> kernel_i2(32);
         for (int i = 0; i < 32; ++i) {   // input channel 32
             std::vector<HEaaN::Plaintext> kernel_bundle2;
             HEaaN::Message kernel_msg2(log_slots);
@@ -150,14 +154,15 @@ int main() {
                 kernel2 = ecd.encode(kernel_msg2, 6, 0);
                 kernel_bundle2.push_back(kernel2);
             }
-            kernel_i2.push_back(kernel_bundle2);
+            kernel_i2[i] = kernel_bundle2;
         }
-        kernel_o2.push_back(kernel_i2);
+        kernel_o2[o] = kernel_i2;
     }
 
-    std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_o3;
+    std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_o3(32);
+    #pragma omp parallel for
     for (int o = 0; o < 32; ++o) { // output channel 32
-        std::vector<std::vector<HEaaN::Plaintext>> kernel_i3;
+        std::vector<std::vector<HEaaN::Plaintext>> kernel_i3(16);
         for (int i = 0; i < 16; ++i) {   // input channel 16
             std::vector<HEaaN::Plaintext> kernel_bundle3;
             HEaaN::Message kernel_msg3(log_slots);
@@ -177,16 +182,17 @@ int main() {
                 kernel3 = ecd.encode(kernel_msg3, 12, 0);
                 kernel_bundle3.push_back(kernel3);
             }
-            kernel_i3.push_back(kernel_bundle3);
+            kernel_i3[i] = kernel_bundle3;
         }
-        kernel_o3.push_back(kernel_i3);
+        kernel_o3[o] = kernel_i3;
     }
     std::cout << "done" << std::endl;
-    // timer.end();
+    timer.end();
 
 
 
     std::vector<std::vector<HEaaN::Ciphertext>> ctxt_bundle;
+    // #pragma omp parallel for
     for (int i = 0; i < 16; ++i) {
         std::vector<HEaaN::Ciphertext> ctxt_bundle_cache;
         for (int ch = 0; ch < 16; ++ch) {
@@ -210,7 +216,7 @@ int main() {
 
     timer.start(" DSB ");
     std::vector<std::vector<HEaaN::Ciphertext>> ctxt_out;
-    ctxt_out = DSB(context, pack, eval, 0, ctxt_bundle, kernel_o, kernel_o2, kernel_o3);
+    ctxt_out = DSB(timer, context, pack, eval, 0, ctxt_bundle, kernel_o, kernel_o2, kernel_o3);
     timer.end();
     std::cout << "DSB is over" << "\n";
 
