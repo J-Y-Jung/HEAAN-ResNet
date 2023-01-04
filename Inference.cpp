@@ -5,53 +5,58 @@
 #include "HEaaNTimer.hpp"
 #include "DSB.hpp"
 
+namespace {
+using namespace HEaaN;
+using namespace std;
+}
+
 int main() {
     // SetUp
-    HEaaN::HEaaNTimer timer(false);
-    HEaaN::ParameterPreset preset = HEaaN::ParameterPreset::FGb;
-    HEaaN::Context context = makeContext(preset);
-    if (!HEaaN::isBootstrappableParameter(context)) {
-        std::cout << "Bootstrap is not available for parameter "
-            << presetNamer(preset) << std::endl;
+    HEaaNTimer timer(false);
+    ParameterPreset preset = ParameterPreset::FGb;
+    Context context = makeContext(preset);
+    if (!isBootstrappableParameter(context)) {
+        cout << "Bootstrap is not available for parameter "
+            << presetNamer(preset) << endl;
         return -1;
     }
-    std::cout << "Parameter : " << presetNamer(preset) << std::endl
-        << std::endl;
+    cout << "Parameter : " << presetNamer(preset) << endl
+        << endl;
     const auto log_slots = getLogFullSlots(context);
 
-    HEaaN::SecretKey sk(context);
-    HEaaN::KeyPack pack(context);
-    HEaaN::KeyGenerator keygen(context, sk, pack);
+    SecretKey sk(context);
+    KeyPack pack(context);
+    KeyGenerator keygen(context, sk, pack);
 
-    std::cout << "Generate encryption key ... " << std::endl;
+    cout << "Generate encryption key ... " << endl;
     keygen.genEncryptionKey();
-    std::cout << "done" << std::endl << std::endl;
+    cout << "done" << endl << endl;
 
-    HEaaN::makeBootstrappable(context);
+    makeBootstrappable(context);
 
-    std::cout << "Generate commonly used keys (mult key, rotation keys, "
+    cout << "Generate commonly used keys (mult key, rotation keys, "
         "conjugation key) ... "
-        << std::endl;
+        << endl;
     keygen.genCommonKeys();
-    std::cout << "done" << std::endl << std::endl;
+    cout << "done" << endl << endl;
 
-    HEaaN::Encryptor enc(context);
-    HEaaN::Decryptor dec(context);
+    Encryptor enc(context);
+    Decryptor dec(context);
 
-    std::cout << "Generate HomEvaluator (including pre-computing constants for "
+    cout << "Generate HomEvaluator (including pre-computing constants for "
         "bootstrapping) ..."
-        << std::endl;
+        << endl;
     timer.start("* ");
-    HEaaN::HomEvaluator eval(context, pack);
+    HomEvaluator eval(context, pack);
     timer.end();
 
 
 
 
     ///////////// Message ///////////////////
-    HEaaN::Message msg(log_slots);
+    Message msg(log_slots);
     // fillRandomComplex(msg);
-    std::optional<size_t> num;
+    optional<size_t> num;
     size_t length = num.has_value() ? num.value() : msg.getSize();
     size_t idx = 0;
     for (; idx < length; ++idx) {
@@ -66,29 +71,29 @@ int main() {
     }
     // printMessage(msg);
 
-    HEaaN::Ciphertext ctxt(context);
-    std::cout << "Encrypt ... " << std::endl;
+    Ciphertext ctxt(context);
+    cout << "Encrypt ... " << endl;
     enc.encrypt(msg, pack, ctxt); // public key encryption
-    std::cout << "done" << std::endl;
+    cout << "done" << endl;
 
 
     /////////////// Kernel ////////////////
     // timer.start(" Kernel generation ");
-    std::cout << "Kernel generation ... " << std::endl;
+    cout << "Kernel generation ... " << endl;
     timer.start("* ");
-    HEaaN::EnDecoder ecd(context);
-    HEaaN::Plaintext ptxt(context);
+    EnDecoder ecd(context);
+    Plaintext ptxt(context);
     ptxt = ecd.encode(msg, 12, 0);
 
-    std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_o;
+    vector<vector<vector<Plaintext>>> kernel_o;
     // #pragma omp parallel for
     for (int o = 0; o < 32; ++o) { // output channel 32
-        std::vector<std::vector<HEaaN::Plaintext>> kernel_i;
+        vector<vector<Plaintext>> kernel_i;
         // #pragma omp parallel for
         for (int i = 0; i < 16; ++i) {   // input channel 16
-            std::vector<HEaaN::Plaintext> kernel_bundle;
-            HEaaN::Message kernel_msg(log_slots);
-            HEaaN::Plaintext kernel(context);
+            vector<Plaintext> kernel_bundle;
+            Message kernel_msg(log_slots);
+            Plaintext kernel(context);
             // #pragma omp parallel for
             for (int k = 0; k < 9; ++k) {
                 idx = 0;
@@ -110,14 +115,14 @@ int main() {
         kernel_o.push_back(kernel_i);
     }
 
-    std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_o2;
+    vector<vector<vector<Plaintext>>> kernel_o2;
     // #pragma omp parallel for
     for (int o = 0; o < 32; ++o) { // output channel 32
-        std::vector<std::vector<HEaaN::Plaintext>> kernel_i2;
+        vector<vector<Plaintext>> kernel_i2;
         for (int i = 0; i < 32; ++i) {   // input channel 32
-            std::vector<HEaaN::Plaintext> kernel_bundle2;
-            HEaaN::Message kernel_msg2(log_slots);
-            HEaaN::Plaintext kernel2(context);
+            vector<Plaintext> kernel_bundle2;
+            Message kernel_msg2(log_slots);
+            Plaintext kernel2(context);
             for (int k = 0; k < 9; ++k) {
                 idx = 0;
                 for (; idx < length; ++idx) {
@@ -138,14 +143,14 @@ int main() {
         kernel_o2.push_back(kernel_i2);
     }
 
-    std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_o3;
+    vector<vector<vector<Plaintext>>> kernel_o3;
     // #pragma omp parallel for
     for (int o = 0; o < 32; ++o) { // output channel 32
-        std::vector<std::vector<HEaaN::Plaintext>> kernel_i3;
+        vector<vector<Plaintext>> kernel_i3;
         for (int i = 0; i < 16; ++i) {   // input channel 16
-            std::vector<HEaaN::Plaintext> kernel_bundle3;
-            HEaaN::Message kernel_msg3(log_slots);
-            HEaaN::Plaintext kernel3(context);
+            vector<Plaintext> kernel_bundle3;
+            Message kernel_msg3(log_slots);
+            Plaintext kernel3(context);
             for (int k = 0; k < 1; ++k) {
                 idx = 0;
                 for (; idx < length; ++idx) {
@@ -165,127 +170,172 @@ int main() {
         }
         kernel_o3.push_back(kernel_i3);
     }
-    std::cout << "done" << std::endl;
+    cout << "done" << endl;
     timer.end();
 
 
 
-    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_bundle;
+    vector<vector<Ciphertext>> ctxt_bundle;
     // #pragma omp parallel for
     for (int i = 0; i < 16; ++i) {
-        std::vector<HEaaN::Ciphertext> ctxt_bundle_cache;
+        vector<Ciphertext> ctxt_bundle_cache;
         for (int ch = 0; ch < 3; ++ch) {
             ctxt_bundle_cache.push_back(ctxt);
         }
         ctxt_bundle.push_back(ctxt_bundle_cache);
     }
 
-    std::cout << "SETUP is over" << "\n";
+    cout << "SETUP is over" << "\n";
 
     // Convolution 1
-    std::cout << "Convolution 1 ..." << std::endl;
+    cout << "Convolution 1 ..." << endl;
     timer.start(" Convolution 1 ");
-    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_conv1_out_bundle;
+    vector<vector<Ciphertext>> ctxt_conv1_out_bundle;
     for (int i = 0; i < 16; ++i) { // 서로 다른 img
-        std::vector<HEaaN::Ciphertext> ctxt_conv1_out_cache;
+        vector<Ciphertext> ctxt_conv1_out_cache;
         ctxt_conv1_out_cache = Conv(context, pack, eval, 32, 1, 1, 3, 16, ctxt_bundle[i], kernel_bundle);
         ctxt_conv1_out_bundle.push_back(ctxt_conv1_out_cache);
     }
     timer.end();
-    std::cout << "DONE!" << "\n";
+    cout << "DONE!" << "\n";
 
 
     // AppReLU
-    std::cout << "AppReLU ..." << std::endl;
+    cout << "AppReLU ..." << endl;
     timer.start(" AppReLU 1 ");
-    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_relu1_out_bundle;
+    vector<vector<Ciphertext>> ctxt_relu1_out_bundle;
     for (int i = 0; i < 4; ++i) {
-        std::vector<HEaaN::Ciphertext> ctxt_relu1_out_allch_bundle;
+        vector<Ciphertext> ctxt_relu1_out_allch_bundle;
         for (int ch = 0; ch < 32; ++ch) {
-            std::cout << "(i = " << i << ", " << "ch = " << ch << ")" << "\n";
-            HEaaN::Ciphertext ctxt_relu1_out(context);
+            cout << "(i = " << i << ", " << "ch = " << ch << ")" << "\n";
+            Ciphertext ctxt_relu1_out(context);
             ApproxReLU(context, eval, ctxt_conv1_out_bundle[i][ch], ctxt_relu1_out);
             ctxt_relu1_out_allch_bundle.push_back(ctxt_relu1_out);
         }
         ctxt_relu1_out_bundle.push_back(ctxt_relu1_out_allch_bundle);
     }
     timer.end();
-    std::cout << "DONE!" << "\n";
+    cout << "DONE!" << "\n";
 
 
     // Residual Block 1, 2, 3
-    std::cout << "RB 1 ..." << std::endl;
+    cout << "RB 1 ..." << endl;
     timer.start(" RB 1 ");
-    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_out;
-    ctxt_out = RB(context, pack, eval, 0, ctxt_bundle, kernel_o, kernel_o2);
+    vector<vector<Ciphertext>> ctxt_out;
+    ctxt_RB1_out = RB(context, pack, eval, 0, ctxt_relu1_out_bundle, kernel_o, kernel_o2);
     timer.end();
-    std::cout << "DONE!" << "\n";
+    cout << "DONE!" << "\n";
 
-    std::cout << "RB 2..." << std::endl;
+    cout << "RB 2..." << endl;
     timer.start(" RB 2 ");
-    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_out;
-    ctxt_out = RB(context, pack, eval, 0, ctxt_bundle, kernel_o, kernel_o2);
+    vector<vector<Ciphertext>> ctxt_out;
+    ctxt_RB2_out = RB(context, pack, eval, 0, ctxt_RB1_out, kernel_o, kernel_o2);
     timer.end();
-    std::cout << "DONE!" << "\n";
+    cout << "DONE!" << "\n";
 
-    std::cout << "RB 3 ..." << std::endl;
+    cout << "RB 3 ..." << endl;
     timer.start(" RB 3 ");
-    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_out;
-    ctxt_out = RB(context, pack, eval, 0, ctxt_bundle, kernel_o, kernel_o2);
+    vector<vector<Ciphertext>> ctxt_out;
+    ctxt_RB3_out = RB(context, pack, eval, 0, ctxt_RB2_out, kernel_o, kernel_o2);
     timer.end();
-    std::cout << "DONE!" << "\n";
+    cout << "DONE!" << "\n";
 
 
     // Down Sampling (Residual) Block 1
-    std::cout << "DSB 1 ..." << std::endl;
+    cout << "DSB 1 ..." << endl;
     timer.start(" DSB 1 ");
-    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_out;
-    ctxt_out = DSB(timer, context, pack, eval, 0, ctxt_bundle, kernel_o, kernel_o2, kernel_o3);
-    std::cout << "DONE!" << "\n";
+    vector<vector<Ciphertext>> ctxt_out;
+    ctxt_DSB1_out = DSB(timer, context, pack, eval, 0, ctxt_RB3_out, kernel_o, kernel_o2, kernel_o3);
+    cout << "DONE!" << "\n";
 
 
     // Residual Block 4, 5
-    std::cout << "RB 4..." << std::endl;
+    cout << "RB 4..." << endl;
     timer.start(" RB 4 ");
-    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_out;
-    ctxt_out = RB(context, pack, eval, 1, ctxt_bundle, kernel_o, kernel_o2);
+    vector<vector<Ciphertext>> ctxt_out;
+    ctxt_RB4_out = RB(context, pack, eval, 1, ctxt_DSB1_out, kernel_o, kernel_o2);
     timer.end();
-    std::cout << "DONE!" << "\n";
+    cout << "DONE!" << "\n";
 
-    std::cout << "RB 5 ..." << std::endl;
+    cout << "RB 5 ..." << endl;
     timer.start(" RB 5 ");
-    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_out;
-    ctxt_out = RB(context, pack, eval, 1, ctxt_bundle, kernel_o, kernel_o2);
+    vector<vector<Ciphertext>> ctxt_out;
+    ctxt_RB5_out = RB(context, pack, eval, 1, ctxt_RB4_out, kernel_o, kernel_o2);
     timer.end();
-    std::cout << "DONE!" << "\n";
+    cout << "DONE!" << "\n";
 
 
     // Down Sampling (Residual) Block 2
-    std::cout << "DSB 2 ..." << std::endl;
+    cout << "DSB 2 ..." << endl;
     timer.start(" DSB 2 ");
-    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_out;
-    ctxt_out = DSB(timer, context, pack, eval, 1, ctxt_bundle, kernel_o, kernel_o2, kernel_o3);
-    std::cout << "DONE!" << "\n";
+    vector<vector<Ciphertext>> ctxt_out;
+    ctxt_DSB2_out = DSB(timer, context, pack, eval, 1, ctxt_RB5_out, kernel_o, kernel_o2, kernel_o3);
+    cout << "DONE!" << "\n";
 
 
     // Residual Block 6, 7
-    std::cout << "RB 6..." << std::endl;
+    cout << "RB 6..." << endl;
     timer.start(" RB 6 ");
-    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_out;
-    ctxt_out = RB(context, pack, eval, 2, ctxt_bundle, kernel_o, kernel_o2);
+    vector<vector<Ciphertext>> ctxt_out;
+    ctxt_RB6_out = RB(context, pack, eval, 2, ctxt_DSB2_out, kernel_o, kernel_o2);
     timer.end();
-    std::cout << "DONE!" << "\n";
+    cout << "DONE!" << "\n";
 
-    std::cout << "RB 7 ..." << std::endl;
+    cout << "RB 7 ..." << endl;
     timer.start(" RB 7 ");
-    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_out;
-    ctxt_out = RB(context, pack, eval, 2, ctxt_bundle, kernel_o, kernel_o2);
+    vector<vector<Ciphertext>> ctxt_out;
+    ctxt_RB7_out = RB(context, pack, eval, 2, ctxt_RB6_out, kernel_o, kernel_o2);
     timer.end();
-    std::cout << "DONE!" << "\n";
+    cout << "DONE!" << "\n";
 
 
     // Average Pooling, Flatten, FC64
+    // Avg Pool
+    cout << "evaluating Avgpool" << endl;
+    timer.start("* ");
+    ctxt = Avgpool(context, pack, eval, ctxt);
+    timer.end();
+    dec.decrypt(ctxt, sk, dmsg);
+    cout << "avgpool message: " << endl;
+    printMessage(dmsg, false, 64, 64);
 
+    ptxt = ecd.encode(uni, 5, 0);
+    for (size_t i = 0; i < 10; ++i) {
+        ptxt_vec.push_back(ptxt);
+    }
+
+    // FC64
+    cout << "evaluating FC64" << endl;
+    timer.start("* ");
+    ctxt_out = FC64old(context, pack, eval, ctxt, ptxt_vec);
+    timer.end();
+    dec.decrypt(ctxt_out, sk, dmsg);
+    cout << "decrypted message after FC64: " << endl;
+    printMessage(dmsg, false, 64, 64);
+    //(0, 8, 16, 24, 256, 264, 272, 280, 512, 520)
+    cout << "actual result:" << endl << "[ ";
+    cout << dmsg[0].real() << ", "<< dmsg[8].real() << ", "<< dmsg[16].real() << ", "<< dmsg[24].real() << ", "
+    << dmsg[256].real() << ", "<< dmsg[264].real() << ", "<< dmsg[272].real() << ", "<< dmsg[280].real() << ", "
+    << dmsg[512].real() << ", "<< dmsg[520].real() << " ]" << endl;
+    //must be all same
+
+    for (size_t i = 0; i < 8; ++i) {
+        for (size_t j = 0; j < 8; ++j) {
+            eval.leftRotate(msg, 4*i+32*4*j, msg_tmp);
+            eval.add(msg_tmp0, msg_tmp, msg_tmp0);
+        }
+    }
+    eval.mult(msg_tmp0, uni, msg_tmp0);
+    for (size_t i = 0; i < 4; ++i) {
+        for (size_t j = 0; j < 4; ++j) {
+            for (size_t k = 0; k < 4; ++k) {
+                eval.leftRotate(msg_tmp0, i+32*j+32*32*k, msg_tmp);
+                eval.add(msg_out, msg_tmp, msg_out);
+            }
+        }
+    }
+    cout << "target value: " << endl;
+    cout << msg_out[0] << endl;
 
     
 
@@ -303,10 +353,10 @@ int main() {
     // /////////////// Decryption ////////////////
     // for (int i = 0; i < 4; ++i) {
     //     for (int ch = 0; ch < 32; ++ch) {
-    //         HEaaN::Message dmsg;
-    //         std::cout << "Decrypt ... ";
+    //         Message dmsg;
+    //         cout << "Decrypt ... ";
     //         dec.decrypt(ctxt_out[i][ch], sk, dmsg);
-    //         std::cout << "done" << std::endl;
+    //         cout << "done" << endl;
     //         // printMessage(dmsg);
     //     }
     // }

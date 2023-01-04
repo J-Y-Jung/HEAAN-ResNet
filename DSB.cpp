@@ -17,24 +17,28 @@
 #include <stdio.h>
 #include <omp.h>
 
+namespace {
+using namespace HEaaN;
+using namespace std;
+}
 
 
 int main() {
     // Multi-thread test
     #pragma omp parallel for
     for (int i = 0; i < 5; ++i) {
-        printf("thread %d : %d (in parallel)\n", omp_get_thread_num(), j);
+        printf("thread %d : %d (in parallel)\n", omp_get_thread_num(), i);
     }
 
 
 
 
-    HEaaN::HEaaNTimer timer(false);
+    HEaaNTimer timer(false);
     // You can use other bootstrappable parameter instead of FGb.
     // See 'include/HEaaN/ParameterPreset.hpp' for more details.
-    HEaaN::ParameterPreset preset = HEaaN::ParameterPreset::FGb;
-    HEaaN::Context context = makeContext(preset);
-    if (!HEaaN::isBootstrappableParameter(context)) {
+    ParameterPreset preset = ParameterPreset::FGb;
+    Context context = makeContext(preset);
+    if (!isBootstrappableParameter(context)) {
         std::cout << "Bootstrap is not available for parameter "
             << presetNamer(preset) << std::endl;
         return -1;
@@ -45,9 +49,9 @@ int main() {
 
     const auto log_slots = getLogFullSlots(context);
 
-    HEaaN::SecretKey sk(context);
-    HEaaN::KeyPack pack(context);
-    HEaaN::KeyGenerator keygen(context, sk, pack);
+    SecretKey sk(context);
+    KeyPack pack(context);
+    KeyGenerator keygen(context, sk, pack);
 
     std::cout << "Generate encryption key ... " << std::endl;
     keygen.genEncryptionKey();
@@ -57,7 +61,7 @@ int main() {
     You should perform makeBootstrappble function
     before generating evaluation keys and constucting HomEvaluator class.
     */
-    HEaaN::makeBootstrappable(context);
+    makeBootstrappable(context);
 
     std::cout << "Generate commonly used keys (mult key, rotation keys, "
         "conjugation key) ... "
@@ -65,8 +69,8 @@ int main() {
     keygen.genCommonKeys();
     std::cout << "done" << std::endl << std::endl;
 
-    HEaaN::Encryptor enc(context);
-    HEaaN::Decryptor dec(context);
+    Encryptor enc(context);
+    Decryptor dec(context);
 
     /*
     HomEvaluator constructor pre-compute the constants for bootstrapping.
@@ -75,14 +79,14 @@ int main() {
         "bootstrapping) ..."
         << std::endl;
     timer.start("* ");
-    HEaaN::HomEvaluator eval(context, pack);
+    HomEvaluator eval(context, pack);
     timer.end();
 
 
 
 
     ///////////// Message ///////////////////
-    HEaaN::Message msg(log_slots);
+    Message msg(log_slots);
     // fillRandomComplex(msg);
     std::optional<size_t> num;
     size_t length = num.has_value() ? num.value() : msg.getSize();
@@ -100,7 +104,7 @@ int main() {
 
     printMessage(msg);
 
-    HEaaN::Ciphertext ctxt(context);
+    Ciphertext ctxt(context);
     std::cout << "Encrypt ... " << std::endl;
     enc.encrypt(msg, pack, ctxt); // public key encryption
     std::cout << "done" << std::endl;
@@ -110,19 +114,19 @@ int main() {
     // timer.start(" Kernel generation ");
     std::cout << "Kernel generation ... " << std::endl;
     timer.start("* ");
-    HEaaN::EnDecoder ecd(context);
-    HEaaN::Plaintext ptxt(context);
+    EnDecoder ecd(context);
+    Plaintext ptxt(context);
     ptxt = ecd.encode(msg, 12, 0);
 
-    std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_o(32);
+    std::vector<std::vector<std::vector<Plaintext>>> kernel_o(32);
     #pragma omp parallel
     #pragma omp for
     for (int o = 0; o < 32; ++o) { // output channel 32
-        std::vector<std::vector<HEaaN::Plaintext>> kernel_i(16);
+        std::vector<std::vector<Plaintext>> kernel_i(16);
         for (int i = 0; i < 16; ++i) {   // input channel 16
-            std::vector<HEaaN::Plaintext> kernel_bundle;
-            HEaaN::Message kernel_msg(log_slots);
-            HEaaN::Plaintext kernel(context);
+            std::vector<Plaintext> kernel_bundle;
+            Message kernel_msg(log_slots);
+            Plaintext kernel(context);
             for (int k = 0; k < 9; ++k) {
                 idx = 0;
                 for (; idx < length; ++idx) {
@@ -144,13 +148,13 @@ int main() {
     }
     timer.end();
 
-    std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_o2(32);
+    std::vector<std::vector<std::vector<Plaintext>>> kernel_o2(32);
     for (int o = 0; o < 32; ++o) { // output channel 32
-        std::vector<std::vector<HEaaN::Plaintext>> kernel_i2(32);
+        std::vector<std::vector<Plaintext>> kernel_i2(32);
         for (int i = 0; i < 32; ++i) {   // input channel 32
-            std::vector<HEaaN::Plaintext> kernel_bundle2;
-            HEaaN::Message kernel_msg2(log_slots);
-            HEaaN::Plaintext kernel2(context);
+            std::vector<Plaintext> kernel_bundle2;
+            Message kernel_msg2(log_slots);
+            Plaintext kernel2(context);
             for (int k = 0; k < 9; ++k) {
                 idx = 0;
                 for (; idx < length; ++idx) {
@@ -171,13 +175,13 @@ int main() {
         kernel_o2[o] = kernel_i2;
     }
 
-    std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_o3(32);
+    std::vector<std::vector<std::vector<Plaintext>>> kernel_o3(32);
     for (int o = 0; o < 32; ++o) { // output channel 32
-        std::vector<std::vector<HEaaN::Plaintext>> kernel_i3(16);
+        std::vector<std::vector<Plaintext>> kernel_i3(16);
         for (int i = 0; i < 16; ++i) {   // input channel 16
-            std::vector<HEaaN::Plaintext> kernel_bundle3;
-            HEaaN::Message kernel_msg3(log_slots);
-            HEaaN::Plaintext kernel3(context);
+            std::vector<Plaintext> kernel_bundle3;
+            Message kernel_msg3(log_slots);
+            Plaintext kernel3(context);
             for (int k = 0; k < 1; ++k) {
                 idx = 0;
                 for (; idx < length; ++idx) {
@@ -202,10 +206,10 @@ int main() {
 
 
 
-    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_bundle;
+    std::vector<std::vector<Ciphertext>> ctxt_bundle;
     // #pragma omp parallel for
     for (int i = 0; i < 16; ++i) {
-        std::vector<HEaaN::Ciphertext> ctxt_bundle_cache;
+        std::vector<Ciphertext> ctxt_bundle_cache;
         for (int ch = 0; ch < 16; ++ch) {
             ctxt_bundle_cache.push_back(ctxt);
         }
@@ -215,20 +219,11 @@ int main() {
 
     std::cout << "SETUP is over" << "\n";
 
-    // int num_ctxt;
-    // num_ctxt = ctxt_bundle.size();
-
-    // int num_kernel_bundle1;
-    // num_kernel_bundle1 = kernel_o.size();
-
-    // int num_kernel_bundle2;
-    // num_kernel_bundle2 = kernel_o2.size();
-
 
 
 
     timer.start(" DSB ");
-    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_out;
+    std::vector<std::vector<Ciphertext>> ctxt_out;
     ctxt_out = DSB(timer, context, pack, eval, 0, ctxt_bundle, kernel_o, kernel_o2, kernel_o3);
     timer.end();
     std::cout << "DSB is over" << "\n";
@@ -247,7 +242,7 @@ int main() {
     // /////////////// Decryption ////////////////
     // for (int i = 0; i < 4; ++i) {
     //     for (int ch = 0; ch < 32; ++ch) {
-    //         HEaaN::Message dmsg;
+    //         Message dmsg;
     //         std::cout << "Decrypt ... ";
     //         dec.decrypt(ctxt_out[i][ch], sk, dmsg);
     //         std::cout << "done" << std::endl;
