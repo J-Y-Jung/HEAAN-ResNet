@@ -1,4 +1,4 @@
-std::vector<std::vector<Ciphertext>> DSB(HEaaNTimer timer, Context context, KeyPack pack,
+std::vector<std::vector<Ciphertext>> DSB(Context context, KeyPack pack,
 HomEvaluator eval, int DSB_count, std::vector<std::vector<Ciphertext>> ctxt_bundle, 
 // 첫번째 index는 서로 다른 이미지 index. 기본 처음에는 16. 첫번째 DSB에서는 16개로 받음. 두번째는 4개. 두번째 : ch
 std::vector<std::vector<std::vector<Plaintext>>> kernel_bundle, 
@@ -17,18 +17,14 @@ std::vector<std::vector<std::vector<Plaintext>>> kernel_residual_bundle) {
 
 
     ///////////////////////// Main flow /////////////////////////////////////////
-    timer.start(" 1st Conv ");
     std::cout << "First Conv-(main flow) ..." << std::endl;
     std::vector<std::vector<Ciphertext>> ctxt_conv_out_bundle;
-    #pragma omp parallel
-    #pragma omp for
     for (int i = 0; i < 16; ++i) { // 서로 다른 img
         std::vector<Ciphertext> ctxt_conv_out_cache;
         ctxt_conv_out_cache = Conv(context, pack, eval, 32, 1, 2, 16, 32, ctxt_bundle[i], kernel_bundle);
         ctxt_conv_out_bundle.push_back(ctxt_conv_out_cache);
     }
     std::cout << "DONE!" << "\n";
-    timer.end();
     /* 여기서 나온 ctxt_conv_out_bundle은 첫번째는 0이상 16미만의 서로다른 img 개수 인덱스,
     두번째는 0이상 32미만의 channel index
     */
@@ -73,10 +69,8 @@ std::vector<std::vector<std::vector<Plaintext>>> kernel_residual_bundle) {
     // AppReLU
     std::cout << "AppReLU-(main flow) ..." << std::endl;
     std::vector<std::vector<Ciphertext>> ctxt_relu_out_bundle;
-    #pragma omp parallel for
     for (int i = 0; i < 4; ++i) {
         std::vector<Ciphertext> ctxt_relu_out_allch_bundle;
-        #pragma omp parallel for
         for (int ch = 0; ch < 32; ++ch) {
             std::cout << "(i = " << i << ", " << "ch = " << ch << ")" << "\n";
             Ciphertext ctxt_relu_out(context);
@@ -154,10 +148,8 @@ std::vector<std::vector<std::vector<Plaintext>>> kernel_residual_bundle) {
     // Last AppReLU
     std::cout << "Last AppReLU ..." << std::endl;
     std::vector<std::vector<Ciphertext>> ctxt_DSB_out;
-    #pragma omp parallel for
     for (int i = 0; i < 4; ++i) {
         std::vector<Ciphertext> ctxt_DSB_out_allch_bundle;
-        #pragma omp parallel for
         for (int ch = 0; ch < 32; ++ch) {
             std::cout << "(i = " << i << ", " << "ch = " << ch << ")" << "\n";
             Ciphertext ctxt_DSB_out_cache(context);

@@ -224,7 +224,7 @@ int main() {
 
     timer.start(" DSB ");
     std::vector<std::vector<Ciphertext>> ctxt_out;
-    ctxt_out = DSB(timer, context, pack, eval, 0, ctxt_bundle, kernel_o, kernel_o2, kernel_o3);
+    ctxt_out = DSB(context, pack, eval, 0, ctxt_bundle, kernel_o, kernel_o2, kernel_o3);
     timer.end();
     std::cout << "DSB is over" << "\n";
 
