@@ -14,8 +14,21 @@
 #include "MPPacking.hpp"
 #include "HEaaNTimer.hpp"
 #include "DSB.hpp"
+#include <stdio.h>
+#include <omp.h>
+
+
 
 int main() {
+    // Multi-thread test
+    #pragma omp parallel for
+    for (int i = 0; i < 5; ++i) {
+        printf("thread %d : %d (in parallel)\n", omp_get_thread_num(), j);
+    }
+
+
+
+
     HEaaN::HEaaNTimer timer(false);
     // You can use other bootstrappable parameter instead of FGb.
     // See 'include/HEaaN/ParameterPreset.hpp' for more details.
@@ -102,15 +115,14 @@ int main() {
     ptxt = ecd.encode(msg, 12, 0);
 
     std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_o(32);
-    #pragma omp parallel for
+    #pragma omp parallel
+    #pragma omp for
     for (int o = 0; o < 32; ++o) { // output channel 32
         std::vector<std::vector<HEaaN::Plaintext>> kernel_i(16);
-        // #pragma omp parallel for
         for (int i = 0; i < 16; ++i) {   // input channel 16
             std::vector<HEaaN::Plaintext> kernel_bundle;
             HEaaN::Message kernel_msg(log_slots);
             HEaaN::Plaintext kernel(context);
-            // #pragma omp parallel for
             for (int k = 0; k < 9; ++k) {
                 idx = 0;
                 for (; idx < length; ++idx) {
@@ -130,9 +142,9 @@ int main() {
         }
         kernel_o[o] = kernel_i;
     }
+    timer.end();
 
     std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_o2(32);
-    #pragma omp parallel for
     for (int o = 0; o < 32; ++o) { // output channel 32
         std::vector<std::vector<HEaaN::Plaintext>> kernel_i2(32);
         for (int i = 0; i < 32; ++i) {   // input channel 32
@@ -160,7 +172,6 @@ int main() {
     }
 
     std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_o3(32);
-    #pragma omp parallel for
     for (int o = 0; o < 32; ++o) { // output channel 32
         std::vector<std::vector<HEaaN::Plaintext>> kernel_i3(16);
         for (int i = 0; i < 16; ++i) {   // input channel 16
@@ -187,7 +198,7 @@ int main() {
         kernel_o3[o] = kernel_i3;
     }
     std::cout << "done" << std::endl;
-    timer.end();
+
 
 
 
@@ -212,6 +223,8 @@ int main() {
 
     // int num_kernel_bundle2;
     // num_kernel_bundle2 = kernel_o2.size();
+
+
 
 
     timer.start(" DSB ");

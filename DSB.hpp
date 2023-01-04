@@ -1,14 +1,3 @@
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-// Copyleft (C) 2021-2022 Crypto Lab Inc.                                    //
-//                                                                            //
-// - This file is part of HEaaN homomorphic encryption library.               //
-// - HEaaN cannot be copied and/or distributed without the express permission //
-//  of Crypto Lab Inc.                                                        //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
-
-
 std::vector<std::vector<HEaaN::Ciphertext>> DSB(HEaaN::HEaaNTimer timer, HEaaN::Context context, HEaaN::KeyPack pack,
 HEaaN::HomEvaluator eval, int DSB_count, std::vector<std::vector<HEaaN::Ciphertext>> ctxt_bundle, 
 // 첫번째 index는 서로 다른 이미지 index. 기본 처음에는 16. 첫번째 DSB에서는 16개로 받음. 두번째는 4개. 두번째 : ch
