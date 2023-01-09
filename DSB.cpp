@@ -14,8 +14,10 @@
 #include "MPPacking.hpp"
 #include "HEaaNTimer.hpp"
 #include "DSB.hpp"
+#include "cifar-10-reader/include/cifar/cifar10_reader.hpp"
 #include <stdio.h>
 #include <omp.h>
+#include <unistd.h>
 
 namespace {
 using namespace HEaaN;
@@ -29,6 +31,36 @@ int main() {
     for (int i = 0; i < 5; ++i) {
         printf("thread %d : %d (in parallel)\n", omp_get_thread_num(), i);
     }
+
+
+
+
+
+    // // bin 폴더 안에 bin 데이터셋 파일 있어야 함
+    // auto dataset = cifar::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();
+    // cout << isprint(dataset.test_images[16][16]) << "\n";
+
+    // int imgpix;
+    // int imgpix2;
+    // imgpix = (char)dataset.test_images[16][16];
+    // printf("%d\n",imgpix);
+    // imgpix2 = (double)dataset.test_images[16][16];
+    // cout << imgpix2 << "\n";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -108,15 +140,17 @@ int main() {
     std::cout << "Encrypt ... " << std::endl;
     enc.encrypt(msg, pack, ctxt); // public key encryption
     std::cout << "done" << std::endl;
-
+    std::cout << "level of ctxt is " << ctxt.getLevel() << "\n";
+    ctxt.setLevel(6);
+    std::cout << "level of ctxt(After rescale) is " << ctxt.getLevel() << "\n";
 
     /////////////// Kernel ////////////////
     // timer.start(" Kernel generation ");
     std::cout << "Kernel generation ... " << std::endl;
     timer.start("* ");
     EnDecoder ecd(context);
-    Plaintext ptxt(context);
-    ptxt = ecd.encode(msg, 12, 0);
+    // Plaintext ptxt(context);
+    // ptxt = ecd.encode(msg, 12, 0);
 
     std::vector<std::vector<std::vector<Plaintext>>> kernel_o(32);
     #pragma omp parallel
@@ -128,8 +162,7 @@ int main() {
             Message kernel_msg(log_slots);
             Plaintext kernel(context);
             for (int k = 0; k < 9; ++k) {
-                idx = 0;
-                for (; idx < length; ++idx) {
+                for (int idx = 0; idx < length; ++idx) {
                     kernel_msg[idx].real(2.0);
                     kernel_msg[idx].imag(0.0);
                 }
@@ -139,16 +172,20 @@ int main() {
                     kernel_msg[idx].real(0.0);
                     kernel_msg[idx].imag(0.0);
                 }
-                kernel = ecd.encode(kernel_msg, 12, 0);
+                kernel = ecd.encode(kernel_msg, 6, 0);
                 kernel_bundle.push_back(kernel);
             }
             kernel_i[i] = kernel_bundle;
         }
         kernel_o[o] = kernel_i;
     }
-    timer.end();
+    // std::vector<std::vector<std::vector<Plaintext>>>().swap(kernel_o);
+    
+    
 
     std::vector<std::vector<std::vector<Plaintext>>> kernel_o2(32);
+    #pragma omp parallel
+    #pragma omp for
     for (int o = 0; o < 32; ++o) { // output channel 32
         std::vector<std::vector<Plaintext>> kernel_i2(32);
         for (int i = 0; i < 32; ++i) {   // input channel 32
@@ -156,8 +193,7 @@ int main() {
             Message kernel_msg2(log_slots);
             Plaintext kernel2(context);
             for (int k = 0; k < 9; ++k) {
-                idx = 0;
-                for (; idx < length; ++idx) {
+                for (int idx = 0; idx < length; ++idx) {
                     kernel_msg2[idx].real(2.0);
                     kernel_msg2[idx].imag(0.0);
                 }
@@ -174,8 +210,11 @@ int main() {
         }
         kernel_o2[o] = kernel_i2;
     }
+    // std::vector<std::vector<std::vector<Plaintext>>>().swap(kernel_o2);
 
     std::vector<std::vector<std::vector<Plaintext>>> kernel_o3(32);
+    #pragma omp parallel
+    #pragma omp for
     for (int o = 0; o < 32; ++o) { // output channel 32
         std::vector<std::vector<Plaintext>> kernel_i3(16);
         for (int i = 0; i < 16; ++i) {   // input channel 16
@@ -183,8 +222,7 @@ int main() {
             Message kernel_msg3(log_slots);
             Plaintext kernel3(context);
             for (int k = 0; k < 1; ++k) {
-                idx = 0;
-                for (; idx < length; ++idx) {
+                for (int idx = 0; idx < length; ++idx) {
                     kernel_msg3[idx].real(2.0);
                     kernel_msg3[idx].imag(0.0);
                 }
@@ -194,20 +232,21 @@ int main() {
                     kernel_msg3[idx].real(0.0);
                     kernel_msg3[idx].imag(0.0);
                 }
-                kernel3 = ecd.encode(kernel_msg3, 12, 0);
+                kernel3 = ecd.encode(kernel_msg3, 6, 0);
                 kernel_bundle3.push_back(kernel3);
             }
             kernel_i3[i] = kernel_bundle3;
         }
         kernel_o3[o] = kernel_i3;
     }
+    // std::vector<std::vector<std::vector<Plaintext>>>().swap(kernel_o3);
     std::cout << "done" << std::endl;
-
+    timer.end();
+    // std::cout << "ctxt is " << sizeof(ctxt) << " bytes" << std::endl;
 
 
 
     std::vector<std::vector<Ciphertext>> ctxt_bundle;
-    // #pragma omp parallel for
     for (int i = 0; i < 16; ++i) {
         std::vector<Ciphertext> ctxt_bundle_cache;
         for (int ch = 0; ch < 16; ++ch) {
@@ -220,13 +259,13 @@ int main() {
     std::cout << "SETUP is over" << "\n";
 
 
-
-
     timer.start(" DSB ");
     std::vector<std::vector<Ciphertext>> ctxt_out;
     ctxt_out = DSB(context, pack, eval, 0, ctxt_bundle, kernel_o, kernel_o2, kernel_o3);
     timer.end();
     std::cout << "DSB is over" << "\n";
+
+
 
 
 

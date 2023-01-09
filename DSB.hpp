@@ -1,3 +1,8 @@
+namespace {
+using namespace HEaaN;
+using namespace std;
+}
+
 std::vector<std::vector<Ciphertext>> DSB(Context context, KeyPack pack,
 HomEvaluator eval, int DSB_count, std::vector<std::vector<Ciphertext>> ctxt_bundle, 
 // 첫번째 index는 서로 다른 이미지 index. 기본 처음에는 16. 첫번째 DSB에서는 16개로 받음. 두번째는 4개. 두번째 : ch
@@ -24,6 +29,7 @@ std::vector<std::vector<std::vector<Plaintext>>> kernel_residual_bundle) {
         ctxt_conv_out_cache = Conv(context, pack, eval, 32, 1, 2, 16, 32, ctxt_bundle[i], kernel_bundle);
         ctxt_conv_out_bundle.push_back(ctxt_conv_out_cache);
     }
+    // std::vector<std::vector<std::vector<Plaintext>>>().swap(kernel_bundle);
     std::cout << "DONE!" << "\n";
     /* 여기서 나온 ctxt_conv_out_bundle은 첫번째는 0이상 16미만의 서로다른 img 개수 인덱스,
     두번째는 0이상 32미만의 channel index
@@ -43,6 +49,8 @@ std::vector<std::vector<std::vector<Plaintext>>> kernel_residual_bundle) {
         }
         ctxt_MPP_in.push_back(ctxt_MPP_in_allch_bundle);
     }
+    // std::vector<std::vector<Ciphertext>>().swap(ctxt_conv_out_bundle);
+
     // ctxt_MPP_in 첫번째 : 4개씩 묶음 index 0이상 4미만, 두번째 : ch, 세번째 : ctxt 4개에 대한 index
     // MPP
     std::vector<std::vector<Ciphertext>> ctxt_MPP_out_bundle;
@@ -55,6 +63,7 @@ std::vector<std::vector<std::vector<Plaintext>>> kernel_residual_bundle) {
         }
         ctxt_MPP_out_bundle.push_back(ctxt_MPP_out);
     }
+    // std::vector<std::vector<std::vector<Ciphertext>>>().swap(ctxt_MPP_in);
     std::cout << "DONE!" << "\n";
     // ctxt_MPP_out_bundle 첫번째 : 서로 다른 img, 두번째 : ch.
 
@@ -79,6 +88,7 @@ std::vector<std::vector<std::vector<Plaintext>>> kernel_residual_bundle) {
         }
         ctxt_relu_out_bundle.push_back(ctxt_relu_out_allch_bundle);
     }
+    // std::vector<std::vector<Ciphertext>>().swap(ctxt_MPP_out_bundle);
     std::cout << "DONE!" << "\n";
 
     // Second convolution
@@ -89,6 +99,8 @@ std::vector<std::vector<std::vector<Plaintext>>> kernel_residual_bundle) {
         ctxt_conv_out2_allch_bundle = Conv(context, pack, eval, 32, 1, 1, 32, 32, ctxt_relu_out_bundle[i], kernel_bundle2);
         ctxt_conv_out2_bundle.push_back(ctxt_conv_out2_allch_bundle);
     }
+    // std::vector<std::vector<std::vector<Plaintext>>>().swap(kernel_bundle2);
+    // std::vector<std::vector<Ciphertext>>().swap(ctxt_relu_out_bundle);
     std::cout << "DONE!" << "\n";
 
     ///////////////////// Residual flow ////////////////////////////
@@ -101,6 +113,8 @@ std::vector<std::vector<std::vector<Plaintext>>> kernel_residual_bundle) {
         //에러나면 push_back 해야 할 수도 있음
         ctxt_residual_out_bundle.push_back(ctxt_residual_out_cache);
     }
+    // std::vector<std::vector<std::vector<Plaintext>>>().swap(kernel_residual_bundle);
+    // std::vector<std::vector<Ciphertext>>().swap(ctxt_bundle);
     std::cout << "DONE!" << "\n";
     // MPP input bundle making
     std::cout << "MPP-(residual flow) ..." << std::endl;
@@ -117,6 +131,7 @@ std::vector<std::vector<std::vector<Plaintext>>> kernel_residual_bundle) {
         }
         ctxt_MPP_in2.push_back(ctxt_MPP_in_allch_bundle2);
     }
+    // std::vector<std::vector<Ciphertext>>().swap(ctxt_residual_out_bundle);
     // MPP
     std::vector<std::vector<Ciphertext>> ctxt_MPP_out_bundle2;
     for (int i = 0; i < 4; ++i) {
@@ -128,6 +143,7 @@ std::vector<std::vector<std::vector<Plaintext>>> kernel_residual_bundle) {
         }
         ctxt_MPP_out_bundle2.push_back(ctxt_MPP_out2);
     }
+    // std::vector<std::vector<std::vector<Ciphertext>>>().swap(ctxt_MPP_in2);
     std::cout << "DONE!" << "\n";
 
 
@@ -143,6 +159,8 @@ std::vector<std::vector<std::vector<Plaintext>>> kernel_residual_bundle) {
         }
         ctxt_residual_added.push_back(ctxt_residual_added_allch_bundle);
     }
+    // std::vector<std::vector<Ciphertext>>().swap(ctxt_conv_out2_bundle);
+    // std::vector<std::vector<Ciphertext>>().swap(ctxt_MPP_out_bundle2);
     std::cout << "DONE!" << "\n";
 
     // Last AppReLU
@@ -158,6 +176,7 @@ std::vector<std::vector<std::vector<Plaintext>>> kernel_residual_bundle) {
         }
         ctxt_DSB_out.push_back(ctxt_DSB_out_allch_bundle);
     }
+    // std::vector<std::vector<Ciphertext>>().swap(ctxt_residual_added);
     std::cout << "DONE!" << "\n";
 
 
