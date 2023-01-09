@@ -202,3 +202,8 @@ conv 레이어를 통과시킬 때, multiplicands 를 filter 로 보고 summands
   > cd build/bin -> ./실행파일이름
   
 파일 업데이트 될 때마다 4번부터 반복 실행
+
+
+
+### kernelEncode, imageEncode
+실행파일이 있는 위치에서 각각 kernel, image 폴더가 있으면 됨
