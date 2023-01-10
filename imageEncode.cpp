@@ -53,7 +53,7 @@ int main() {
     vector<vector<Ciphertext>> imageVec;
 
     for (int i = 1; i < 313; ++i) {
-        string str = "./cifar10/image_" + to_string(i) + ".txt";
+        string str = "./image/image_" + to_string(i) + ".txt";
         vector<double> temp;
 
         txtreader(temp, str);
@@ -64,7 +64,7 @@ int main() {
 
     }
 
-    string str = "./cifar10/image_" + to_string(313) + ".txt";
+    string str = "./image/image_" + to_string(313) + ".txt";
     vector<double> temp;
     txtreader(temp, str);
     for (int i = 0; i < 49152; ++i) temp.push_back(0);
