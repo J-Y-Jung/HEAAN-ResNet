@@ -2,9 +2,10 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <optional>
 
 #include "HEaaN/heaan.hpp" // 필요한가?
-#include "examples.hpp" // 필요한가?
+// #include "examples.hpp" // 필요한가?
 #include "Conv.hpp"
 #include "oddLazyBSGS.hpp"
 #include "MPPacking.hpp"
@@ -12,6 +13,7 @@
 #include "DSB.hpp"
 #include "convtools.hpp"
 #include "kernelEncode.hpp"
+#include "imageEncode.hpp"
 
 namespace {
 using namespace HEaaN;
@@ -63,6 +65,36 @@ int main() {
 
     ///////////// Message ///////////////////
 
+
+
+    vector<vector<Ciphertext>> imageVec;
+
+    for (int i = 1; i < 17; ++i) { // 313
+        string str = "./image/image_" + to_string(i) + ".txt";
+        vector<double> temp;
+
+        txtreader(temp, str);
+
+        vector<Ciphertext> out;
+        imageCompiler(context, pack, enc, temp, out);
+        imageVec.push_back(out);
+
+    }
+
+    // // string str = "./image/image_" + to_string(313) + ".txt";
+    // vector<double> temp;
+    // txtreader(temp, str);
+    // for (int i = 0; i < 49152; ++i) temp.push_back(0);
+
+    // vector<Ciphertext> out;
+    // imageCompiler(context, pack, enc, temp, out);
+    // imageVec.push_back(out);
+
+
+
+
+
+
     // 1st conv
     vector<double> temp0;
     vector<vector<vector<Plaintext>>> block0conv0multiplicands16_3_3_3;
@@ -81,7 +113,7 @@ int main() {
     vector<vector<Ciphertext>> ctxt_conv1_out_bundle;
     for (int i = 0; i < 16; ++i) { // 서로 다른 img
         vector<Ciphertext> ctxt_conv1_out_cache;
-        ctxt_conv1_out_cache = Conv(context, pack, eval, 32, 1, 1, 3, 16, ctxt_bundle[i], block0conv0multiplicands16_3_3_3);
+        ctxt_conv1_out_cache = Conv(context, pack, eval, 32, 1, 1, 3, 16, imageVec[i], block0conv0multiplicands16_3_3_3);
         ctxt_conv1_out_bundle.push_back(ctxt_conv1_out_cache);
     }
     addBNsummands(context, ctxt_conv1_out_bundle, block0conv0summands16, 16, 16);
@@ -135,7 +167,7 @@ int main() {
     // RB 1
     cout << "RB 1 ..." << endl;
     timer.start(" RB 1 ");
-    vector<vector<Ciphertext>> ctxt_out;
+    vector<vector<Ciphertext>> ctxt_RB1_out;
     ctxt_RB1_out = RB(context, pack, eval, 0, ctxt_relu1_out_bundle, block1conv0multiplicands16_16_3_3, block1conv1multiplicands16_16_3_3
     block1conv0summands16, block1conv1summands16);
     timer.end();
@@ -174,7 +206,7 @@ int main() {
     // RB 2
     cout << "RB 2..." << endl;
     timer.start(" RB 2 ");
-    vector<vector<Ciphertext>> ctxt_out;
+    vector<vector<Ciphertext>> ctxt_RB2_out;
     ctxt_RB2_out = RB(context, pack, eval, 0, ctxt_RB1_out, block2conv0multiplicands16_16_3_3, block2conv1multiplicands16_16_3_3,
     block2conv0summands16, block2conv1summands16);
     timer.end();
@@ -224,7 +256,7 @@ int main() {
     // RB 3
     cout << "RB 3 ..." << endl;
     timer.start(" RB 3 ");
-    vector<vector<Ciphertext>> ctxt_out;
+    vector<vector<Ciphertext>> ctxt_RB3_out;
     ctxt_RB3_out = RB(context, pack, eval, 0, ctxt_RB2_out, block3conv0multiplicands16_16_3_3, block3conv1multiplicands16_16_3_3,
     block3conv0summands16, block3conv1summands16);
     timer.end();
@@ -272,7 +304,7 @@ int main() {
     // DSB 1
     cout << "DSB 1 ..." << endl;
     timer.start(" DSB 1 ");
-    vector<vector<Ciphertext>> ctxt_out;
+    vector<vector<Ciphertext>> ctxt_DSB1_out;
     ctxt_DSB1_out = DSB(timer, context, pack, eval, 0, ctxt_RB3_out, block4conv0multiplicands32_16_3_3, block4conv1multiplicands32_32_3_3, block4conv_onebyone_multiplicands32_16_1_1,
     block4conv0summands32, block4conv1summands32, block4conv_onebyone_summands32);
     cout << "DONE!" << "\n";
@@ -307,7 +339,7 @@ int main() {
     // RB 4
     cout << "RB 4..." << endl;
     timer.start(" RB 4 ");
-    vector<vector<Ciphertext>> ctxt_out;
+    vector<vector<Ciphertext>> ctxt_RB4_out;
     ctxt_RB4_out = RB(context, pack, eval, 1, ctxt_DSB1_out, block5conv0multiplicands32_32_3_3, block5conv1multiplicands32_32_3_3,
     block5conv0summands32, block5conv1summands32);
     timer.end();
@@ -353,7 +385,7 @@ int main() {
     // RB 5
     cout << "RB 5 ..." << endl;
     timer.start(" RB 5 ");
-    vector<vector<Ciphertext>> ctxt_out;
+    vector<vector<Ciphertext>> ctxt_RB5_out;
     ctxt_RB5_out = RB(context, pack, eval, 1, ctxt_RB4_out, block6conv0multiplicands32_32_3_3, block6conv1multiplicands32_32_3_3,
     block6conv0summands32, block6conv1summands32);
     timer.end();
@@ -403,7 +435,7 @@ int main() {
     // DSB 2
     cout << "DSB 2 ..." << endl;
     timer.start(" DSB 2 ");
-    vector<vector<Ciphertext>> ctxt_out;
+    vector<vector<Ciphertext>> ctxt_DSB2_out;
     ctxt_DSB2_out = DSB(timer, context, pack, eval, 1, ctxt_RB5_out, block7conv0multiplicands64_32_3_3, block7conv1multiplicands64_64_3_3, block7conv_onebyone_multiplicands64_32_1_1,
     block7conv0summands64, block7conv1summands64, block7conv_onebyone_summands64);
     cout << "DONE!" << "\n";
@@ -435,7 +467,7 @@ int main() {
     // RB 6
     cout << "RB 6..." << endl;
     timer.start(" RB 6 ");
-    vector<vector<Ciphertext>> ctxt_out;
+    vector<vector<Ciphertext>> ctxt_RB6_out;
     ctxt_RB6_out = RB(context, pack, eval, 2, ctxt_DSB2_out, block8conv0multiplicands64_64_3_3, block8conv1multiplicands64_64_3_3,
     block8conv0summands64, block8conv1summands64);
     timer.end();
@@ -469,7 +501,7 @@ int main() {
     // RB 7
     cout << "RB 7 ..." << endl;
     timer.start(" RB 7 ");
-    vector<vector<Ciphertext>> ctxt_out;
+    vector<vector<Ciphertext>> ctxt_RB7_out;
     ctxt_RB7_out = RB(context, pack, eval, 2, ctxt_RB6_out, block9conv0multiplicands64_64_3_3, block9conv1multiplicands64_64_3_3,
     block9conv0summands64, block9conv1summands64);
     timer.end();
