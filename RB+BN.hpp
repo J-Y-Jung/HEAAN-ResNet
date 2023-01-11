@@ -37,7 +37,7 @@ vector<double> BN2_add) {
     std::cout << "DONE!" << "\n";
 
     cout << "Adding BN-(main flow) ..." << endl;
-    addBNsummands(context, ctxt_conv_out_bundle, BN1_add, 16, 16);
+    addBNsummands(context, eval,ctxt_conv_out_bundle, BN1_add, 16, 16);
     cout << "DONE!" << "\n";
 
 
@@ -108,7 +108,7 @@ vector<double> BN2_add) {
     std::cout << "DONE!" << "\n";
 
     cout << "Adding BN-(main flow) ..." << endl;
-    addBNsummands(context, ctxt_conv_out2_bundle, BN2_add, 16, 16);
+    addBNsummands(context, eval,ctxt_conv_out2_bundle, BN2_add, 16, 16);
     cout << "DONE!" << "\n";
 
     ///////////////////// Residual flow ////////////////////////////

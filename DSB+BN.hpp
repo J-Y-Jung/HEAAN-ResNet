@@ -76,7 +76,7 @@ vector<double> BN3_add) {
     cout << "DONE!" << "\n";
 
     cout << "Adding BN-(main flow) ..." << endl;
-    addBNsummands(context, ctxt_MPP_out_bundle, BN1_add, 4, 32);
+    addBNsummands(context,eval ,ctxt_MPP_out_bundle, BN1_add, 4, 32);
     // for (int i = 0; i < 4; ++i) {
     //     for (int ch = 0; ch < 32; ++ch) {
     //         // Ciphertext ctxt_BN1_out_bundle_cache(context);
@@ -121,7 +121,7 @@ vector<double> BN3_add) {
     cout << "DONE!" << "\n";
 
     cout << "Adding BN-(main flow) ..." << endl;
-    addBNsummands(context, ctxt_MPP_out_bundle, BN2_add, 4, 32);
+    addBNsummands(context, eval,ctxt_MPP_out_bundle, BN2_add, 4, 32);
     cout << "DONE!" << "\n";
 
 
@@ -170,7 +170,7 @@ vector<double> BN3_add) {
     cout << "DONE!" << "\n";
 
     cout << "Adding BN-(main flow) ..." << endl;
-    addBNsummands(context, ctxt_MPP_out_bundle, BN3_add, 4, 32);
+    addBNsummands(context, eval,ctxt_MPP_out_bundle, BN3_add, 4, 32);
     // for (int i = 0; i < 4; ++i) {
     //     for (int ch = 0; ch < 32; ++ch) {
     //         // Ciphertext ctxt_BN2_out_bundle_cache(context);
