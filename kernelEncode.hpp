@@ -80,3 +80,17 @@ void kernel_ptxt(Context context, vector<double>& weight, vector<vector<vector<P
     return 0;
 
 }
+
+void addBNsummands(Context context, vector<vector<Ciphertext>>& afterConv, vector<vector<Ciphertext>> output, vector<double> summands, const int n, const int ch) {
+
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < ch; ++j) {
+            Ciphertext temp(context);
+            Complex cnst = Complex(summands[j]);
+            eval.add(afterConv[i][j], cnst, temp);
+            output.push_back(temp);
+        }
+    }
+
+    return 0;
+}
