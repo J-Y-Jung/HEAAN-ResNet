@@ -45,7 +45,7 @@ void kernel_ptxt(Context context, vector<double>& weight, vector<vector<vector<P
                 vector<vector<double>> temp(3, vector<double>(3));
 
                 for (int k = 0; k < 3; ++k) {
-                    for (int l = 0; l < 3; ++i) temp[k][l] = weight[27 * i + 9 * j + 3 * k + l];
+                    for (int l = 0; l < 3; ++i) temp[k][l] = weight[9*in_ch * i + 9 * j + 3 * k + l];
                 }
 
                 for (int k = 0; k < 3; ++k) {
@@ -64,7 +64,7 @@ void kernel_ptxt(Context context, vector<double>& weight, vector<vector<vector<P
             for (int j = 0; j < in_ch; ++j) {
 
                 vector<vector<double>> temp(0, vector<double>(0));
-                temp[0][0] = weight[27 * i + 9 * j];
+                temp[0][0] = weight[in_ch * i +  j];
 
                 Plaintext ptxt(context);
                 weightToPtxt(ptxt, level, temp, gap_in, stride, (u64)1, (u64)1, ecd);
