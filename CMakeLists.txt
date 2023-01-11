@@ -36,3 +36,6 @@ target_link_libraries(AvgpoolFC64test PUBLIC HEaaN::HEaaN)
 
 add_executable(kernelEncode kernelEncode.cpp) 
 target_link_libraries(kernelEncode PUBLIC HEaaN::HEaaN)
+
+add_executable(imageEncode imageEncode.cpp) 
+target_link_libraries(imageEncode PUBLIC HEaaN::HEaaN)
