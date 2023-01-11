@@ -16,11 +16,11 @@ void txtreader(vector<double>& kernel, const string filename) {
     string line;
 
     ifstream input_file(filename);
-    if (!input_file.is_open()) {
+    /*if (!input_file.is_open()) {
         cerr << "Could not open the file - '"
             << filename << "'" << endl;
         return EXIT_FAILURE;
-    }
+    }*/
 
     while (getline(input_file, line)) {
         double temp = stod(line);
@@ -31,7 +31,7 @@ void txtreader(vector<double>& kernel, const string filename) {
         cout << i << endl;*/
 
     input_file.close();
-    return EXIT_SUCCESS;
+    return;
 
 }
 
@@ -41,18 +41,18 @@ void kernel_ptxt(Context context, vector<double>& weight, vector<vector<vector<P
     if (ker_size == 3) {  //output vector is out_ch * in_ch * 9
         for (int i = 0; i < out_ch; ++i) {
             for (int j = 0; j < in_ch; ++j) {
-                
+
                 vector<vector<double>> temp(3, vector<double>(3));
-                
+
                 for (int k = 0; k < 3; ++k) {
                     for (int l = 0; l < 3; ++i) temp[k][l] = weight[27 * i + 9 * j + 3 * k + l];
                 }
-                
+
                 for (int k = 0; k < 3; ++k) {
                     for (int l = 0; l < 3; ++i) {
                         Plaintext ptxt(context);
                         weightToPtxt(ptxt, level, temp, gap_in, stride, (u64)k, (u64)l, ecd);
-                        output[i][j][3*k+l] = ptxt;
+                        output[i][j][3 * k + l] = ptxt;
                     }
                 }
             }
@@ -68,7 +68,7 @@ void kernel_ptxt(Context context, vector<double>& weight, vector<vector<vector<P
 
                 Plaintext ptxt(context);
                 weightToPtxt(ptxt, level, temp, gap_in, stride, (u64)1, (u64)1, ecd);
-                output[i][j][0][0] = ptxt;
+                output[i][j][0] = ptxt;
 
             }
         }
@@ -77,7 +77,7 @@ void kernel_ptxt(Context context, vector<double>& weight, vector<vector<vector<P
 }
 
 void addBNsummands(Context context, vector<vector<Ciphertext>>& afterConv, vector<double> summands, const int n, const int ch) {
-    
+
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < ch; ++j) {
             Complex cnst = Complex(summands[j]);
