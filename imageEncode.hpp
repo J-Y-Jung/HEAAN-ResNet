@@ -16,11 +16,11 @@ void txtreader(vector<double>& kernel, const string filename) {
     string line;
     //ifstream input_file(file_path);
     ifstream input_file(filename);
-    if (!input_file.is_open()) {
+    /*if (!input_file.is_open()) {
         cerr << "Could not open the file - '"
             << filename << "'" << endl;
         return EXIT_FAILURE;
-    }
+    }*/
 
     while (getline(input_file, line)) {
         double temp = stod(line);
@@ -31,7 +31,7 @@ void txtreader(vector<double>& kernel, const string filename) {
         cout << i << endl;*/
 
     input_file.close();
-    return EXIT_SUCCESS;
+    return;
 
 }
 
