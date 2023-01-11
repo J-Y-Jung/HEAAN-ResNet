@@ -263,26 +263,14 @@ int main() {
     ptxt = ecd.encode(msg, 4, 0);
 
 
-    vector<vector<Plaintext>> BN_sum1(16);
-    #pragma omp parallel
-    #pragma omp for
-    for (int i = 0; i < 16; ++i) {
-        vector<Plaintext> BN_sum1_cache;
-        for (int ch = 0; ch < 16; ++ch) {
-            BN_sum1_cache.push_back(ptxt);
-        }
-        BN_sum1[i] = BN_sum1_cache;
+    vector<double> BN1_add;
+    for (int ch = 0; ch < 32; ++ch) {
+        // BN1_add.push_back(ptxt);
     }
 
-    vector<vector<Plaintext>> BN_sum2(16);
-    #pragma omp parallel
-    #pragma omp for
-    for (int i = 0; i < 16; ++i) {
-        vector<Plaintext> BN_sum2_cache;
-        for (int ch = 0; ch < 16; ++ch) {
-            BN_sum2_cache.push_back(ptxt);
-        }
-        BN_sum2[i] = BN_sum2_cache;
+    vector<double> BN2_add;
+    for (int ch = 0; ch < 32; ++ch) {
+        // BN2_add.push_back(ptxt);
     }
 
 
@@ -293,7 +281,7 @@ int main() {
     timer.start(" DSB ");
     vector<vector<Ciphertext>> ctxt_out;
     ctxt_out = DSB(context, pack, eval, 0, ctxt_bundle,
-        kernel_o, kernel_o2, kernel_o3, BN_sum1, BN_sum2);
+        kernel_o, kernel_o2, kernel_o3, BN1_add, BN2_add);
     timer.end();
     cout << "DSB is over" << "\n";
 

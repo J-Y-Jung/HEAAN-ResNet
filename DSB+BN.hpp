@@ -1,7 +1,10 @@
+#include "kernelEncode.hpp"
+
 namespace {
 using namespace HEaaN;
 using namespace std;
 }
+
 
 vector<vector<Ciphertext>> DSB(Context context, KeyPack pack,
 HomEvaluator eval, int DSB_count, vector<vector<Ciphertext>> ctxt_bundle, 
@@ -9,18 +12,18 @@ HomEvaluator eval, int DSB_count, vector<vector<Ciphertext>> ctxt_bundle,
 vector<vector<vector<Plaintext>>> kernel_bundle, 
 vector<vector<vector<Plaintext>>> kernel_bundle2, 
 vector<vector<vector<Plaintext>>> kernel_residual_bundle,
-vector<vector<Plaintext>> BN_sum1,
-vector<vector<Plaintext>> BN_sum2) {
+vector<double> BN1_add,
+vector<double> BN2_add) {
     ///////////////////////// SetUp ////////////////////////////////
     cout << "DSB start" << "\n";
-    // int num_ctxt;
-    // num_ctxt = ctxt_bundle.size();
+    int num_ctxt;
+    num_ctxt = ctxt_bundle.size();
 
-    // int num_kernel_bundle1;
-    // num_kernel_bundle1 = kernel_bundle.size();
+    int num_kernel_bundle1;
+    num_kernel_bundle1 = kernel_bundle.size();
 
-    // int num_kernel_bundle2;
-    // num_kernel_bundle2 = kernel_bundle2.size();
+    int num_kernel_bundle2;
+    num_kernel_bundle2 = kernel_bundle2.size();
 
 
     ///////////////////////// Main flow /////////////////////////////////////////
@@ -33,12 +36,12 @@ vector<vector<Plaintext>> BN_sum2) {
         ctxt_conv_out_bundle.push_back(ctxt_conv_out_cache);
     }
     cout << "level of ctxt is " << ctxt_conv_out_bundle[0][0].getLevel() << "\n";
-
     // vector<vector<vector<Plaintext>>>().swap(kernel_bundle);
     cout << "DONE!" << "\n";
     /* 여기서 나온 ctxt_conv_out_bundle은 첫번째는 0이상 16미만의 서로다른 img 개수 인덱스,
     두번째는 0이상 32미만의 channel index
     */
+
     // MPP input bundle making
     cout << "MPP-(main flow, First Conv) ..." << endl;
     vector<vector<vector<Ciphertext>>> ctxt_MPP_in;
@@ -71,16 +74,21 @@ vector<vector<Plaintext>> BN_sum2) {
     // vector<vector<vector<Ciphertext>>>().swap(ctxt_MPP_in);
     cout << "DONE!" << "\n";
 
-    
-    // ctxt_MPP_out_bundle 첫번째 : 서로 다른 img, 두번째 : ch.
+    cout << "Adding BN-(main flow) ..." << endl;
+    addBNsummands(context, ctxt_MPP_out_bundle, BN1_add, 4, 32);
+    // for (int i = 0; i < 4; ++i) {
+    //     for (int ch = 0; ch < 32; ++ch) {
+    //         // Ciphertext ctxt_BN1_out_bundle_cache(context);
+    //         // cout << ctxt_MPP_out_bundle[i][ch].getLogSlots() << "\n";
+    //         // cout << BN1_add[ch].getLogSlots() << "\n";
+    //         eval.add(ctxt_MPP_out_bundle[i][ch], BN1_add[ch], ctxt_MPP_out_bundle[i][ch]);
 
-    // /////////////// Decryption ////////////////
-    // Message dmsg0;
-    // cout << "Decrypt ... ";
-    // dec.decrypt(ctxt_MPP_out, sk, dmsg0);
-    // cout << "done" << endl;
-    // printMessage(dmsg0);
-    // ////////////////////////////////////////
+    //         // ctxt_MPP_out_bundle[i][ch] = ctxt_BN1_out_bundle_cache;
+    //     }
+    // }
+    cout << "DONE!" << "\n";
+
+    // ctxt_MPP_out_bundle 첫번째 : 서로 다른 img, 두번째 : ch.
 
     // AppReLU
     cout << "AppReLU-(main flow) ..." << endl;
@@ -153,6 +161,17 @@ vector<vector<Plaintext>> BN_sum2) {
     }
     cout << "level of ctxt is " << ctxt_MPP_out_bundle2[0][0].getLevel() << "\n";
     // vector<vector<vector<Ciphertext>>>().swap(ctxt_MPP_in2);
+    cout << "DONE!" << "\n";
+
+    cout << "Adding BN-(main flow) ..." << endl;
+    addBNsummands(context, ctxt_MPP_out_bundle, BN2_add, 4, 32);
+    // for (int i = 0; i < 4; ++i) {
+    //     for (int ch = 0; ch < 32; ++ch) {
+    //         // Ciphertext ctxt_BN2_out_bundle_cache(context);
+    //         eval.add(ctxt_MPP_out_bundle[i][ch], BN2_add[ch], ctxt_MPP_out_bundle[i][ch]);
+    //         // ctxt_MPP_out_bundle[i][ch] = ctxt_BN2_out_bundle_cache;
+    //     }
+    // }
     cout << "DONE!" << "\n";
 
 
