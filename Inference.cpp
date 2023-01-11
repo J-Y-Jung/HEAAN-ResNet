@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include <algorithm>
 
 #include "HEaaN/heaan.hpp" // 필요한가?
 // #include "examples.hpp" // 필요한가?
@@ -36,6 +37,7 @@ int main() {
 
     SecretKey sk(context);
     KeyPack pack(context);
+
     KeyGenerator keygen(context, sk, pack);
 
     cout << "Generate encryption key ... " << endl;
@@ -98,7 +100,7 @@ int main() {
     // 1st conv
     vector<double> temp0;
     vector<vector<vector<Plaintext>>> block0conv0multiplicands16_3_3_3;
-    string path0 = "./kernel/multiplicands/" + "block0conv0multiplicands16_3_3_3";
+    string path0 = "./kernel/multiplicands/" + string("block0conv0multiplicands16_3_3_3");
     txtreader(temp0, path0);
     kernel_ptxt(context, temp0, block0conv0multiplicands16_3_3_3, 12, 1, 1, 16, 3, 3, ecd);
     
