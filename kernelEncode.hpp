@@ -88,7 +88,8 @@ void addBNsummands(Context context, vector<vector<Ciphertext>>& afterConv, vecto
         for (int j = 0; j < ch; ++j) {
             Ciphertext temp(context);
             Complex cnst = Complex(summands[j]);
-            eval.add(afterConv[i][j], cnst, output[j]);
+            eval.add(afterConv[i][j], cnst, temp);
+            output.push_back(temp);
         }
     }
 
