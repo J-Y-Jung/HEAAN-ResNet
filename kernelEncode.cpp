@@ -55,9 +55,10 @@ int main(){
     EnDecoder ecd(context);
 
     //----------------------------------------------------------------------------------------
-
+    
+    Plaintext ptxt_init(context);
     vector<double> temp0;
-    vector<vector<vector<Plaintext>>> block0conv0multiplicands16_3_3_3;
+    vector<vector<vector<Plaintext>>> block0conv0multiplicands16_3_3_3(16, vector<vector<Plaintext>>(3, vector<Plaintext>(9, ptxt_init)));
     
     string path0 = "./kernel/multiplicands/" + "block0conv0multiplicands16_3_3_3";
     txtreader(temp0, path0);
@@ -69,7 +70,8 @@ int main(){
     
 
     vector<double> temp1;
-    vector<vector<vector<Plaintext>>> block1conv0multiplicands16_16_3_3;
+    vector<vector<vector<Plaintext>>> block1conv0multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
+    
 
     string path1 = "./kernel/multiplicands/" + "block1conv0multiplicands16_16_3_3";
     txtreader(temp1, path1);
@@ -81,7 +83,7 @@ int main(){
     
     
     vector<double> temp2;
-    vector<vector<vector<Plaintext>>> block1conv1multiplicands16_16_3_3;
+    vector<vector<vector<Plaintext>>> block1conv1multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
 
     string path2 = "./kernel/multiplicands/" + "block1conv1multiplicands16_16_3_3";
     txtreader(temp2, path2);
@@ -95,7 +97,7 @@ int main(){
     
     
     vector<double> temp3;
-    vector<vector<vector<Plaintext>>> block2conv0multiplicands16_16_3_3;
+    vector<vector<vector<Plaintext>>> block2conv0multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
 
     string path3 = "./kernel/multiplicands/" + "block2conv0multiplicands16_16_3_3";
     txtreader(temp3, path3);
@@ -108,7 +110,7 @@ int main(){
     
     
     vector<double> temp4;
-    vector<vector<vector<Plaintext>>> block2conv1multiplicands16_16_3_3;
+    vector<vector<vector<Plaintext>>> block2conv1multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
 
     string path4 = "./kernel/multiplicands/" + "block2conv1multiplicands16_16_3_3";
     txtreader(temp4, path4);
@@ -122,7 +124,7 @@ int main(){
     
 
     vector<double> temp5;
-    vector<vector<vector<Plaintext>>> block3conv0multiplicands16_16_3_3;
+    vector<vector<vector<Plaintext>>> block3conv0multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
 
     string path5 = "./kernel/multiplicands/" + "block3conv0multiplicands16_16_3_3";
     txtreader(temp5, path5);
@@ -136,7 +138,7 @@ int main(){
     
 
     vector<double> temp6;
-    vector<vector<vector<Plaintext>>> block3conv1multiplicands16_16_3_3;
+    vector<vector<vector<Plaintext>>> block3conv1multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
 
     string path6 = "./kernel/multiplicands/" + "block3conv1multiplicands16_16_3_3";
     txtreader(temp6, path6);
@@ -149,7 +151,7 @@ int main(){
     
     
     vector<double> temp7;
-    vector<vector<vector<Plaintext>>> block4conv_onebyone_multiplicands32_16_1_1;
+    vector<vector<vector<Plaintext>>> block4conv_onebyone_multiplicands32_16_1_1(32, vector<vector<Plaintext>>(16, vector<Plaintext>(1, ptxt_init)));
 
     string path7 = "./kernel/multiplicands/" + "block4conv_onebyone_multiplicands32_16_1_1";
     txtreader(temp7, path7);
@@ -162,7 +164,7 @@ int main(){
     
 
     vector<double> temp8;
-    vector<vector<vector<Plaintext>>> block4conv0multiplicands32_16_3_3;
+    vector<vector<vector<Plaintext>>> block4conv0multiplicands32_16_3_3(32, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
 
     string path8 = "./kernel/multiplicands/" + "block4conv0multiplicands32_16_3_3";
     txtreader(temp8, path8);
@@ -176,7 +178,7 @@ int main(){
     
     
     vector<double> temp9;
-    vector<vector<vector<Plaintext>>> block4conv1multiplicands32_32_3_3;
+    vector<vector<vector<Plaintext>>> block4conv1multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
 
     string path9 = "./kernel/multiplicands/" + "block4conv1multiplicands32_32_3_3";
     txtreader(temp9, path9);
@@ -192,7 +194,7 @@ int main(){
     
     
     vector<double> temp10;
-    vector<vector<vector<Plaintext>>> block5conv0multiplicands32_32_3_3;
+    vector<vector<vector<Plaintext>>> block5conv0multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
 
     string path10 = "./kernel/multiplicands/" + "block5conv0multiplicands32_32_3_3";
     txtreader(temp10, path10);
@@ -206,7 +208,7 @@ int main(){
     
 
     vector<double> temp11;
-    vector<vector<vector<Plaintext>>> block5conv1multiplicands32_32_3_3;
+    vector<vector<vector<Plaintext>>> block5conv1multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
 
     string path1 = "./kernel/multiplicands/" + "block5conv1multiplicands32_32_3_3";
     txtreader(temp11, path11);
@@ -220,7 +222,7 @@ int main(){
     
 
     vector<double> temp12;
-    vector<vector<vector<Plaintext>>> block6conv0multiplicands32_32_3_3;
+    vector<vector<vector<Plaintext>>> block6conv0multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
 
     string path12 = "./kernel/multiplicands/" + "block6conv0multiplicands32_32_3_3";
     txtreader(temp12, path12);
@@ -238,7 +240,7 @@ int main(){
     
     
     vector<double> temp13;
-    vector<vector<vector<Plaintext>>> block6conv1multiplicands32_32_3_3;
+    vector<vector<vector<Plaintext>>> block6conv1multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
 
     string path13 = "./kernel/multiplicands/" + "block6conv1multiplicands32_32_3_3";
     txtreader(temp13, path13);
@@ -252,7 +254,7 @@ int main(){
     
     
     vector<double> temp14;
-    vector<vector<vector<Plaintext>>> block7conv_onebyone_multiplicands64_32_1_1;
+    vector<vector<vector<Plaintext>>> block7conv_onebyone_multiplicands64_32_1_1(64, vector<vector<Plaintext>>(32, vector<Plaintext>(1, ptxt_init)));
 
     string path14 = "./kernel/multiplicands/" + "block7conv_onebyone_multiplicands64_32_1_1";
     txtreader(temp14, path14);
@@ -265,7 +267,7 @@ int main(){
     
     
     vector<double> temp15;
-    vector<vector<vector<Plaintext>>> block7conv0multiplicands64_32_3_3;
+    vector<vector<vector<Plaintext>>> block7conv0multiplicands64_32_3_3(64, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
 
     string path15 = "./kernel/multiplicands/" + "block7conv0multiplicands64_32_3_3";
     txtreader(temp15, path15);
@@ -279,7 +281,7 @@ int main(){
     
 
     vector<double> temp16;
-    vector<vector<vector<Plaintext>>> block7conv1multiplicands64_64_3_3;
+    vector<vector<vector<Plaintext>>> block7conv1multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
 
     string path16 = "./kernel/multiplicands/" + "block7conv1multiplicands64_64_3_3";
     txtreader(temp16, path16);
@@ -292,7 +294,7 @@ int main(){
     
 
     vector<double> temp17;
-    vector<vector<vector<Plaintext>>> block8conv0multiplicands64_64_3_3;
+    vector<vector<vector<Plaintext>>> block8conv0multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
 
     string path17 = "./kernel/multiplicands/" + "block8conv0multiplicands64_64_3_3";
     txtreader(temp17, path17);
@@ -306,7 +308,7 @@ int main(){
     
 
     vector<double> temp18;
-    vector<vector<vector<Plaintext>>> block8conv1multiplicands64_64_3_3;
+    vector<vector<vector<Plaintext>>> block8conv1multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
 
     string path18 = "./kernel/multiplicands/" + "block8conv1multiplicands64_64_3_3";
     txtreader(temp18, path18);
@@ -319,7 +321,7 @@ int main(){
     
 
     vector<double> temp19;
-    vector<vector<vector<Plaintext>>> block9conv0multiplicands64_64_3_3;
+    vector<vector<vector<Plaintext>>> block9conv0multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
 
     string path19 = "./kernel/multiplicands/" + "block9conv0multiplicands64_64_3_3";
     txtreader(temp19, path19);
@@ -333,7 +335,7 @@ int main(){
     
     
     vector<double> temp20;
-    vector<vector<vector<Plaintext>>> block9conv1multiplicands64_64_3_3;
+    vector<vector<vector<Plaintext>>> block9conv1multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
 
     string path20 = "./kernel/multiplicands/" + "block9conv1multiplicands64_64_3_3";
     txtreader(temp20, path20);
