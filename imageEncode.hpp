@@ -62,9 +62,13 @@ void imageCompiler(Context context, KeyPack pack, Encryptor enc, vector<double>&
         vector<double> temp2 = slice(image, 3072 * i + 1024, 3072 * i + 2048);
         vector<double> temp3 = slice(image, 3072 * i + 2048, 3072 * i + 3072);
 
+        cout << "slicing done" << endl;
+
         input1.insert(input1.end(), temp1.begin(), temp1.end());
         input2.insert(input2.end(), temp2.begin(), temp2.end());
         input3.insert(input3.end(), temp3.begin(), temp3.end());
+
+        cout << i << "th for loop done" << endl;
     }
     
     cout<< "double vector done" <<endl;

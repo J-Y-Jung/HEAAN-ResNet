@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -11,7 +12,8 @@
 #include "oddLazyBSGS.hpp"
 #include "MPPacking.hpp"
 #include "HEaaNTimer.hpp"
-#include "DSB.hpp"
+#include "DSB+BN.hpp"
+#include "RB+BN.hpp"
 #include "convtools.hpp"
 #include "kernelEncode.hpp"
 #include "imageEncode.hpp"
@@ -27,12 +29,12 @@ int main() {
     ParameterPreset preset = ParameterPreset::FGb;
     Context context = makeContext(preset);
     if (!isBootstrappableParameter(context)) {
-        cout << "Bootstrap is not available for parameter "
-            << presetNamer(preset) << endl;
+        // cout << "Bootstrap is not available for parameter "
+        //     << presetNamer(preset) << endl;
         return -1;
     }
-    cout << "Parameter : " << presetNamer(preset) << endl
-        << endl;
+    // cout << "Parameter : " << presetNamer(preset) << endl
+    //     << endl;
     const auto log_slots = getLogFullSlots(context);
 
     SecretKey sk(context);
@@ -62,26 +64,29 @@ int main() {
     HomEvaluator eval(context, pack);
     timer.end();
 
+    EnDecoder ecd(context);
 
 
 
     ///////////// Message ///////////////////
 
 
-
+    cout << "Image Loading ..." << "\n";
     vector<vector<Ciphertext>> imageVec;
 
     for (int i = 1; i < 17; ++i) { // 313
-        string str = "./image/image_" + to_string(i) + ".txt";
+        
+        string str = "./image/image_" + to_string(i) + string(".txt");
         vector<double> temp;
 
         txtreader(temp, str);
-
+        cout << i << "\n";
         vector<Ciphertext> out;
         imageCompiler(context, pack, enc, temp, out);
         imageVec.push_back(out);
 
     }
+    cout << "DONE" << "\n";
 
     // // string str = "./image/image_" + to_string(313) + ".txt";
     // vector<double> temp;
@@ -118,7 +123,7 @@ int main() {
         ctxt_conv1_out_cache = Conv(context, pack, eval, 32, 1, 1, 3, 16, imageVec[i], block0conv0multiplicands16_3_3_3);
         ctxt_conv1_out_bundle.push_back(ctxt_conv1_out_cache);
     }
-    addBNsummands(context, ctxt_conv1_out_bundle, block0conv0summands16, 16, 16);
+    addBNsummands(context, eval, ctxt_conv1_out_bundle, block0conv0summands16, 16, 16);
 
     timer.end();
     cout << "DONE!" << "\n";
@@ -170,7 +175,7 @@ int main() {
     cout << "RB 1 ..." << endl;
     timer.start(" RB 1 ");
     vector<vector<Ciphertext>> ctxt_RB1_out;
-    ctxt_RB1_out = RB(context, pack, eval, 0, ctxt_relu1_out_bundle, block1conv0multiplicands16_16_3_3, block1conv1multiplicands16_16_3_3
+    ctxt_RB1_out = RB(context, pack, eval, 0, ctxt_relu1_out_bundle, block1conv0multiplicands16_16_3_3, block1conv1multiplicands16_16_3_3,
     block1conv0summands16, block1conv1summands16);
     timer.end();
     cout << "DONE!" << "\n";
@@ -276,7 +281,7 @@ int main() {
     
     vector<double> block4conv_onebyone_summands32;
     string path7a = "./kernel/summands/" + string("block4conv_onebyone_summands16");
-    txtreader(block4conv_onebyone_conv1summands32, path7a);
+    txtreader(block4conv_onebyone_summands32, path7a);
     
     // DSB 1 - 1
     vector<double> temp8;
@@ -307,7 +312,7 @@ int main() {
     cout << "DSB 1 ..." << endl;
     timer.start(" DSB 1 ");
     vector<vector<Ciphertext>> ctxt_DSB1_out;
-    ctxt_DSB1_out = DSB(timer, context, pack, eval, 0, ctxt_RB3_out, block4conv0multiplicands32_16_3_3, block4conv1multiplicands32_32_3_3, block4conv_onebyone_multiplicands32_16_1_1,
+    ctxt_DSB1_out = DSB(context, pack, eval, 0, ctxt_RB3_out, block4conv0multiplicands32_16_3_3, block4conv1multiplicands32_32_3_3, block4conv_onebyone_multiplicands32_16_1_1,
     block4conv0summands32, block4conv1summands32, block4conv_onebyone_summands32);
     cout << "DONE!" << "\n";
 
@@ -329,7 +334,7 @@ int main() {
     // RB 4 - 2
     vector<double> temp11;
     vector<vector<vector<Plaintext>>> block5conv1multiplicands32_32_3_3;
-    string path1 = "./kernel/multiplicands/" + string("block5conv1multiplicands32_32_3_3");
+    string path11 = "./kernel/multiplicands/" + string("block5conv1multiplicands32_32_3_3");
     txtreader(temp11, path11);
     kernel_ptxt(context, temp11, block5conv1multiplicands32_32_3_3, 12, 2, 1, 32, 32, 3, ecd);
     
@@ -438,7 +443,7 @@ int main() {
     cout << "DSB 2 ..." << endl;
     timer.start(" DSB 2 ");
     vector<vector<Ciphertext>> ctxt_DSB2_out;
-    ctxt_DSB2_out = DSB(timer, context, pack, eval, 1, ctxt_RB5_out, block7conv0multiplicands64_32_3_3, block7conv1multiplicands64_64_3_3, block7conv_onebyone_multiplicands64_32_1_1,
+    ctxt_DSB2_out = DSB(context, pack, eval, 1, ctxt_RB5_out, block7conv0multiplicands64_32_3_3, block7conv1multiplicands64_64_3_3, block7conv_onebyone_multiplicands64_32_1_1,
     block7conv0summands64, block7conv1summands64, block7conv_onebyone_summands64);
     cout << "DONE!" << "\n";
 
@@ -494,7 +499,7 @@ int main() {
     vector<vector<vector<Plaintext>>> block9conv1multiplicands64_64_3_3;
     string path20 = "./kernel/multiplicands/" + string("block9conv1multiplicands64_64_3_3");
     txtreader(temp20, path20);
-    kernel_ptxt(context, temp21, block9conv1multiplicands64_64_3_3, 12, 4, 1, 64, 64, 3, ecd);
+    kernel_ptxt(context, temp20, block9conv1multiplicands64_64_3_3, 12, 4, 1, 64, 64, 3, ecd);
     
     vector<double> block9conv1summands64;
     string path20a = "./kernel/summands/" + string("block9conv1summands64");
@@ -510,53 +515,53 @@ int main() {
     cout << "DONE!" << "\n";
 
 
-    // Average Pooling, Flatten, FC64
-    // Avg Pool
-    cout << "evaluating Avgpool" << endl;
-    timer.start("* ");
-    ctxt = Avgpool(context, pack, eval, ctxt);
-    timer.end();
-    dec.decrypt(ctxt, sk, dmsg);
-    cout << "avgpool message: " << endl;
-    printMessage(dmsg, false, 64, 64);
-
-    ptxt = ecd.encode(uni, 5, 0);
-    for (size_t i = 0; i < 10; ++i) {
-        ptxt_vec.push_back(ptxt);
-    }
-
-    // FC64
-    cout << "evaluating FC64" << endl;
-    timer.start("* ");
-    ctxt_FC64_out = FC64old(context, pack, eval, ctxt, ptxt_vec);
-    timer.end();
-    // dec.decrypt(ctxt_out, sk, dmsg);
-    // cout << "decrypted message after FC64: " << endl;
+    // // Average Pooling, Flatten, FC64
+    // // Avg Pool
+    // cout << "evaluating Avgpool" << endl;
+    // timer.start("* ");
+    // ctxt = Avgpool(context, pack, eval, ctxt);
+    // timer.end();
+    // dec.decrypt(ctxt, sk, dmsg);
+    // cout << "avgpool message: " << endl;
     // printMessage(dmsg, false, 64, 64);
-    // //(0, 8, 16, 24, 256, 264, 272, 280, 512, 520)
-    // cout << "actual result:" << endl << "[ ";
-    // cout << dmsg[0].real() << ", "<< dmsg[8].real() << ", "<< dmsg[16].real() << ", "<< dmsg[24].real() << ", "
-    // << dmsg[256].real() << ", "<< dmsg[264].real() << ", "<< dmsg[272].real() << ", "<< dmsg[280].real() << ", "
-    // << dmsg[512].real() << ", "<< dmsg[520].real() << " ]" << endl;
-    // //must be all same
 
-    for (size_t i = 0; i < 8; ++i) {
-        for (size_t j = 0; j < 8; ++j) {
-            eval.leftRotate(msg, 4*i+32*4*j, msg_tmp);
-            eval.add(msg_tmp0, msg_tmp, msg_tmp0);
-        }
-    }
-    eval.mult(msg_tmp0, uni, msg_tmp0);
-    for (size_t i = 0; i < 4; ++i) {
-        for (size_t j = 0; j < 4; ++j) {
-            for (size_t k = 0; k < 4; ++k) {
-                eval.leftRotate(msg_tmp0, i+32*j+32*32*k, msg_tmp);
-                eval.add(msg_out, msg_tmp, msg_out);
-            }
-        }
-    }
-    cout << "target value: " << endl;
-    cout << msg_out[0] << endl;
+    // ptxt = ecd.encode(uni, 5, 0);
+    // for (size_t i = 0; i < 10; ++i) {
+    //     ptxt_vec.push_back(ptxt);
+    // }
+
+    // // FC64
+    // cout << "evaluating FC64" << endl;
+    // timer.start("* ");
+    // ctxt_FC64_out = FC64old(context, pack, eval, ctxt, ptxt_vec);
+    // timer.end();
+    // // dec.decrypt(ctxt_out, sk, dmsg);
+    // // cout << "decrypted message after FC64: " << endl;
+    // // printMessage(dmsg, false, 64, 64);
+    // // //(0, 8, 16, 24, 256, 264, 272, 280, 512, 520)
+    // // cout << "actual result:" << endl << "[ ";
+    // // cout << dmsg[0].real() << ", "<< dmsg[8].real() << ", "<< dmsg[16].real() << ", "<< dmsg[24].real() << ", "
+    // // << dmsg[256].real() << ", "<< dmsg[264].real() << ", "<< dmsg[272].real() << ", "<< dmsg[280].real() << ", "
+    // // << dmsg[512].real() << ", "<< dmsg[520].real() << " ]" << endl;
+    // // //must be all same
+
+    // for (size_t i = 0; i < 8; ++i) {
+    //     for (size_t j = 0; j < 8; ++j) {
+    //         eval.leftRotate(msg, 4*i+32*4*j, msg_tmp);
+    //         eval.add(msg_tmp0, msg_tmp, msg_tmp0);
+    //     }
+    // }
+    // eval.mult(msg_tmp0, uni, msg_tmp0);
+    // for (size_t i = 0; i < 4; ++i) {
+    //     for (size_t j = 0; j < 4; ++j) {
+    //         for (size_t k = 0; k < 4; ++k) {
+    //             eval.leftRotate(msg_tmp0, i+32*j+32*32*k, msg_tmp);
+    //             eval.add(msg_out, msg_tmp, msg_out);
+    //         }
+    //     }
+    // }
+    // cout << "target value: " << endl;
+    // cout << msg_out[0] << endl;
 
     
 

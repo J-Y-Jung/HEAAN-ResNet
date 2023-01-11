@@ -5,35 +5,36 @@
 #include <vector>
 #include "HEaaN/heaan.hpp"
 #include "convtools.hpp"
+#include "imageEncode.hpp"
 
 namespace {
     using namespace std;
     using namespace HEaaN;
 }
 
-void txtreader(vector<double>& kernel, const string filename) {
+// void txtreader(vector<double>& kernel, const string filename) {
 
-    string line;
+//     string line;
 
-    ifstream input_file(filename);
-    /*if (!input_file.is_open()) {
-        cerr << "Could not open the file - '"
-            << filename << "'" << endl;
-        return EXIT_FAILURE;
-    }*/
+//     ifstream input_file(filename);
+//     /*if (!input_file.is_open()) {
+//         cerr << "Could not open the file - '"
+//             << filename << "'" << endl;
+//         return EXIT_FAILURE;
+//     }*/
 
-    while (getline(input_file, line)) {
-        double temp = stod(line);
-        kernel.push_back(temp);
-    }
+//     while (getline(input_file, line)) {
+//         double temp = stod(line);
+//         kernel.push_back(temp);
+//     }
 
-    /*for (const auto& i : kernel)
-        cout << i << endl;*/
+//     /*for (const auto& i : kernel)
+//         cout << i << endl;*/
 
-    input_file.close();
-    return;
+//     input_file.close();
+//     return;
 
-}
+// }
 
 
 void kernel_ptxt(Context context, vector<double>& weight, vector<vector<vector<Plaintext>>>& output, u64 level, u64 gap_in, u64 stride, const int out_ch, const int in_ch, const int ker_size, EnDecoder ecd) {
@@ -76,7 +77,7 @@ void kernel_ptxt(Context context, vector<double>& weight, vector<vector<vector<P
     return;
 }
 
-void addBNsummands(Context context, vector<vector<Ciphertext>>& afterConv, vector<double> summands, const int n, const int ch) {
+void addBNsummands(Context context, HomEvaluator eval, vector<vector<Ciphertext>>& afterConv, vector<double> summands, const int n, const int ch) {
 
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < ch; ++j) {
