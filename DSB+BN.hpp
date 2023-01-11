@@ -13,7 +13,8 @@ vector<vector<vector<Plaintext>>> kernel_bundle,
 vector<vector<vector<Plaintext>>> kernel_bundle2, 
 vector<vector<vector<Plaintext>>> kernel_residual_bundle,
 vector<double> BN1_add,
-vector<double> BN2_add) {
+vector<double> BN2_add,
+vector<double> BN3_add) {
     ///////////////////////// SetUp ////////////////////////////////
     cout << "DSB start" << "\n";
     int num_ctxt;
@@ -119,6 +120,11 @@ vector<double> BN2_add) {
     // vector<vector<Ciphertext>>().swap(ctxt_relu_out_bundle);
     cout << "DONE!" << "\n";
 
+    cout << "Adding BN-(main flow) ..." << endl;
+    addBNsummands(context, ctxt_MPP_out_bundle, BN2_add, 4, 32);
+    cout << "DONE!" << "\n";
+
+
     ///////////////////// Residual flow ////////////////////////////
     // Convolution
     cout << "Residual Conv-(residual flow) ..." << endl;
@@ -164,7 +170,7 @@ vector<double> BN2_add) {
     cout << "DONE!" << "\n";
 
     cout << "Adding BN-(main flow) ..." << endl;
-    addBNsummands(context, ctxt_MPP_out_bundle, BN2_add, 4, 32);
+    addBNsummands(context, ctxt_MPP_out_bundle, BN3_add, 4, 32);
     // for (int i = 0; i < 4; ++i) {
     //     for (int ch = 0; ch < 32; ++ch) {
     //         // Ciphertext ctxt_BN2_out_bundle_cache(context);

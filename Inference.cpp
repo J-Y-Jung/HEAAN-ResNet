@@ -175,7 +175,8 @@ int main() {
     cout << "RB 2..." << endl;
     timer.start(" RB 2 ");
     vector<vector<Ciphertext>> ctxt_out;
-    ctxt_RB2_out = RB(context, pack, eval, 0, ctxt_RB1_out, block2conv0multiplicands16_16_3_3, block2conv1multiplicands16_16_3_3);
+    ctxt_RB2_out = RB(context, pack, eval, 0, ctxt_RB1_out, block2conv0multiplicands16_16_3_3, block2conv1multiplicands16_16_3_3,
+    block2conv0summands16, block2conv1summands16);
     timer.end();
     cout << "DONE!" << "\n";
 
@@ -224,7 +225,8 @@ int main() {
     cout << "RB 3 ..." << endl;
     timer.start(" RB 3 ");
     vector<vector<Ciphertext>> ctxt_out;
-    ctxt_RB3_out = RB(context, pack, eval, 0, ctxt_RB2_out, block3conv0multiplicands16_16_3_3, block3conv1multiplicands16_16_3_3);
+    ctxt_RB3_out = RB(context, pack, eval, 0, ctxt_RB2_out, block3conv0multiplicands16_16_3_3, block3conv1multiplicands16_16_3_3,
+    block3conv0summands16, block3conv1summands16);
     timer.end();
     cout << "DONE!" << "\n";
 
@@ -271,7 +273,8 @@ int main() {
     cout << "DSB 1 ..." << endl;
     timer.start(" DSB 1 ");
     vector<vector<Ciphertext>> ctxt_out;
-    ctxt_DSB1_out = DSB(timer, context, pack, eval, 0, ctxt_RB3_out, block4conv0multiplicands32_16_3_3, block4conv1multiplicands32_32_3_3, block4conv_onebyone_multiplicands32_16_1_1);
+    ctxt_DSB1_out = DSB(timer, context, pack, eval, 0, ctxt_RB3_out, block4conv0multiplicands32_16_3_3, block4conv1multiplicands32_32_3_3, block4conv_onebyone_multiplicands32_16_1_1,
+    block4conv0summands32, block4conv1summands32, block4conv_onebyone_summands32);
     cout << "DONE!" << "\n";
 
 
@@ -305,7 +308,8 @@ int main() {
     cout << "RB 4..." << endl;
     timer.start(" RB 4 ");
     vector<vector<Ciphertext>> ctxt_out;
-    ctxt_RB4_out = RB(context, pack, eval, 1, ctxt_DSB1_out, block5conv0multiplicands32_32_3_3, block5conv1multiplicands32_32_3_3);
+    ctxt_RB4_out = RB(context, pack, eval, 1, ctxt_DSB1_out, block5conv0multiplicands32_32_3_3, block5conv1multiplicands32_32_3_3,
+    block5conv0summands32, block5conv1summands32);
     timer.end();
     cout << "DONE!" << "\n";
 
@@ -350,7 +354,8 @@ int main() {
     cout << "RB 5 ..." << endl;
     timer.start(" RB 5 ");
     vector<vector<Ciphertext>> ctxt_out;
-    ctxt_RB5_out = RB(context, pack, eval, 1, ctxt_RB4_out, block6conv0multiplicands32_32_3_3, block6conv1multiplicands32_32_3_3);
+    ctxt_RB5_out = RB(context, pack, eval, 1, ctxt_RB4_out, block6conv0multiplicands32_32_3_3, block6conv1multiplicands32_32_3_3,
+    block6conv0summands32, block6conv1summands32);
     timer.end();
     cout << "DONE!" << "\n";
 
@@ -399,7 +404,8 @@ int main() {
     cout << "DSB 2 ..." << endl;
     timer.start(" DSB 2 ");
     vector<vector<Ciphertext>> ctxt_out;
-    ctxt_DSB2_out = DSB(timer, context, pack, eval, 1, ctxt_RB5_out, block7conv0multiplicands64_32_3_3, block7conv1multiplicands64_64_3_3, block7conv_onebyone_multiplicands64_32_1_1);
+    ctxt_DSB2_out = DSB(timer, context, pack, eval, 1, ctxt_RB5_out, block7conv0multiplicands64_32_3_3, block7conv1multiplicands64_64_3_3, block7conv_onebyone_multiplicands64_32_1_1,
+    block7conv0summands64, block7conv1summands64, block7conv_onebyone_summands64);
     cout << "DONE!" << "\n";
 
 
@@ -430,7 +436,8 @@ int main() {
     cout << "RB 6..." << endl;
     timer.start(" RB 6 ");
     vector<vector<Ciphertext>> ctxt_out;
-    ctxt_RB6_out = RB(context, pack, eval, 2, ctxt_DSB2_out, block8conv0multiplicands64_64_3_3, block8conv1multiplicands64_64_3_3);
+    ctxt_RB6_out = RB(context, pack, eval, 2, ctxt_DSB2_out, block8conv0multiplicands64_64_3_3, block8conv1multiplicands64_64_3_3,
+    block8conv0summands64, block8conv1summands64);
     timer.end();
     cout << "DONE!" << "\n";
 
@@ -463,7 +470,8 @@ int main() {
     cout << "RB 7 ..." << endl;
     timer.start(" RB 7 ");
     vector<vector<Ciphertext>> ctxt_out;
-    ctxt_RB7_out = RB(context, pack, eval, 2, ctxt_RB6_out, block9conv0multiplicands64_64_3_3, block9conv1multiplicands64_64_3_3);
+    ctxt_RB7_out = RB(context, pack, eval, 2, ctxt_RB6_out, block9conv0multiplicands64_64_3_3, block9conv1multiplicands64_64_3_3,
+    block9conv0summands64, block9conv1summands64);
     timer.end();
     cout << "DONE!" << "\n";
 
