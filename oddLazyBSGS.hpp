@@ -272,8 +272,8 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     
     
     //for optimization
-    for(int  i = 0 ; i < polynomial_3.size() ; ++i){
-        polynomial_3[i] = polynomial_3[i]*0.5;
+    for(int  i = 0 ; i < 28 ; ++i){
+        polynomial_3[i] = polynomial_3[i] * 0.5;
     }
 
 
