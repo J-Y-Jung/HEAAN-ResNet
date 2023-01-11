@@ -38,7 +38,7 @@ std::vector<HEaaN::Ciphertext> ctxt_bundle) {
         mask[idx].imag(0.0);
         idx = idx + gap - 1;
     }
-    printMessage(mask);
+    // printMessage(mask);
     for (int i = 0; i < mask.getSize(); ++i) {
         if ((i/imgsize) % gap != 0) {
             mask[i].real(0.0);
