@@ -18,6 +18,8 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
@@ -25,17 +27,21 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 add_executable(convtoolstest convtoolstest.cpp)
 target_link_libraries(convtoolstest PUBLIC HEaaN::HEaaN)
 
-add_executable(rotsumtest rotsumtest.cpp)
-target_link_libraries(rotsumtest PUBLIC HEaaN::HEaaN)
+# add_executable(rotsumtest rotsumtest.cpp)
+# target_link_libraries(rotsumtest PUBLIC HEaaN::HEaaN)
 
-add_executable(oddLazyBSGStest oddLazyBSGStest.cpp) 
-target_link_libraries(oddLazyBSGStest PUBLIC HEaaN::HEaaN)
+# add_executable(oddLazyBSGStest oddLazyBSGStest.cpp) 
+# target_link_libraries(oddLazyBSGStest PUBLIC HEaaN::HEaaN)
 
-add_executable(AvgpoolFC64test AvgpoolFC64test.cpp) 
-target_link_libraries(AvgpoolFC64test PUBLIC HEaaN::HEaaN)
+# add_executable(AvgpoolFC64test AvgpoolFC64test.cpp) 
+# target_link_libraries(AvgpoolFC64test PUBLIC HEaaN::HEaaN)
 
-add_executable(kernelEncode kernelEncode.cpp) 
-target_link_libraries(kernelEncode PUBLIC HEaaN::HEaaN)
+# add_executable(kernelEncode kernelEncode.cpp) 
+# target_link_libraries(kernelEncode PUBLIC HEaaN::HEaaN)
 
-add_executable(imageEncode imageEncode.cpp) 
-target_link_libraries(imageEncode PUBLIC HEaaN::HEaaN)
+# add_executable(imageEncode imageEncode.cpp) 
+# target_link_libraries(imageEncode PUBLIC HEaaN::HEaaN)
+
+add_executable(Inference Inference.cpp) 
+target_link_libraries(Inference PUBLIC HEaaN::HEaaN)
+
