@@ -1,12 +1,11 @@
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-// Copyleft (C) 2021-2022 Crypto Lab Inc.                                    //
-//                                                                            //
-// - This file is part of HEaaN homomorphic encryption library.               //
-// - HEaaN cannot be copied and/or distributed without the express permission //
-//  of Crypto Lab Inc.                                                        //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
+#include "kernelEncode.hpp"
+
+namespace {
+using namespace HEaaN;
+using namespace std;
+}
+
+
 
 std::vector<std::vector<HEaaN::Ciphertext>> RB(HEaaN::Context context, HEaaN::KeyPack pack,
 HEaaN::HomEvaluator eval, int DSB_count, std::vector<std::vector<HEaaN::Ciphertext>> ctxt_bundle, 
