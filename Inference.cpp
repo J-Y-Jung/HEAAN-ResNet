@@ -99,12 +99,12 @@ int main() {
 
 
 
-
+    Plaintext ptxt_init(context); // for initializing
 
 
     // 1st conv
 
-    Plaintext ptxt_init(context);
+    
     vector<double> temp0;
     vector<vector<vector<Plaintext>>> block0conv0multiplicands16_3_3_3(16, vector<vector<Plaintext>>(3, vector<Plaintext>(9, ptxt_init)));
     string path0 = "/app/examples/kernel/multiplicands/" + string("block0conv0multiplicands16_3_3_3");
@@ -153,12 +153,12 @@ int main() {
     }
     timer.end();
     cout << "DONE!" << "\n";
-    
+
 
     // Residual Block 1, 2, 3
         // RB 1 - 1
     vector<double> temp1;
-    vector<vector<vector<Plaintext>>> block1conv0multiplicands16_16_3_3;
+    vector<vector<vector<Plaintext>>> block1conv0multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path1 = "/app/examples/kernel/multiplicands/" + string("block1conv0multiplicands16_16_3_3");
     txtreader(temp1, path1);
     kernel_ptxt(context, temp1, block1conv0multiplicands16_16_3_3, 12, 1, 1, 16, 16, 3, ecd);
@@ -169,7 +169,7 @@ int main() {
     
         // RB 1 - 2
     vector<double> temp2;
-    vector<vector<vector<Plaintext>>> block1conv1multiplicands16_16_3_3;
+    vector<vector<vector<Plaintext>>> block1conv1multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path2 = "/app/examples/kernel/multiplicands/" + string("block1conv1multiplicands16_16_3_3");
     txtreader(temp2, path2);
     kernel_ptxt(context, temp2, block1conv1multiplicands16_16_3_3, 12, 1, 1, 16, 16, 3, ecd);
@@ -205,7 +205,7 @@ int main() {
 
         // RB 2 - 1
     vector<double> temp3;
-    vector<vector<vector<Plaintext>>> block2conv0multiplicands16_16_3_3;
+    vector<vector<vector<Plaintext>>> block2conv0multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path3 = "/app/examples/kernel/multiplicands/" + string("block2conv0multiplicands16_16_3_3");
     txtreader(temp3, path3);
     kernel_ptxt(context, temp3, block2conv0multiplicands16_16_3_3, 12, 1, 1, 16, 16, 3, ecd);
@@ -217,7 +217,7 @@ int main() {
     
     // RB 2 - 2
     vector<double> temp4;
-    vector<vector<vector<Plaintext>>> block2conv1multiplicands16_16_3_3;
+    vector<vector<vector<Plaintext>>> block2conv1multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path4 = "/app/examples/kernel/multiplicands/" + string("block2conv1multiplicands16_16_3_3");
     txtreader(temp4, path4);
     kernel_ptxt(context, temp4, block2conv1multiplicands16_16_3_3, 12, 1, 1, 16, 16, 3, ecd);
@@ -257,7 +257,7 @@ int main() {
 
         // RB 3 - 1
     vector<double> temp5;
-    vector<vector<vector<Plaintext>>> block3conv0multiplicands16_16_3_3;
+    vector<vector<vector<Plaintext>>> block3conv0multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path5 = "/app/examples/kernel/multiplicands/" + string("block3conv0multiplicands16_16_3_3");
     txtreader(temp5, path5);
     kernel_ptxt(context, temp5, block3conv0multiplicands16_16_3_3, 12, 1, 1, 16, 16, 3, ecd);
@@ -270,7 +270,7 @@ int main() {
     
     // RB 3 - 2
     vector<double> temp6;
-    vector<vector<vector<Plaintext>>> block3conv1multiplicands16_16_3_3;
+    vector<vector<vector<Plaintext>>> block3conv1multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path6 = "/app/examples/kernel/multiplicands/" + string("block3conv1multiplicands16_16_3_3");
     txtreader(temp6, path6);
     kernel_ptxt(context, temp6, block3conv1multiplicands16_16_3_3, 12, 1, 1, 16, 16, 3, ecd);
@@ -307,7 +307,7 @@ int main() {
     // Down Sampling (Residual) Block 1
         // DSB 1 - res
     vector<double> temp7;
-    vector<vector<vector<Plaintext>>> block4conv_onebyone_multiplicands32_16_1_1;
+    vector<vector<vector<Plaintext>>> block4conv_onebyone_multiplicands32_16_1_1(32, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path7 = "/app/examples/kernel/multiplicands/" + string("block4conv_onebyone_multiplicands32_16_1_1");
     txtreader(temp7, path7);
     kernel_ptxt(context, temp7, block4conv_onebyone_multiplicands32_16_1_1, 12, 1, 2, 32, 16, 1, ecd);
@@ -319,7 +319,7 @@ int main() {
     
     // DSB 1 - 1
     vector<double> temp8;
-    vector<vector<vector<Plaintext>>> block4conv0multiplicands32_16_3_3;
+    vector<vector<vector<Plaintext>>> block4conv0multiplicands32_16_3_3(32, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path8 = "/app/examples/kernel/multiplicands/" + string("block4conv0multiplicands32_16_3_3");
     txtreader(temp8, path8);
     kernel_ptxt(context, temp8, block4conv0multiplicands32_16_3_3, 12, 1, 2, 32, 16, 3, ecd);
@@ -332,7 +332,7 @@ int main() {
     
     // DSB 1 - 2
     vector<double> temp9;
-    vector<vector<vector<Plaintext>>> block4conv1multiplicands32_32_3_3;
+    vector<vector<vector<Plaintext>>> block4conv1multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
     string path9 = "/app/examples/kernel/multiplicands/" + string("block4conv1multiplicands32_32_3_3");
     txtreader(temp9, path9);
     kernel_ptxt(context, temp9, block4conv1multiplicands32_32_3_3, 12, 2, 1, 32, 32, 3, ecd);
@@ -371,7 +371,7 @@ int main() {
     // Residual Block 4, 5
         // RB 4 - 1
     vector<double> temp10;
-    vector<vector<vector<Plaintext>>> block5conv0multiplicands32_32_3_3;
+    vector<vector<vector<Plaintext>>> block5conv0multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
     string path10 = "/app/examples/kernel/multiplicands/" + string("block5conv0multiplicands32_32_3_3");
     txtreader(temp10, path10);
     kernel_ptxt(context, temp10, block5conv0multiplicands32_32_3_3, 12, 2, 1, 32, 32, 3, ecd);
@@ -384,7 +384,7 @@ int main() {
     
     // RB 4 - 2
     vector<double> temp11;
-    vector<vector<vector<Plaintext>>> block5conv1multiplicands32_32_3_3;
+    vector<vector<vector<Plaintext>>> block5conv1multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
     string path11 = "/app/examples/kernel/multiplicands/" + string("block5conv1multiplicands32_32_3_3");
     txtreader(temp11, path11);
     kernel_ptxt(context, temp11, block5conv1multiplicands32_32_3_3, 12, 2, 1, 32, 32, 3, ecd);
@@ -424,7 +424,7 @@ int main() {
 
         // RB 5 - 1
     vector<double> temp12;
-    vector<vector<vector<Plaintext>>> block6conv0multiplicands32_32_3_3;
+    vector<vector<vector<Plaintext>>> block6conv0multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
     string path12 = "/app/examples/kernel/multiplicands/" + string("block6conv0multiplicands32_32_3_3");
     txtreader(temp12, path12);
     kernel_ptxt(context, temp12, block6conv0multiplicands32_32_3_3, 12, 2, 1, 32, 32, 3, ecd);
@@ -435,7 +435,7 @@ int main() {
     
     // RB 5 - 2
     vector<double> temp13;
-    vector<vector<vector<Plaintext>>> block6conv1multiplicands32_32_3_3;
+    vector<vector<vector<Plaintext>>> block6conv1multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
     string path13 = "/app/examples/kernel/multiplicands/" + string("block6conv1multiplicands32_32_3_3");
     txtreader(temp13, path13);
     kernel_ptxt(context, temp13, block6conv1multiplicands32_32_3_3, 12, 2, 1, 32, 32, 3, ecd);
@@ -474,7 +474,7 @@ int main() {
     // Down Sampling (Residual) Block 2
         // DSB 2
     vector<double> temp14;
-    vector<vector<vector<Plaintext>>> block7conv_onebyone_multiplicands64_32_1_1;
+    vector<vector<vector<Plaintext>>> block7conv_onebyone_multiplicands64_32_1_1(64, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
     string path14 = "/app/examples/kernel/multiplicands/" + string("block7conv_onebyone_multiplicands64_32_1_1");
     txtreader(temp14, path14);
     kernel_ptxt(context, temp14, block7conv_onebyone_multiplicands64_32_1_1, 12, 2, 2, 64, 32, 1, ecd);
@@ -486,7 +486,7 @@ int main() {
     
     
     vector<double> temp15;
-    vector<vector<vector<Plaintext>>> block7conv0multiplicands64_32_3_3;
+    vector<vector<vector<Plaintext>>> block7conv0multiplicands64_32_3_3(64, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
     string path15 = "/app/examples/kernel/multiplicands/" + string("block7conv0multiplicands64_32_3_3");
     txtreader(temp15, path15);
     kernel_ptxt(context, temp15, block7conv0multiplicands64_32_3_3, 12, 2, 2, 64, 32, 3, ecd);
@@ -498,7 +498,7 @@ int main() {
     
 
     vector<double> temp16;
-    vector<vector<vector<Plaintext>>> block7conv1multiplicands64_64_3_3;
+    vector<vector<vector<Plaintext>>> block7conv1multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
     string path16 = "/app/examples/kernel/multiplicands/" + string("block7conv1multiplicands64_64_3_3");
     txtreader(temp16, path16);
     kernel_ptxt(context, temp16, block7conv1multiplicands64_64_3_3, 12, 4, 1, 64, 64, 3, ecd);
@@ -537,7 +537,7 @@ int main() {
     // Residual Block 6, 7
     // RB 6
     vector<double> temp17;
-    vector<vector<vector<Plaintext>>> block8conv0multiplicands64_64_3_3;
+    vector<vector<vector<Plaintext>>> block8conv0multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
     string path17 = "/app/examples/kernel/multiplicands/" + string("block8conv0multiplicands64_64_3_3");
     txtreader(temp17, path17);
     kernel_ptxt(context, temp17, block8conv0multiplicands64_64_3_3, 12, 4, 1, 64, 64, 3, ecd);
@@ -548,7 +548,7 @@ int main() {
     
     
     vector<double> temp18;
-    vector<vector<vector<Plaintext>>> block8conv1multiplicands64_64_3_3;
+    vector<vector<vector<Plaintext>>> block8conv1multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
     string path18 = "/app/examples/kernel/multiplicands/" + string("block8conv1multiplicands64_64_3_3");
     txtreader(temp18, path18);
     kernel_ptxt(context, temp18, block8conv1multiplicands64_64_3_3, 12, 4, 1, 64, 64, 3, ecd);
@@ -584,7 +584,7 @@ int main() {
 
         // RB 7
     vector<double> temp19;
-    vector<vector<vector<Plaintext>>> block9conv0multiplicands64_64_3_3;
+    vector<vector<vector<Plaintext>>> block9conv0multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
     string path19 = "/app/examples/kernel/multiplicands/" + string("block9conv0multiplicands64_64_3_3");
     txtreader(temp19, path19);
     kernel_ptxt(context, temp19, block9conv0multiplicands64_64_3_3, 12, 4, 1, 64, 64, 3, ecd);
@@ -595,7 +595,7 @@ int main() {
     
 
     vector<double> temp20;
-    vector<vector<vector<Plaintext>>> block9conv1multiplicands64_64_3_3;
+    vector<vector<vector<Plaintext>>> block9conv1multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
     string path20 = "/app/examples/kernel/multiplicands/" + string("block9conv1multiplicands64_64_3_3");
     txtreader(temp20, path20);
     kernel_ptxt(context, temp20, block9conv1multiplicands64_64_3_3, 12, 4, 1, 64, 64, 3, ecd);
