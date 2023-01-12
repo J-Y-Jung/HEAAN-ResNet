@@ -39,47 +39,45 @@ namespace {
 
 void kernel_ptxt(Context context, vector<double>& weight, vector<vector<vector<Plaintext>>>& output, u64 level, u64 gap_in, u64 stride, const int out_ch, const int in_ch, const int ker_size, EnDecoder ecd) {
 
-    if (ker_size == 3) {  //output vector is out_ch * in_ch * 9
-        for (int i = 0; i < out_ch; ++i) {
-            for (int j = 0; j < in_ch; ++j) {
-                
-                cout << i<< j << "th loop start..." << endl;
-                vector<vector<double>> temp(3, vector<double>(3, 0));
+    if (ker_size == 3) {
+        for (int k = 0; k < 3; ++k) {
+            for (int l = 0; l < 3; ++l) {
 
-                for (int k = 0; k < 3; ++k) {
-                    for (int l = 0; l < 3; ++l) temp[k][l] = weight[9 * in_ch * i + 9 * j + 3 * k + l];
-                }
-                
-                cout<< "junyoung..." <<endl;
+                vector<vector<double>> temp(out_ch, vector<double>(in_ch, 0));
 
-                for (int k = 0; k < 3; ++k) {
-                    for (int l = 0; l < 3; ++l) weightToPtxt(output[i][j][3 * k + l], level, temp, gap_in, stride, (u64)k, (u64)l, ecd);
+                for (int i = 0; i < out_ch; ++i) {
+                    for (int j = 0; j < in_ch; ++j) {
+                        temp[i][j] = weight[in_ch * 9 * i + 9 * j + 3 * k + l];
+                    }
                 }
-                
-                cout << "succeed" <<endl;
+
+                for (int i = 0; i < out_ch; ++i) {
+                    for (int j = 0; j < in_ch; ++j) {
+                        weightToPtxt(output[i][j][3 * k + l], level, temp, gap_in, stride, (u64)k, (u64)l, ecd);
+                    }
+                }
             }
         }
+        return;
     }
 
     if (ker_size == 1) { //output vector is out_ch * in_ch * 1
+
+        vector<vector<double>> temp(out_ch, vector<double>(in_ch, 0));
+
         for (int i = 0; i < out_ch; ++i) {
             for (int j = 0; j < in_ch; ++j) {
-                
-                cout << "start..." << endl;
-
-                vector<vector<double>> temp(0, vector<double>(0, 0));
-                temp[0][0] = weight[in_ch * i +  j];
-                
-                cout<< "junyoung..." <<endl;
-
-                weightToPtxt(output[i][j][0], level, temp, gap_in, stride, (u64)1, (u64)1, ecd);
-                
-                cout << "succeed" <<endl;
-
+                temp[i][j] = weight[in_ch * i + j];
             }
         }
+
+        for (int i = 0; i < out_ch; ++i) {
+            for (int j = 0; j < in_ch; ++j) {
+                weightToPtxt(output[i][j][0], level, temp, gap_in, stride, (u64)1, (u64)1, ecd);
+            }
+        }
+        return;
     }
-    return;
 }
 
 void addBNsummands(Context context, HomEvaluator eval, vector<vector<Ciphertext>>& afterConv, vector<double> summands, const int n, const int ch) {
