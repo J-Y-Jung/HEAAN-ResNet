@@ -132,6 +132,11 @@ int main() {
     cout << "DONE!" << "\n";
 
 
+    //memory delete
+    //block0conv0multiplicands16_3_3_3.clear();
+    //block0conv0multiplicands16_3_3_3.shrink_to_fit();
+
+
     // AppReLU
     cout << "AppReLU ..." << endl;
     timer.start(" AppReLU 1 ");
@@ -148,7 +153,7 @@ int main() {
     }
     timer.end();
     cout << "DONE!" << "\n";
-
+    
 
     // Residual Block 1, 2, 3
         // RB 1 - 1
@@ -182,6 +187,18 @@ int main() {
     block1conv0summands16, block1conv1summands16);
     timer.end();
     cout << "DONE!" << "\n";
+
+    //memeory delete    
+    // ctxt_relu1_out_bundle.claer();
+    // ctxt_relu1_out_bundle.shrink_to_fit();
+    // block1conv0multiplicands16_16_3_3.clear();
+    // block1conv0multiplicands16_16_3_3.shrink_to_fit();
+    // block1conv1multiplicands16_16_3_3.clear();
+    // block1conv1multiplicands16_16_3_3.shrink_to_fit();
+    // block1conv0summands16.clear();
+    // block1conv0summands16.shrink_to_fit();
+    // block1conv1summands16.clear();
+    // block1conv1summands16.shrink_to_fit();
 
 
 
@@ -222,17 +239,17 @@ int main() {
     timer.end();
     cout << "DONE!" << "\n";
 
-
-
-
-
-
-
-
-
-
-
-
+    //memory delete 
+    // ctxt_RB1_out.clear();
+    // ctxt_RB1_out.shrink_to_fit();
+    // block2conv0multiplicands16_16_3_3.clear();
+    // block2conv0multiplicands16_16_3_3.shrink_to_fit();
+    // block2conv1multiplicands16_16_3_3.clear();
+    // block2conv1multiplicands16_16_3_3.shrink_to_fit();
+    // block2conv0summands16.clear();
+    // block2conv0summands16.shrink_to_fit();
+    // block2conv1summands16.clear();
+    // block2conv1summands16.shrink_to_fit();
 
 
 
@@ -271,6 +288,20 @@ int main() {
     block3conv0summands16, block3conv1summands16);
     timer.end();
     cout << "DONE!" << "\n";
+
+    //memory delete 
+    // ctxt_RB2_out.clear();
+    // ctxt_RB2_out.shrink_to_fit();
+    // block3conv0multiplicands16_16_3_3.clear();
+    // block3conv0multiplicands16_16_3_3.shrink_to_fit();
+    // block3conv1multiplicands16_16_3_3.clear();
+    // block3conv1multiplicands16_16_3_3.shrink_to_fit();
+    // block3conv0summands16.clear();
+    // block3conv0summands16.shrink_to_fit();
+    // block3conv1summands16.clear();
+    // block3conv1summands16.shrink_to_fit();
+
+
 
 
     // Down Sampling (Residual) Block 1
@@ -319,6 +350,23 @@ int main() {
     block4conv0summands32, block4conv1summands32, block4conv_onebyone_summands32);
     cout << "DONE!" << "\n";
 
+    //memory delete
+    // ctxt_RB3_out.clear();
+    // ctxt_RB3_out.shrink_to_fit();
+    // block4conv0multiplicands32_16_3_3.clear();
+    // block4conv0multiplicands32_16_3_3.shrink_to_fit();
+    // block4conv1multiplicands32_32_3_3.clear();
+    // block4conv1multiplicands32_32_3_3.shrink_to_fit();
+    // block4conv_onebyone_multiplicands32_16_1_1.clear();
+    // block4conv_onebyone_multiplicands32_16_1_1.shrink_to_fit();
+    // block4conv0summands32.clear();
+    // block4conv0summands32.shrink_to_fit();
+    // block4conv1summands32.clear();
+    // block4conv1summands32.shrink_to_fit();
+    // block4conv_onebyone_summands32.clear();
+    // block4conv_onebyone_summands32.shrink_to_fit();
+
+
 
     // Residual Block 4, 5
         // RB 4 - 1
@@ -355,12 +403,17 @@ int main() {
     timer.end();
     cout << "DONE!" << "\n";
 
-
-
-
-
-
-
+    //memory delete 
+    // ctxt_DSB1_out.clear();
+    // ctxt_DSB1_out.shrink_to_fit();
+    // block5conv0multiplicands32_32_3_3.claer();
+    // block5conv0multiplicands32_32_3_3.shrink_to_fit();
+    // block5conv1multiplicands32_32_3_3.clear();
+    // block5conv1multiplicands32_32_3_3.shrink_to_fit();
+    // block5conv0summands32.clear();
+    // block5conv0summands32.shrink_to_fit();
+    // block5conv1summands32.clear();
+    // block5conv1summands32.shrink_to_fit();
 
 
 
@@ -400,6 +453,18 @@ int main() {
     block6conv0summands32, block6conv1summands32);
     timer.end();
     cout << "DONE!" << "\n";
+
+    //memory delete
+    // ctxt_RB4_out.clear();
+    // ctxt_RB4_out.shrink_to_fit();
+    // block6conv0multiplicands32_32_3_3.clear();
+    // block6conv0multiplicands32_32_3_3.shrink_to_fit();
+    // block6conv1multiplicands32_32_3_3.claer();
+    // block6conv1multiplicands32_32_3_3.shrink_to_fit();
+    // block6conv0summands32.clear();
+    // block6conv0summands32.shrink_to_fit();
+    // block6conv1summands32.claer();
+    // block6conv1summands32.shrink_to_fit();
 
 
 
@@ -450,6 +515,24 @@ int main() {
     block7conv0summands64, block7conv1summands64, block7conv_onebyone_summands64);
     cout << "DONE!" << "\n";
 
+    //memory delete
+    // ctxt_RB5_out.clear();
+    // ctxt_RB5_out.shrink_to_fit();
+    // block7conv0multiplicands64_32_3_3.clear();
+    // block7conv0multiplicands64_32_3_3.shrink_to_fit();
+    // block7conv1multiplicands64_64_3_3.clear();
+    // block7conv1multiplicands64_64_3_3.shrink_to_fit();
+    // block7conv_onebyone_multiplicands64_32_1_1.clear();
+    // block7conv_onebyone_multiplicands64_32_1_1.shrink_to_fit();
+    // block7conv0summands64.clear();
+    // block7conv0summands64.shrink_to_fit();
+    // block7conv1summands64.clear();
+    // block7conv1summands64.shrink_to_fit();
+    // block7conv_onebyone_summands64.clear();
+    // block7conv_onebyone_summands64.shrink_to_fit();
+
+
+
 
     // Residual Block 6, 7
     // RB 6
@@ -484,6 +567,19 @@ int main() {
     cout << "DONE!" << "\n";
 
 
+    //memory delete
+    // ctxt_DSB2_out.claer();
+    // ctxt_DSB2_out.shrink_to_fit();
+    // block8conv0multiplicands64_64_3_3.clear();
+    // block8conv0multiplicands64_64_3_3.shrink_to_fit();
+    // block8conv1multiplicands64_64_3_3.clear();
+    // block8conv1multiplicands64_64_3_3.shrink_to_fit();
+    // block8conv0summands64.claer();
+    // block8conv0summands64.shrink_to_fit();
+    // block8conv1summands64.claer();
+    // block8conv1summands64.shrink_to_fit();
+
+
 
 
         // RB 7
@@ -516,6 +612,19 @@ int main() {
     block9conv0summands64, block9conv1summands64);
     timer.end();
     cout << "DONE!" << "\n";
+
+    //memory delete
+    // ctxt_RB6_out.claer();
+    // ctxt_RB6_out.shrink_to_fit();
+    // block9conv0multiplicands64_64_3_3.claer();
+    // block9conv0multiplicands64_64_3_3.shrink_to_fit();
+    // block9conv1multiplicands64_64_3_3.claer();
+    // block9conv1multiplicands64_64_3_3.shrink_to_fit();
+    // block9conv0summands64.clear();
+    // block9conv0summands64.shrink_to_fit();
+    // block9conv1summands64.clear();
+    // block9conv1summands64.shrink_to_fit();
+
 
 
     // // Average Pooling, Flatten, FC64
