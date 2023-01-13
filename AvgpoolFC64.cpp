@@ -23,7 +23,7 @@ HEaaN::Ciphertext Avgpool(HEaaN::Context context, HEaaN::KeyPack pack, HEaaN::Ho
 }
 
 
-//we aggregate scaling in Avgpool by 1/64 to the linear weight vectors in preprocessing 
+//we delete scaling in Avgpool by 1/64 and add multiplying 64 to bias vectors in preprocessing 
 //old version assuming 16-channel multiplexed packing
 /*
 HEaaN::Ciphertext oldFC64old(HEaaN::Context context, HEaaN::KeyPack pack, HEaaN::HomEvaluator eval, 
@@ -42,8 +42,8 @@ HEaaN::Ciphertext oldFC64old(HEaaN::Context context, HEaaN::KeyPack pack, HEaaN:
     return ctxt_out;
 }*/
 //new version assuming 16 images in one 32*32 block, and 32 channels in one ciphertext.
-
-HEaaN::Ciphertext oldFC64(HEaaN::Context context, HEaaN::KeyPack pack, HEaaN::HomEvaluator eval, 
+/*
+HEaaN::Ciphertext FC64Old(HEaaN::Context context, HEaaN::KeyPack pack, HEaaN::HomEvaluator eval, 
                               HEaaN::Ciphertext ctxt_1, HEaaN::Ciphertext ctxt_2, vector<HEaaN::Plaintext> ptxt_vec_1, vector<HEaaN::Plaintext> ptxt_vec_2) {
     //ctxt_1 and ptxt_vec_1 accounts for channel 1 ~ 32, ctxt_2 and ptxt_vec_2 accounts for channel 33 ~ 64.
     HEaaN::Ciphertext ctxt_tmp(context), ctxt_out(context);
@@ -63,9 +63,10 @@ HEaaN::Ciphertext oldFC64(HEaaN::Context context, HEaaN::KeyPack pack, HEaaN::Ho
     ctxt_out = RotSumToIdx(context, pack, eval, 32*32, 5, 0, ctxt_out);
     return ctxt_out;
 }
-
+*/
+/*
 //takes only vector of avgpool2idx - processed ciphertexts
-HEaaN::Ciphertext oldFC64Packed(HEaaN::Context context, HEaaN::KeyPack pack, HEaaN::HomEvaluator eval, 
+HEaaN::Ciphertext FC64PackedOld(HEaaN::Context context, HEaaN::KeyPack pack, HEaaN::HomEvaluator eval, 
                               vector<HEaaN::Ciphertext> ctxt_1, vector<HEaaN::Ciphertext> ctxt_2, vector<HEaaN::Plaintext> ptxt_vec_1, vector<HEaaN::Plaintext> ptxt_vec_2) {
     //ctxt_1 and ptxt_vec_1 accounts for channel 1 ~ 32, ctxt_2 and ptxt_vec_2 accounts for channel 33 ~ 64.
     HEaaN::Ciphertext ctxt_tmp(context), ctxt_out(context);
@@ -87,7 +88,7 @@ HEaaN::Ciphertext oldFC64Packed(HEaaN::Context context, HEaaN::KeyPack pack, HEa
     ctxt_out = RotSumToIdx(context, pack, eval, 32*32, 5, 0, ctxt_out);
     return ctxt_out;
 }
-
+*/
 //ctxt: vector of 64 ciphertext which has 16*32 images each and representing single channel
 //ptxt:  vector of 10 vectors, and each sub-vector contains a 64 encoded values/constant
 //with lazy rescaling
@@ -97,12 +98,14 @@ vector<HEaaN::Ciphertext> FC64(HEaaN::Context context, HEaaN::KeyPack pack, HEaa
     vector<HEaaN::Ciphertext> v(64, zero_ct);
     vector<HEaaN::Ciphertext> out(10);
     vector<vector<HEaaN::Ciphertext>> tmp(10, v);
-    #pragma omp parallel{
+    #pragma omp parallel
+	{
         #pragma omp for collapse(2)
         for (u64 i=0;i<10 ;i++){
             for (u64 j=0;j<64 ;j++){
                 eval.multWithoutRescale(ctxt[j], ptxt_vec[i][j], tmp[i][j]);
-                #pragma omp critical{
+                #pragma omp critical
+				{
                 if (j != 0){
                     eval.add(tmp[i][0], tmp[i][j], tmp[i][0]);
                 }

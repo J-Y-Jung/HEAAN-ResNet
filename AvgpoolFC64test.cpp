@@ -1,4 +1,5 @@
 #include <iostream>
+#include <omp.h>
 #include "HEaaN/heaan.hpp"
 #include "HEaaNTimer.hpp"
 #include "AvgpoolFC64.hpp"
@@ -11,109 +12,120 @@ using namespace std;
 
 //test code
 int main() {
-    HEaaNTimer timer(false);
-    ParameterPreset preset = ParameterPreset::FGb;
-    Context context = makeContext(preset);
+    HEaaN::HEaaNTimer timer(false);
+    // You can use other bootstrappable parameter instead of FGb.
+    // See 'include/HEaaN/ParameterPreset.hpp' for more details.
+    HEaaN::ParameterPreset preset = HEaaN::ParameterPreset::FGb;
+    HEaaN::Context context = makeContext(preset);
+    if (!HEaaN::isBootstrappableParameter(context)) {
+        std::cout << "Bootstrap is not available for parameter "
+            << presetNamer(preset) << std::endl;
+        return -1;
+    }
+
+    std::cout << "Parameter : " << presetNamer(preset) << std::endl
+        << std::endl;
 
     const auto log_slots = getLogFullSlots(context);
-    const auto num_slots = U64C(1) << log_slots;
 
-    cout << "Generate secret key ... ";
-        SecretKey sk(context);
-        cout << "done" << endl;
+    HEaaN::SecretKey sk(context);
+    HEaaN::KeyPack pack(context);
+    HEaaN::KeyGenerator keygen(context, sk, pack);
 
-    KeyPack pack(context);
-    KeyGenerator keygen(context, sk, pack);
-
-    cout << "Generate encryption key ... " << endl;
+    std::cout << "Generate encryption key ... " << std::endl;
     keygen.genEncryptionKey();
-    cout << "done" << endl << endl;
+    std::cout << "done" << std::endl << std::endl;
 
-    //makeBootstrappable(context);
+    /*
+    You should perform makeBootstrappble function
+    before generating evaluation keys and constucting HomEvaluator class.
+    */
+    HEaaN::makeBootstrappable(context);
 
-    cout << "Generate commonly used keys (mult key, rotation keys, "
-                 "conjugation key) ... "
-              << endl;
+    std::cout << "Generate commonly used keys (mult key, rotation keys, "
+        "conjugation key) ... "
+        << std::endl;
     keygen.genCommonKeys();
-    cout << "done" << endl << endl;
+    std::cout << "done" << std::endl << std::endl;
 
-    EnDecoder ecd(context);
-    Encryptor enc(context);
-    Decryptor dec(context);
+    HEaaN::Encryptor enc(context);
+    HEaaN::Decryptor dec(context);
 
-    cout << "Generate HomEvaluator ..."
-              << endl;
+    /*
+    HomEvaluator constructor pre-compute the constants for bootstrapping.
+    */
+    std::cout << "Generate HomEvaluator (including pre-computing constants for "
+        "bootstrapping) ..."
+        << std::endl;
     timer.start("* ");
-    HomEvaluator eval(context, pack);
-    timer.end(); 
+    HEaaN::HomEvaluator eval(context, pack);
+    timer.end();
 
-    {
-        Message msg(log_slots), uni(log_slots, COMPLEX_ZERO), dmsg(log_slots), msg_tmp(log_slots), 
-                msg_tmp0(log_slots, COMPLEX_ZERO), msg_out(log_slots, COMPLEX_ZERO);
-        Plaintext ptxt(context);
-        vector<Plaintext> ptxt_vec;
-        for (size_t i = 0; i < num_slots; ++i) {
-            msg[i] = 1;
-        }
-        cout << "original message: " << endl;
-        printMessage(msg, false, 64, 64);
-        for (size_t i = 0; i < 4; ++i) {
-            for (size_t j = 0; j < 4; ++j) {
-                for (size_t k = 0; k < 4; ++k) {
-                    uni[i+32*j+32*32*k] = 1.0;
-                }
-            }
-        }
-        cout << "mask: " << endl;
-        printMessage(uni, false, 64, 64);
-        Ciphertext ctxt(context), ctxt_out(context);
-        enc.encrypt(msg, pack, ctxt);
-        ctxt.setLevel(5);
-        cout << "evaluating Avgpool" << endl;
-        timer.start("* ");
-        ctxt = Avgpool(context, pack, eval, ctxt);
-        timer.end();
-        dec.decrypt(ctxt, sk, dmsg);
-        cout << "avgpool message: " << endl;
-        printMessage(dmsg, false, 64, 64);
+    // ///////////// Preset ///////////////////
+    // std::int rb_num;
+    // rb_num = 16;
+    
+    
 
-        ptxt = ecd.encode(uni, 5, 0);
-        for (size_t i = 0; i < 10; ++i) {
-            ptxt_vec.push_back(ptxt);
-        }
-        cout << "evaluating FC64" << endl;
-        timer.start("* ");
-        ctxt_out = FC64old(context, pack, eval, ctxt, ptxt_vec);
-        timer.end();
-        dec.decrypt(ctxt_out, sk, dmsg);
-        cout << "decrypted message after FC64: " << endl;
-        printMessage(dmsg, false, 64, 64);
-        //(0, 8, 16, 24, 256, 264, 272, 280, 512, 520)
-        cout << "actual result:" << endl << "[ ";
-        cout << dmsg[0].real() << ", "<< dmsg[8].real() << ", "<< dmsg[16].real() << ", "<< dmsg[24].real() << ", "
-        << dmsg[256].real() << ", "<< dmsg[264].real() << ", "<< dmsg[272].real() << ", "<< dmsg[280].real() << ", "
-        << dmsg[512].real() << ", "<< dmsg[520].real() << " ]" << endl;
-        //must be all same
-
-        for (size_t i = 0; i < 8; ++i) {
-            for (size_t j = 0; j < 8; ++j) {
-                eval.leftRotate(msg, 4*i+32*4*j, msg_tmp);
-                eval.add(msg_tmp0, msg_tmp, msg_tmp0);
-            }
-        }
-        eval.mult(msg_tmp0, uni, msg_tmp0);
-        for (size_t i = 0; i < 4; ++i) {
-            for (size_t j = 0; j < 4; ++j) {
-                for (size_t k = 0; k < 4; ++k) {
-                    eval.leftRotate(msg_tmp0, i+32*j+32*32*k, msg_tmp);
-                    eval.add(msg_out, msg_tmp, msg_out);
-                }
-            }
-        }
-        cout << "target value: " << endl;
-        cout << msg_out[0] << endl;
-        //must be equal to the actual result value
-
+    ///////////// Message & Ctxt ///////////////////
+    HEaaN::Message msg(log_slots);
+    // fillRandomComplex(msg);
+    std::optional<size_t> num;
+    size_t length = num.has_value() ? num.value() : msg.getSize();
+    size_t idx = 0;
+	#pragma omp parallel for
+    for (; idx < length; ++idx) {
+        msg[idx].real(0.5);
+        msg[idx].imag(0.0);
     }
+    // If num is less than the size of msg,
+    // all remaining slots are zero.
+	#pragma omp parallel for
+    for (; idx < msg.getSize(); ++idx) {
+        msg[idx].real(0.0);
+        msg[idx].imag(0.0);
+    }
+
+    printMessage(msg);
+	
+	HEaaN::EnDecoder ecd(context);
+    HEaaN::Plaintext ptxt(context);
+	ptxt = ecd.encode(msg, 12, 0);
+	
+    HEaaN::Ciphertext ctxt(context);
+    std::cout << "Encrypt ... " << std::endl;
+    enc.encrypt(ptxt, pack, ctxt); // public key encryption
+    std::cout << "done" << std::endl;
+
+    std::vector<HEaaN::Ciphertext> ctxt_bundle;
+	std::vector<vector<HEaaN::Plaintext>> ptxt_bundle;
+	#pragma omp parallel for
+    for (int i = 0; i < 64; ++i) {
+        ctxt_bundle.push_back(ctxt);
+    }
+	vector<HEaaN::Plaintext> ptxt_bundle_tmp;
+	#pragma omp parallel for
+	for (int i = 0; i < 64; ++i) {
+		ptxt_bundle_tmp.push_back(ptxt);
+	}
+	#pragma omp parallel for
+	for (int i = 0; i < 64; ++i) {
+		ptxt_bundle.push_back(ptxt_bundle_tmp);
+    }
+
+	std::vector<HEaaN::Ciphertext> ctxt_out;
+	timer.start(" FC64 ");
+	ctxt_out=FC64(context, pack, eval, 
+                    ctxt_bundle, ptxt_bundle, ptxt_bundle_tmp);
+	timer.end();
+    std::cout << "FC64 is over" << "\n";
+	
+	/////////////// Decryption ////////////////
+    HEaaN::Message dmsg;
+    std::cout << "Decrypt ... ";
+    dec.decrypt(ctxt_out[0], sk, dmsg);
+    std::cout << "done" << std::endl;
+    printMessage(dmsg);
+	
     return 0;
 }
