@@ -215,9 +215,9 @@ void evalOddPolynomial(HEaaN::Context context, HEaaN::HomEvaluator eval,
 //Aproximated ReLU function.
 void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphertext& ctxt, HEaaN::Ciphertext& ctxt_relu) {
 
-    std::cout << "Input ciphertext - level " << ctxt.getLevel()
-        << std::endl
-        << std::endl;
+    // std::cout << "Input ciphertext - level " << ctxt.getLevel()
+    //     << std::endl
+    //     << std::endl;
 
     HEaaN::Ciphertext ctxt_temp(context);
     eval.conjugate(ctxt, ctxt_temp);
@@ -330,7 +330,7 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     //eval.mult(ctxt_real_BTS, ctxt_sign, ctxt_relu);
     //eval.add(ctxt_real_BTS, ctxt_relu, ctxt_relu);
 
-    std::cout << "Evaluating Apporximate ReLU done; Ciphertext after evaluating approximate ReLU - level " << ctxt_relu.getLevel()
-        << std::endl
-        << std::endl;
+    // std::cout << "Evaluating Apporximate ReLU done; Ciphertext after evaluating approximate ReLU - level " << ctxt_relu.getLevel()
+    //     << std::endl
+    //     << std::endl;
 }

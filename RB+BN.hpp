@@ -30,6 +30,7 @@ vector<double> BN2_add) {
     std::cout << "First Conv-(main flow) ..." << std::endl;
     std::vector<std::vector<HEaaN::Ciphertext>> ctxt_conv_out_bundle;
     for (int i = 0; i < 16; ++i) { // 서로 다른 img
+        //std::cout << "i = " << i << std::endl;
         std::vector<HEaaN::Ciphertext> ctxt_conv_out_cache;
         ctxt_conv_out_cache = Conv(context, pack, eval, 32, 1, 1, 16, 16, ctxt_bundle[i], kernel_bundle);
         ctxt_conv_out_bundle.push_back(ctxt_conv_out_cache);

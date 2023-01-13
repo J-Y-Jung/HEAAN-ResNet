@@ -7,11 +7,13 @@
 //  of Crypto Lab Inc.                                                        //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
+#pragma once
 #include<iostream>
 #include<thread>
 #include "examples.hpp"
 #include "Conv.hpp"
 #include "HEaaNTimer.hpp"
+
 // #include "HEaaN/heaan.hpp"
 
 int main() {

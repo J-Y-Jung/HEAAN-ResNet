@@ -51,20 +51,6 @@ int main() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     HEaaNTimer timer(false);
     // You can use other bootstrappable parameter instead of FGb.
     // See 'include/HEaaN/ParameterPreset.hpp' for more details.
@@ -278,24 +264,15 @@ int main() {
     cout << "SETUP is over" << "\n";
 
 
-    timer.start(" DSB ");
-    vector<vector<Ciphertext>> ctxt_out;
-    ctxt_out = DSB(context, pack, eval, 0, ctxt_bundle,
-        kernel_o, kernel_o2, kernel_o3, BN1_add, BN2_add);
-    timer.end();
-    cout << "DSB is over" << "\n";
+    return 0;
 
+    // timer.start(" DSB ");
+    // vector<vector<Ciphertext>> ctxt_out;
+    // ctxt_out = DSB(context, pack, eval, 0, ctxt_bundle,
+    //     kernel_o, kernel_o2, kernel_o3, BN1_add, BN2_add);
+    // timer.end();
+    // cout << "DSB is over" << "\n";
 
-
-
-
-
-
-
-
-
-    
-    
 
 
     // /////////////// Decryption ////////////////
