@@ -51,18 +51,40 @@ std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_o) {
 
         HEaaN::Ciphertext ctxt_out(context);
         for (int inputid = 0; inputid < (input_channel); ++inputid) {
-            // std::cout << inputid << " in\n";
+            //std::cout << inputid << " in\n";
             HEaaN::Ciphertext ctxt_out_cache(context);
             if (kernelsize == 9) {
                 HEaaN::Ciphertext mult_cache(context);
+                int level1 = rotated_ctxts_bundle[inputid][0].getLevel();
+                int level2 = kernel_o[outputid][inputid][0].getLevel();
+                if(level1 > level2) {
+                    eval.levelDown(rotated_ctxts_bundle[inputid][0],level2,rotated_ctxts_bundle[inputid][0]);
+                }else if(level1 < level2){
+                    kernel_o[outputid][inputid][0].setLevel(level1);
+                }
+                //eval.levelDown(rotated_ctxts_bundle[inputid][0],kernel_o[outputid][inputid][0].getLevel(),rotated_ctxts_bundle[inputid][0]); //추가
                 eval.multWithoutRescale(rotated_ctxts_bundle[inputid][0], kernel_o[outputid][inputid][0], ctxt_out_cache);
                 // ctxt_out_cache = mult_cache;
                 for (int i = 1; i < 9; ++i) {
+                    int level1 = rotated_ctxts_bundle[inputid][i].getLevel();
+                    int level2 = kernel_o[outputid][inputid][i].getLevel();
+                    if(level1 > level2) {
+                        eval.levelDown(rotated_ctxts_bundle[inputid][i],level2,rotated_ctxts_bundle[inputid][i]);
+                    }else if(level1 < level2){
+                        kernel_o[outputid][inputid][i].setLevel(level1);
+                    }
                     eval.multWithoutRescale(rotated_ctxts_bundle[inputid][i], kernel_o[outputid][inputid][i], mult_cache);
                     eval.add(ctxt_out_cache, mult_cache, ctxt_out_cache);
                 }
 
             } else if (kernelsize == 1) {
+                int level1 = ctxt_bundle[inputid].getLevel();
+                int level2 = kernel_o[outputid][inputid][0].getLevel();
+                if(level1 > level2){ 
+                    eval.levelDown(ctxt_bundle[inputid],level2,ctxt_bundle[inputid]);
+                }else if(level1 < level2){
+                    kernel_o[outputid][inputid][0].setLevel(level1);
+                }
                 eval.multWithoutRescale(ctxt_bundle[inputid], kernel_o[outputid][inputid][0], ctxt_out_cache);
             
             } else {
