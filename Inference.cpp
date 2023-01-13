@@ -7,14 +7,14 @@
 #include <algorithm>
 
 #include "HEaaN/heaan.hpp" // 필요한가?
-// #include "examples.hpp" // 필요한가?
+#include "examples.hpp" // 필요한가?
 #include "Conv.hpp"
 #include "oddLazyBSGS.hpp"
 #include "MPPacking.hpp"
 #include "HEaaNTimer.hpp"
 #include "DSB+BN.hpp"
 #include "RB+BN.hpp"
-#include "convtools.hpp"
+//#include "convtools.hpp"
 #include "kernelEncode.hpp"
 #include "imageEncode.hpp"
 
@@ -78,8 +78,6 @@ int main() {
         
         string str = "/app/examples/image/image_" + to_string(i) + string(".txt");
         vector<double> temp;
-
-
         txtreader(temp, str);
         vector<Ciphertext> out;
         imageCompiler(context, pack, enc, temp, out);
@@ -88,35 +86,34 @@ int main() {
     }
     cout << "DONE" << "\n";
 
-    // // string str = "./image/image_" + to_string(313) + ".txt";
-    // vector<double> temp;
-    // txtreader(temp, str);
-    // for (int i = 0; i < 49152; ++i) temp.push_back(0);
+    /*
+    string str = "./image/image_" + to_string(313) + ".txt";
+    vector<double> temp;
+    txtreader(temp, str);
+    for (int i = 0; i < 49152; ++i) temp.push_back(0);
 
-    // vector<Ciphertext> out;
-    // imageCompiler(context, pack, enc, temp, out);
-    // imageVec.push_back(out);
+    vector<Ciphertext> out;
+    imageCompiler(context, pack, enc, temp, out);
+    imageVec.push_back(out);
+    */
 
 
 
     Plaintext ptxt_init(context); // for initializing
 
-
     // 1st conv
-
-    
     vector<double> temp0;
     vector<vector<vector<Plaintext>>> block0conv0multiplicands16_3_3_3(16, vector<vector<Plaintext>>(3, vector<Plaintext>(9, ptxt_init)));
     string path0 = "/app/examples/kernel/multiplicands/" + string("block0conv0multiplicands16_3_3_3");
     txtreader(temp0, path0);
-    cout << "conv0 done" <<endl;
+    //cout << "conv0 done" <<endl;
     kernel_ptxt(context, temp0, block0conv0multiplicands16_3_3_3, 12, 1, 1, 16, 3, 3, ecd);
     
     vector<double> block0conv0summands16;
     string path0a = "/app/examples/kernel/summands/" + string("block0conv0summands16");
     txtreader(block0conv0summands16, path0a);
 
-
+    
     // Convolution 1
     cout << "Convolution 1 ..." << endl;
     timer.start(" Convolution 1 ");
@@ -127,20 +124,20 @@ int main() {
         ctxt_conv1_out_bundle.push_back(ctxt_conv1_out_cache);
     }
     addBNsummands(context, eval, ctxt_conv1_out_bundle, block0conv0summands16, 16, 16);
-
     timer.end();
     cout << "DONE!" << "\n";
-
+    
 
     //memory delete
-    //block0conv0multiplicands16_3_3_3.clear();
-    //block0conv0multiplicands16_3_3_3.shrink_to_fit();
+    block0conv0multiplicands16_3_3_3.clear();
+    block0conv0multiplicands16_3_3_3.shrink_to_fit();
 
 
-    // AppReLU
+    // // AppReLU
     cout << "AppReLU ..." << endl;
     timer.start(" AppReLU 1 ");
-    vector<vector<Ciphertext>> ctxt_relu1_out_bundle;
+    Ciphertext ctxt(context); //추가
+    vector<vector<Ciphertext>> ctxt_relu1_out_bundle(16,vector<Ciphertext>(16,ctxt)); //초기화부분 추가
     for (int i = 0; i < 16; ++i) {
         vector<Ciphertext> ctxt_relu1_out_allch_bundle;
         for (int ch = 0; ch < 16; ++ch) {
@@ -154,9 +151,8 @@ int main() {
     timer.end();
     cout << "DONE!" << "\n";
 
-
     // Residual Block 1, 2, 3
-        // RB 1 - 1
+    // RB 1 - 1
     vector<double> temp1;
     vector<vector<vector<Plaintext>>> block1conv0multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path1 = "/app/examples/kernel/multiplicands/" + string("block1conv0multiplicands16_16_3_3");
@@ -167,7 +163,7 @@ int main() {
     string path1a = "/app/examples/kernel/summands/" + string("block1conv0summands16");
     txtreader(block1conv0summands16, path1a);
     
-        // RB 1 - 2
+    // RB 1 - 2
     vector<double> temp2;
     vector<vector<vector<Plaintext>>> block1conv1multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path2 = "/app/examples/kernel/multiplicands/" + string("block1conv1multiplicands16_16_3_3");
@@ -177,8 +173,9 @@ int main() {
 
     vector<double> block1conv1summands16;
     string path2a = "/app/examples/kernel/summands/" + string("block1conv1summands16");
-    txtreader(block0conv0summands16, path2a);
+    txtreader(block1conv1summands16, path2a);
 
+    
     // RB 1
     cout << "RB 1 ..." << endl;
     timer.start(" RB 1 ");
@@ -187,23 +184,24 @@ int main() {
     block1conv0summands16, block1conv1summands16);
     timer.end();
     cout << "DONE!" << "\n";
+    
 
     //memeory delete    
-    // ctxt_relu1_out_bundle.claer();
-    // ctxt_relu1_out_bundle.shrink_to_fit();
-    // block1conv0multiplicands16_16_3_3.clear();
-    // block1conv0multiplicands16_16_3_3.shrink_to_fit();
-    // block1conv1multiplicands16_16_3_3.clear();
-    // block1conv1multiplicands16_16_3_3.shrink_to_fit();
-    // block1conv0summands16.clear();
-    // block1conv0summands16.shrink_to_fit();
-    // block1conv1summands16.clear();
-    // block1conv1summands16.shrink_to_fit();
+    ctxt_relu1_out_bundle.clear();
+    ctxt_relu1_out_bundle.shrink_to_fit();
+    block1conv0multiplicands16_16_3_3.clear();
+    block1conv0multiplicands16_16_3_3.shrink_to_fit();
+    block1conv1multiplicands16_16_3_3.clear();
+    block1conv1multiplicands16_16_3_3.shrink_to_fit();
+    block1conv0summands16.clear();
+    block1conv0summands16.shrink_to_fit();
+    block1conv1summands16.clear();
+    block1conv1summands16.shrink_to_fit();
 
 
 
-
-        // RB 2 - 1
+    
+    // RB 2 - 1
     vector<double> temp3;
     vector<vector<vector<Plaintext>>> block2conv0multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path3 = "/app/examples/kernel/multiplicands/" + string("block2conv0multiplicands16_16_3_3");
@@ -240,22 +238,22 @@ int main() {
     cout << "DONE!" << "\n";
 
     //memory delete 
-    // ctxt_RB1_out.clear();
-    // ctxt_RB1_out.shrink_to_fit();
-    // block2conv0multiplicands16_16_3_3.clear();
-    // block2conv0multiplicands16_16_3_3.shrink_to_fit();
-    // block2conv1multiplicands16_16_3_3.clear();
-    // block2conv1multiplicands16_16_3_3.shrink_to_fit();
-    // block2conv0summands16.clear();
-    // block2conv0summands16.shrink_to_fit();
-    // block2conv1summands16.clear();
-    // block2conv1summands16.shrink_to_fit();
+    ctxt_RB1_out.clear();
+    ctxt_RB1_out.shrink_to_fit();
+    block2conv0multiplicands16_16_3_3.clear();
+    block2conv0multiplicands16_16_3_3.shrink_to_fit();
+    block2conv1multiplicands16_16_3_3.clear();
+    block2conv1multiplicands16_16_3_3.shrink_to_fit();
+    block2conv0summands16.clear();
+    block2conv0summands16.shrink_to_fit();
+    block2conv1summands16.clear();
+    block2conv1summands16.shrink_to_fit();
 
 
 
 
 
-        // RB 3 - 1
+    // RB 3 - 1
     vector<double> temp5;
     vector<vector<vector<Plaintext>>> block3conv0multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path5 = "/app/examples/kernel/multiplicands/" + string("block3conv0multiplicands16_16_3_3");
@@ -278,8 +276,10 @@ int main() {
 
     vector<double> block3conv1summands16;
     string path6a = "/app/examples/kernel/summands/" + string("block3conv1summands16");
+
     txtreader(block3conv1summands16, path5a);
 
+    
     // RB 3
     cout << "RB 3 ..." << endl;
     timer.start(" RB 3 ");
@@ -288,24 +288,25 @@ int main() {
     block3conv0summands16, block3conv1summands16);
     timer.end();
     cout << "DONE!" << "\n";
+    
 
     //memory delete 
-    // ctxt_RB2_out.clear();
-    // ctxt_RB2_out.shrink_to_fit();
-    // block3conv0multiplicands16_16_3_3.clear();
-    // block3conv0multiplicands16_16_3_3.shrink_to_fit();
-    // block3conv1multiplicands16_16_3_3.clear();
-    // block3conv1multiplicands16_16_3_3.shrink_to_fit();
-    // block3conv0summands16.clear();
-    // block3conv0summands16.shrink_to_fit();
-    // block3conv1summands16.clear();
-    // block3conv1summands16.shrink_to_fit();
+    ctxt_RB2_out.clear();
+    ctxt_RB2_out.shrink_to_fit();
+    block3conv0multiplicands16_16_3_3.clear();
+    block3conv0multiplicands16_16_3_3.shrink_to_fit();
+    block3conv1multiplicands16_16_3_3.clear();
+    block3conv1multiplicands16_16_3_3.shrink_to_fit();
+    block3conv0summands16.clear();
+    block3conv0summands16.shrink_to_fit();
+    block3conv1summands16.clear();
+    block3conv1summands16.shrink_to_fit();
 
 
 
 
     // Down Sampling (Residual) Block 1
-        // DSB 1 - res
+    // DSB 1 - res
     vector<double> temp7;
     vector<vector<vector<Plaintext>>> block4conv_onebyone_multiplicands32_16_1_1(32, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path7 = "/app/examples/kernel/multiplicands/" + string("block4conv_onebyone_multiplicands32_16_1_1");
@@ -342,6 +343,7 @@ int main() {
     string path9a = "/app/examples/kernel/summands/" + string("block4conv1summands32");
     txtreader(block4conv1summands32, path9a);
 
+    
     // DSB 1
     cout << "DSB 1 ..." << endl;
     timer.start(" DSB 1 ");
@@ -349,22 +351,23 @@ int main() {
     ctxt_DSB1_out = DSB(context, pack, eval, 0, ctxt_RB3_out, block4conv0multiplicands32_16_3_3, block4conv1multiplicands32_32_3_3, block4conv_onebyone_multiplicands32_16_1_1,
     block4conv0summands32, block4conv1summands32, block4conv_onebyone_summands32);
     cout << "DONE!" << "\n";
+    
 
     //memory delete
-    // ctxt_RB3_out.clear();
-    // ctxt_RB3_out.shrink_to_fit();
-    // block4conv0multiplicands32_16_3_3.clear();
-    // block4conv0multiplicands32_16_3_3.shrink_to_fit();
-    // block4conv1multiplicands32_32_3_3.clear();
-    // block4conv1multiplicands32_32_3_3.shrink_to_fit();
-    // block4conv_onebyone_multiplicands32_16_1_1.clear();
-    // block4conv_onebyone_multiplicands32_16_1_1.shrink_to_fit();
-    // block4conv0summands32.clear();
-    // block4conv0summands32.shrink_to_fit();
-    // block4conv1summands32.clear();
-    // block4conv1summands32.shrink_to_fit();
-    // block4conv_onebyone_summands32.clear();
-    // block4conv_onebyone_summands32.shrink_to_fit();
+    ctxt_RB3_out.clear();
+    ctxt_RB3_out.shrink_to_fit();
+    block4conv0multiplicands32_16_3_3.clear();
+    block4conv0multiplicands32_16_3_3.shrink_to_fit();
+    block4conv1multiplicands32_32_3_3.clear();
+    block4conv1multiplicands32_32_3_3.shrink_to_fit();
+    block4conv_onebyone_multiplicands32_16_1_1.clear();
+    block4conv_onebyone_multiplicands32_16_1_1.shrink_to_fit();
+    block4conv0summands32.clear();
+    block4conv0summands32.shrink_to_fit();
+    block4conv1summands32.clear();
+    block4conv1summands32.shrink_to_fit();
+    block4conv_onebyone_summands32.clear();
+    block4conv_onebyone_summands32.shrink_to_fit();
 
 
 
@@ -394,6 +397,7 @@ int main() {
     string path11a = "/app/examples/kernel/summands/" + string("block5conv1summands32");
     txtreader(block5conv1summands32, path11a);
 
+    
     // RB 4
     cout << "RB 4..." << endl;
     timer.start(" RB 4 ");
@@ -402,27 +406,24 @@ int main() {
     block5conv0summands32, block5conv1summands32);
     timer.end();
     cout << "DONE!" << "\n";
+    
 
     //memory delete 
-    // ctxt_DSB1_out.clear();
-    // ctxt_DSB1_out.shrink_to_fit();
-    // block5conv0multiplicands32_32_3_3.claer();
-    // block5conv0multiplicands32_32_3_3.shrink_to_fit();
-    // block5conv1multiplicands32_32_3_3.clear();
-    // block5conv1multiplicands32_32_3_3.shrink_to_fit();
-    // block5conv0summands32.clear();
-    // block5conv0summands32.shrink_to_fit();
-    // block5conv1summands32.clear();
-    // block5conv1summands32.shrink_to_fit();
+    ctxt_DSB1_out.clear();
+    ctxt_DSB1_out.shrink_to_fit();
+    block5conv0multiplicands32_32_3_3.clear();
+    block5conv0multiplicands32_32_3_3.shrink_to_fit();
+    block5conv1multiplicands32_32_3_3.clear();
+    block5conv1multiplicands32_32_3_3.shrink_to_fit();
+    block5conv0summands32.clear();
+    block5conv0summands32.shrink_to_fit();
+    block5conv1summands32.clear();
+    block5conv1summands32.shrink_to_fit();
 
 
 
 
-
-
-
-
-        // RB 5 - 1
+    // RB 5 - 1
     vector<double> temp12;
     vector<vector<vector<Plaintext>>> block6conv0multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
     string path12 = "/app/examples/kernel/multiplicands/" + string("block6conv0multiplicands32_32_3_3");
@@ -445,6 +446,7 @@ int main() {
     string path13a = "/app/examples/kernel/summands/" + string("block6conv1summands32");
     txtreader(block6conv1summands32, path13a);
 
+    
     // RB 5
     cout << "RB 5 ..." << endl;
     timer.start(" RB 5 ");
@@ -453,26 +455,24 @@ int main() {
     block6conv0summands32, block6conv1summands32);
     timer.end();
     cout << "DONE!" << "\n";
+    
+
 
     //memory delete
-    // ctxt_RB4_out.clear();
-    // ctxt_RB4_out.shrink_to_fit();
-    // block6conv0multiplicands32_32_3_3.clear();
-    // block6conv0multiplicands32_32_3_3.shrink_to_fit();
-    // block6conv1multiplicands32_32_3_3.claer();
-    // block6conv1multiplicands32_32_3_3.shrink_to_fit();
-    // block6conv0summands32.clear();
-    // block6conv0summands32.shrink_to_fit();
-    // block6conv1summands32.claer();
-    // block6conv1summands32.shrink_to_fit();
-
-
-
-
+    ctxt_RB4_out.clear();
+    ctxt_RB4_out.shrink_to_fit();
+    block6conv0multiplicands32_32_3_3.clear();
+    block6conv0multiplicands32_32_3_3.shrink_to_fit();
+    block6conv1multiplicands32_32_3_3.clear();
+    block6conv1multiplicands32_32_3_3.shrink_to_fit();
+    block6conv0summands32.clear();
+    block6conv0summands32.shrink_to_fit();
+    block6conv1summands32.clear();
+    block6conv1summands32.shrink_to_fit();
 
 
     // Down Sampling (Residual) Block 2
-        // DSB 2
+    // DSB 2
     vector<double> temp14;
     vector<vector<vector<Plaintext>>> block7conv_onebyone_multiplicands64_32_1_1(64, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
     string path14 = "/app/examples/kernel/multiplicands/" + string("block7conv_onebyone_multiplicands64_32_1_1");
@@ -507,6 +507,7 @@ int main() {
     string path16a = "/app/examples/kernel/summands/" + string("block7conv1summands64");
     txtreader(block7conv1summands64, path16a);
 
+    
     // DSB 2
     cout << "DSB 2 ..." << endl;
     timer.start(" DSB 2 ");
@@ -514,22 +515,23 @@ int main() {
     ctxt_DSB2_out = DSB(context, pack, eval, 1, ctxt_RB5_out, block7conv0multiplicands64_32_3_3, block7conv1multiplicands64_64_3_3, block7conv_onebyone_multiplicands64_32_1_1,
     block7conv0summands64, block7conv1summands64, block7conv_onebyone_summands64);
     cout << "DONE!" << "\n";
+    
 
     //memory delete
-    // ctxt_RB5_out.clear();
-    // ctxt_RB5_out.shrink_to_fit();
-    // block7conv0multiplicands64_32_3_3.clear();
-    // block7conv0multiplicands64_32_3_3.shrink_to_fit();
-    // block7conv1multiplicands64_64_3_3.clear();
-    // block7conv1multiplicands64_64_3_3.shrink_to_fit();
-    // block7conv_onebyone_multiplicands64_32_1_1.clear();
-    // block7conv_onebyone_multiplicands64_32_1_1.shrink_to_fit();
-    // block7conv0summands64.clear();
-    // block7conv0summands64.shrink_to_fit();
-    // block7conv1summands64.clear();
-    // block7conv1summands64.shrink_to_fit();
-    // block7conv_onebyone_summands64.clear();
-    // block7conv_onebyone_summands64.shrink_to_fit();
+    ctxt_RB5_out.clear();
+    ctxt_RB5_out.shrink_to_fit();
+    block7conv0multiplicands64_32_3_3.clear();
+    block7conv0multiplicands64_32_3_3.shrink_to_fit();
+    block7conv1multiplicands64_64_3_3.clear();
+    block7conv1multiplicands64_64_3_3.shrink_to_fit();
+    block7conv_onebyone_multiplicands64_32_1_1.clear();
+    block7conv_onebyone_multiplicands64_32_1_1.shrink_to_fit();
+    block7conv0summands64.clear();
+    block7conv0summands64.shrink_to_fit();
+    block7conv1summands64.clear();
+    block7conv1summands64.shrink_to_fit();
+    block7conv_onebyone_summands64.clear();
+    block7conv_onebyone_summands64.shrink_to_fit();
 
 
 
@@ -557,6 +559,7 @@ int main() {
     string path18a = "/app/examples/kernel/summands/" + string("block8conv1summands64");
     txtreader(block8conv0summands64, path18a);
 
+    
     // RB 6
     cout << "RB 6..." << endl;
     timer.start(" RB 6 ");
@@ -565,24 +568,24 @@ int main() {
     block8conv0summands64, block8conv1summands64);
     timer.end();
     cout << "DONE!" << "\n";
-
+    
 
     //memory delete
-    // ctxt_DSB2_out.claer();
-    // ctxt_DSB2_out.shrink_to_fit();
-    // block8conv0multiplicands64_64_3_3.clear();
-    // block8conv0multiplicands64_64_3_3.shrink_to_fit();
-    // block8conv1multiplicands64_64_3_3.clear();
-    // block8conv1multiplicands64_64_3_3.shrink_to_fit();
-    // block8conv0summands64.claer();
-    // block8conv0summands64.shrink_to_fit();
-    // block8conv1summands64.claer();
-    // block8conv1summands64.shrink_to_fit();
+    ctxt_DSB2_out.clear();
+    ctxt_DSB2_out.shrink_to_fit();
+    block8conv0multiplicands64_64_3_3.clear();
+    block8conv0multiplicands64_64_3_3.shrink_to_fit();
+    block8conv1multiplicands64_64_3_3.clear();
+    block8conv1multiplicands64_64_3_3.shrink_to_fit();
+    block8conv0summands64.clear();
+    block8conv0summands64.shrink_to_fit();
+    block8conv1summands64.clear();
+    block8conv1summands64.shrink_to_fit();
 
 
 
 
-        // RB 7
+    // RB 7
     vector<double> temp19;
     vector<vector<vector<Plaintext>>> block9conv0multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
     string path19 = "/app/examples/kernel/multiplicands/" + string("block9conv0multiplicands64_64_3_3");
@@ -604,7 +607,8 @@ int main() {
     string path20a = "/app/examples/kernel/summands/" + string("block9conv1summands64");
     txtreader(block9conv1summands64, path20a);
 
-    // RB 7
+    
+     // RB 7
     cout << "RB 7 ..." << endl;
     timer.start(" RB 7 ");
     vector<vector<Ciphertext>> ctxt_RB7_out;
@@ -612,18 +616,20 @@ int main() {
     block9conv0summands64, block9conv1summands64);
     timer.end();
     cout << "DONE!" << "\n";
+    
+
 
     //memory delete
-    // ctxt_RB6_out.claer();
-    // ctxt_RB6_out.shrink_to_fit();
-    // block9conv0multiplicands64_64_3_3.claer();
-    // block9conv0multiplicands64_64_3_3.shrink_to_fit();
-    // block9conv1multiplicands64_64_3_3.claer();
-    // block9conv1multiplicands64_64_3_3.shrink_to_fit();
-    // block9conv0summands64.clear();
-    // block9conv0summands64.shrink_to_fit();
-    // block9conv1summands64.clear();
-    // block9conv1summands64.shrink_to_fit();
+    ctxt_RB6_out.clear();
+    ctxt_RB6_out.shrink_to_fit();
+    block9conv0multiplicands64_64_3_3.clear();
+    block9conv0multiplicands64_64_3_3.shrink_to_fit();
+    block9conv1multiplicands64_64_3_3.clear();
+    block9conv1multiplicands64_64_3_3.shrink_to_fit();
+    block9conv0summands64.clear();
+    block9conv0summands64.shrink_to_fit();
+    block9conv1summands64.clear();
+    block9conv1summands64.shrink_to_fit();
 
 
 
