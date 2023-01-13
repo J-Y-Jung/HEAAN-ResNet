@@ -11,37 +11,43 @@
 project(HEaaN_examples LANGUAGES CXX)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
 
 find_package(HEaaN REQUIRED)
 
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release)
-endif()
+## add_executable(ex1_encrypt-decrypt 1_encrypt-decrypt.cpp)
+## target_link_libraries(ex1_encrypt-decrypt PUBLIC HEaaN::HEaaN)
 
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
-set(CMAKE_CXX_FLAGS "-Wall -Wextra")
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+## add_executable(ex2_evalpoly 2_evalpoly.cpp)
+## target_link_libraries(ex2_evalpoly PUBLIC HEaaN::HEaaN)
 
-add_executable(convtoolstest convtoolstest.cpp)
-target_link_libraries(convtoolstest PUBLIC HEaaN::HEaaN)
+## add_executable(ex3_average 3_average.cpp)
+## target_link_libraries(ex3_average PUBLIC HEaaN::HEaaN)
 
-# add_executable(rotsumtest rotsumtest.cpp)
-# target_link_libraries(rotsumtest PUBLIC HEaaN::HEaaN)
+## add_executable(ex4_save-load 4_save-load.cpp)
+## target_link_libraries(ex4_save-load PUBLIC HEaaN::HEaaN)
 
-# add_executable(oddLazyBSGStest oddLazyBSGStest.cpp) 
-# target_link_libraries(oddLazyBSGStest PUBLIC HEaaN::HEaaN)
+## add_executable(ex5_bootstrap 5_bootstrap.cpp)
+## target_link_libraries(ex5_bootstrap PUBLIC HEaaN::HEaaN)
 
-# add_executable(AvgpoolFC64test AvgpoolFC64test.cpp) 
-# target_link_libraries(AvgpoolFC64test PUBLIC HEaaN::HEaaN)
+## add_executable(evalpolytest evalpolytest.cpp) 
+## target_link_libraries(evalpolytest PUBLIC HEaaN::HEaaN)
 
-# add_executable(kernelEncode kernelEncode.cpp) 
-# target_link_libraries(kernelEncode PUBLIC HEaaN::HEaaN)
+## add_executable(packing MPPacking.cpp) 
+## target_link_libraries(packing PUBLIC HEaaN::HEaaN)
 
-# add_executable(imageEncode imageEncode.cpp) 
-# target_link_libraries(imageEncode PUBLIC HEaaN::HEaaN)
+## add_executable(dsb DSB.cpp) 
+## target_link_libraries(dsb PUBLIC HEaaN::HEaaN)
 
-add_executable(Inference Inference.cpp) 
-target_link_libraries(Inference PUBLIC HEaaN::HEaaN)
+## add_executable(thread thread.cpp) 
+## target_link_libraries(thread PUBLIC HEaaN::HEaaN)
+
+## add_executable(dsbtest DSB_test.cpp) 
+## target_link_libraries(dsbtest PUBLIC HEaaN::HEaaN)
+
+add_executable(inference Inference.cpp) 
+target_link_libraries(inference PUBLIC HEaaN::HEaaN)
+
+## add_executable(rb RB+BN.cpp) 
+## target_link_libraries(rb PUBLIC HEaaN::HEaaN)
 
