@@ -201,7 +201,7 @@ vector<double>& BN3_add) {
         ctxt_residual_added.push_back(ctxt_residual_added_allch_bundle);
     }
     // vector<vector<Ciphertext>>().swap(ctxt_conv_out2_bundle);
-    ctxt_conv_out2_bundle.claer();
+    ctxt_conv_out2_bundle.clear();
     ctxt_conv_out2_bundle.shrink_to_fit();
     // vector<vector<Ciphertext>>().swap(ctxt_MPP_out_bundle2);
     ctxt_MPP_out_bundle2.clear();
