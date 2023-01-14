@@ -7,7 +7,6 @@ namespace {
 using namespace HEaaN;
 using namespace std;
 }
-/*
 void printMessage(const Message &msg, bool is_complex = true,
                   size_t start_num = 64, size_t end_num = 64) {
     const size_t msg_size = msg.getSize();
@@ -31,7 +30,6 @@ void printMessage(const Message &msg, bool is_complex = true,
     else
         cout << msg[msg_size - 1].real() << " ]" << endl;
 }
-*/
 
 
 /*weight index : (weight_row_idx, weight_col_idx) 
@@ -176,7 +174,7 @@ void weightToPtxtOld(Plaintext &ptxt, u64 level, vector<vector<double>> weights,
 }
 
 void weightToPtxt(Plaintext &ptxt, u64 level, double weight,
-                    u64 gap_in, u64 stride,
+                    u64 gap_in, 
                     u64 weight_row_idx, u64 weight_col_idx, EnDecoder ecd) {
     Message msg(15);                    
     auto num_slots = msg.getSize();

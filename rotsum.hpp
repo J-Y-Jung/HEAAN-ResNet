@@ -7,7 +7,7 @@ using namespace HEaaN;
 using namespace std;
 }
 HEaaN::Ciphertext RotSumToIdx(HEaaN::Context context, HEaaN::KeyPack pack, HEaaN::HomEvaluator eval, 
-                              u64 rot_interval, u64 log_rot_num, u64 idx, HEaaN::Ciphertext ctxt) {
+                              u64 rot_interval, u64 log_rot_num, u64 idx, HEaaN::Ciphertext &ctxt) {
     //Rotate-sum 2^(log_rot_num)*rotated ciphertexts, which are rotated at the interval of rot_interval, 
     //and save the result starting at idx-th slot.
     //summing all elements of ciphertext is equivalent to

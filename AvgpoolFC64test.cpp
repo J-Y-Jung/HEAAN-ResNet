@@ -1,5 +1,6 @@
 #include <iostream>
 #include <omp.h>
+#include <optional>
 #include "HEaaN/heaan.hpp"
 #include "HEaaNTimer.hpp"
 #include "AvgpoolFC64.hpp"
@@ -17,15 +18,6 @@ int main() {
     // See 'include/HEaaN/ParameterPreset.hpp' for more details.
     HEaaN::ParameterPreset preset = HEaaN::ParameterPreset::FGb;
     HEaaN::Context context = makeContext(preset);
-    if (!HEaaN::isBootstrappableParameter(context)) {
-        std::cout << "Bootstrap is not available for parameter "
-            << presetNamer(preset) << std::endl;
-        return -1;
-    }
-
-    std::cout << "Parameter : " << presetNamer(preset) << std::endl
-        << std::endl;
-
     const auto log_slots = getLogFullSlots(context);
 
     HEaaN::SecretKey sk(context);
@@ -73,14 +65,14 @@ int main() {
     std::optional<size_t> num;
     size_t length = num.has_value() ? num.value() : msg.getSize();
     size_t idx = 0;
-	#pragma omp parallel for
+	
     for (; idx < length; ++idx) {
         msg[idx].real(0.5);
         msg[idx].imag(0.0);
     }
     // If num is less than the size of msg,
     // all remaining slots are zero.
-	#pragma omp parallel for
+	
     for (; idx < msg.getSize(); ++idx) {
         msg[idx].real(0.0);
         msg[idx].imag(0.0);
@@ -99,21 +91,18 @@ int main() {
 
     std::vector<HEaaN::Ciphertext> ctxt_bundle;
 	std::vector<vector<HEaaN::Plaintext>> ptxt_bundle;
-	#pragma omp parallel for
     for (int i = 0; i < 64; ++i) {
-        ctxt_bundle.push_back(ctxt);
+    	ctxt_bundle.push_back(ctxt);
     }
 	vector<HEaaN::Plaintext> ptxt_bundle_tmp;
-	#pragma omp parallel for
 	for (int i = 0; i < 64; ++i) {
 		ptxt_bundle_tmp.push_back(ptxt);
 	}
-	#pragma omp parallel for
 	for (int i = 0; i < 64; ++i) {
 		ptxt_bundle.push_back(ptxt_bundle_tmp);
     }
-
-	std::vector<HEaaN::Ciphertext> ctxt_out;
+	HEaaN::Ciphertext tmp_ctxt(context);
+	std::vector<HEaaN::Ciphertext> ctxt_out(10, tmp_ctxt);
 	timer.start(" FC64 ");
 	ctxt_out=FC64(context, pack, eval, 
                     ctxt_bundle, ptxt_bundle, ptxt_bundle_tmp);
