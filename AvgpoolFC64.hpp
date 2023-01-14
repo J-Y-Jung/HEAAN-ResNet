@@ -15,7 +15,7 @@ HEaaN::Ciphertext singleAvgpool(HEaaN::Context context, HEaaN::KeyPack pack, HEa
     return ctxt;
 }
 
-HEaaN::Ciphertext Avgpool(HEaaN::Context context, HEaaN::KeyPack pack, HEaaN::HomEvaluator eval, vector<HEaaN::Ciphertext> &ctxt) {
+vector<HEaaN::Ciphertext> Avgpool(HEaaN::Context context, HEaaN::KeyPack pack, HEaaN::HomEvaluator eval, vector<HEaaN::Ciphertext> &ctxt) {
     #pragma omp parallel for
     for (u64 i=0; i<ctxt.size();i++){
         ctxt[i] = singleAvgpool(context, pack, eval, ctxt[i]);
