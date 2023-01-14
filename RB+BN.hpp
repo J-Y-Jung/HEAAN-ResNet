@@ -8,12 +8,12 @@ using namespace std;
 
 
 std::vector<std::vector<HEaaN::Ciphertext>> RB(HEaaN::Context context, HEaaN::KeyPack pack,
-HEaaN::HomEvaluator eval, int DSB_count, std::vector<std::vector<HEaaN::Ciphertext>> ctxt_bundle, 
+HEaaN::HomEvaluator eval, int DSB_count, std::vector<std::vector<HEaaN::Ciphertext>>& ctxt_bundle, 
 // 첫번째 index는 서로 다른 이미지 index. 기본 처음에는 16. 첫번째 RB에서는 16개로 받음. 두번째 : ch
-std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_bundle, 
-std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_bundle2,
-vector<double> BN1_add,
-vector<double> BN2_add) {
+std::vector<std::vector<std::vector<HEaaN::Plaintext>>>& kernel_bundle, 
+std::vector<std::vector<std::vector<HEaaN::Plaintext>>>& kernel_bundle2,
+vector<double>& BN1_add,
+vector<double>& BN2_add) {
     ///////////////////////// SetUp ////////////////////////////////
     std::cout << "RB start" << "\n";
     // int num_ctxt;
@@ -97,6 +97,8 @@ vector<double> BN2_add) {
         ctxt_relu_out_bundle.push_back(ctxt_relu_out_allch_bundle);
     }
     std::cout << "DONE!" << "\n";
+    ctxt_conv_out_bundle.clear();
+    ctxt_conv_out_bundle.shrink_to_fit();
 
     // Second convolution
     std::cout << "Second Conv-(main flow) ..." << std::endl;
@@ -106,6 +108,8 @@ vector<double> BN2_add) {
         ctxt_conv_out2_allch_bundle = Conv(context, pack, eval, 32, 1, 1, 16, 16, ctxt_relu_out_bundle[i], kernel_bundle2);
         ctxt_conv_out2_bundle.push_back(ctxt_conv_out2_allch_bundle);
     }
+    ctxt_relu_out_bundle.clear();
+    ctxt_relu_out_bundle.shrink_to_fit();
     std::cout << "DONE!" << "\n";
 
     cout << "Adding BN-(main flow) ..." << endl;
@@ -178,6 +182,8 @@ vector<double> BN2_add) {
         }
         ctxt_RB_out.push_back(ctxt_RB_out_allch_bundle);
     }
+    ctxt_residual_added.clear();
+    ctxt_residual_added.shrink_to_fit();
     std::cout << "DONE!" << "\n";
 
 

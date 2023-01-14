@@ -11,8 +11,8 @@
 
 std::vector<HEaaN::Ciphertext> Conv(HEaaN::Context context, HEaaN::KeyPack pack,
 HEaaN::HomEvaluator eval, int imgsize, int gap, int stride, int input_channel, int output_channel, 
-std::vector<HEaaN::Ciphertext> ctxt_bundle, 
-std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_o) {
+std::vector<HEaaN::Ciphertext>& ctxt_bundle, 
+std::vector<std::vector<std::vector<HEaaN::Plaintext>>>& kernel_o) {
     int kernelsize;
     kernelsize = kernel_o[0][0].size();
     std::vector<HEaaN::Ciphertext> ctxt_out_bundle;
@@ -102,6 +102,8 @@ std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_o) {
         eval.rescale(ctxt_out);
         ctxt_out_bundle.push_back(ctxt_out);
     }
+    rotated_ctxts_bundle.clear();
+    rotated_ctxts_bundle.shrink_to_fit();
 
     return ctxt_out_bundle;
 }

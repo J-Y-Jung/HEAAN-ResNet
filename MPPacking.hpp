@@ -11,7 +11,7 @@
 
 HEaaN::Ciphertext MPPacking(HEaaN::Context context, HEaaN::KeyPack pack,
 HEaaN::HomEvaluator eval, int imgsize, 
-std::vector<HEaaN::Ciphertext> ctxt_bundle) {
+std::vector<HEaaN::Ciphertext>& ctxt_bundle) {
     int num_ctxt;
     num_ctxt = ctxt_bundle.size();
     if (floor(sqrt(num_ctxt)) != (double)sqrt(num_ctxt)) {
@@ -108,6 +108,8 @@ std::vector<HEaaN::Ciphertext> ctxt_bundle) {
         eval.leftRotate(ctxt_masked_bundle[15], -(3*imgsize)-3, ctxt_rotated_bundle_cache);
         ctxt_rotated_bundle.push_back(ctxt_rotated_bundle_cache);
     }
+    ctxt_masked_bundle.clear();
+    ctxt_masked_bundle.shrink_to_fit();
 
     // Sum
     HEaaN::Ciphertext ctxt_sum(context);
