@@ -12,8 +12,8 @@ HEaaN::HomEvaluator eval, int DSB_count, std::vector<std::vector<HEaaN::Cipherte
 // 첫번째 index는 서로 다른 이미지 index. 기본 처음에는 16. 첫번째 RB에서는 16개로 받음. 두번째 : ch
 std::vector<std::vector<std::vector<HEaaN::Plaintext>>>& kernel_bundle, 
 std::vector<std::vector<std::vector<HEaaN::Plaintext>>>& kernel_bundle2,
-vector<double>& BN1_add,
-vector<double>& BN2_add) {
+vector<Plaintext>& BN1_add,
+vector<Plaintext>& BN2_add) {
     ///////////////////////// SetUp ////////////////////////////////
     std::cout << "RB start" << "\n";
     // int num_ctxt;

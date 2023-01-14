@@ -12,9 +12,9 @@ HomEvaluator eval, int DSB_count, vector<vector<Ciphertext>>& ctxt_bundle,
 vector<vector<vector<Plaintext>>>& kernel_bundle, 
 vector<vector<vector<Plaintext>>>& kernel_bundle2, 
 vector<vector<vector<Plaintext>>>& kernel_residual_bundle,
-vector<double>& BN1_add,
-vector<double>& BN2_add,
-vector<double>& BN3_add) {
+vector<Plaintext>& BN1_add,
+vector<Plaintext>& BN2_add,
+vector<Plaintext>& BN3_add) {
     ///////////////////////// SetUp ////////////////////////////////
     cout << "DSB start" << "\n";
     int num_ctxt;

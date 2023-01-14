@@ -7,34 +7,21 @@
 #include "convtools.hpp"
 #include "imageEncode.hpp"
 
-namespace {
-    using namespace std;
-    using namespace HEaaN;
-}
+ void Scaletxtreader(vector<double>& kernel, const string filename, const double cnst) {
 
-// void txtreader(vector<double>& kernel, const string filename) {
+     string line;
+     ifstream input_file(filename);
 
-//     string line;
+     while (getline(input_file, line)) {
+         double temp = stod(line);
+         double temp1 = cnst* temp;
+         kernel.push_back(temp1);
+     }
 
-//     ifstream input_file(filename);
-//     /*if (!input_file.is_open()) {
-//         cerr << "Could not open the file - '"
-//             << filename << "'" << endl;
-//         return EXIT_FAILURE;
-//     }*/
+     input_file.close();
+     return;
 
-//     while (getline(input_file, line)) {
-//         double temp = stod(line);
-//         kernel.push_back(temp);
-//     }
-
-//     /*for (const auto& i : kernel)
-//         cout << i << endl;*/
-
-//     input_file.close();
-//     return;
-
-// }
+ }
 
 
 void kernel_ptxt(Context context, vector<double>& weight, vector<vector<vector<Plaintext>>>& output, u64 level, u64 gap_in, u64 stride, const int out_ch, const int in_ch, const int ker_size, EnDecoder ecd) {
@@ -104,12 +91,12 @@ void kernel_ptxt(Context context, vector<double>& weight, vector<vector<vector<P
 
 }
 
-void addBNsummands(Context context, HomEvaluator eval, vector<vector<Ciphertext>>& afterConv, vector<double> summands, const int n, const int ch) {
+
+void addBNsummands(Context context, HomEvaluator eval, vector<vector<Ciphertext>>& afterConv, vector<Plaintext>& summands, const int n, const int ch) {
 
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < ch; ++j) {
-            Complex cnst = Complex(summands[j]);
-            eval.add(afterConv[i][j], cnst, afterConv[i][j]);
+            eval.add(afterConv[i][j], summands[j], afterConv[i][j]);
         }
     }
 

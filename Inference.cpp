@@ -17,6 +17,7 @@
 //#include "convtools.hpp"
 #include "kernelEncode.hpp"
 #include "imageEncode.hpp"
+#include "AvgpoolFC64.hpp"
 
 namespace {
 using namespace HEaaN;
@@ -76,7 +77,7 @@ int main() {
 
     for (int i = 1; i < 17; ++i) { // 313
         
-        string str = "/app/examples/image/image_" + to_string(i) + string(".txt");
+        string str = "/app/HEAAN-ResNet/image/image_" + to_string(i) + string(".txt");
         vector<double> temp;
         txtreader(temp, str);
         vector<Ciphertext> out;
@@ -84,6 +85,13 @@ int main() {
         imageVec.push_back(out);
 
     }
+    
+    cout << "DONE, test for image encode ..." << "\n";
+
+    Message dmsg;
+    dec.decrypt(imageVec[0][0], sk, dmsg);
+    printMessage(dmsg);
+
     cout << "DONE" << "\n";
 
     /*
@@ -104,14 +112,23 @@ int main() {
     // 1st conv
     vector<double> temp0;
     vector<vector<vector<Plaintext>>> block0conv0multiplicands16_3_3_3(16, vector<vector<Plaintext>>(3, vector<Plaintext>(9, ptxt_init)));
-    string path0 = "/app/examples/kernel/multiplicands/" + string("block0conv0multiplicands16_3_3_3");
-    txtreader(temp0, path0);
+    string path0 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block0conv0multiplicands16_3_3_3");
+    double cnst = (double)1/((double)40);
+    Scaletxtreader(temp0, path0, cnst);
     //cout << "conv0 done" <<endl;
     kernel_ptxt(context, temp0, block0conv0multiplicands16_3_3_3, 12, 1, 1, 16, 3, 3, ecd);
     
-    vector<double> block0conv0summands16;
-    string path0a = "/app/examples/kernel/summands/" + string("block0conv0summands16");
-    txtreader(block0conv0summands16, path0a);
+
+    vector<Plaintext> block0conv0summands16;
+    vector<double> temp0a;
+    string path0a = "/app/HEAAN-ResNet/kernel/summands/" + string("block0conv0summands16");
+    Scaletxtreader(temp0a, path0a, cnst);
+
+    for (int i=0; i<16; ++i){
+        Message msg(log_slots, temp0a[i]);
+        block0conv0summands16.push_back(ecd.encode(msg));
+    }
+
 
     
     // Convolution 1
@@ -149,31 +166,55 @@ int main() {
         ctxt_relu1_out_bundle.push_back(ctxt_relu1_out_allch_bundle);
     }
     timer.end();
-    cout << "DONE!" << "\n";
+    cout << "DONE!, decrypted message is ... " << "\n";
+
+    dec.decrypt(ctxt_relu1_out_bundle[0][0], sk, dmsg);
+    printMessage(dmsg);
+
+    cout << "\n";
+
+
+
+
 
     // Residual Block 1, 2, 3
     // RB 1 - 1
     vector<double> temp1;
     vector<vector<vector<Plaintext>>> block1conv0multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
-    string path1 = "/app/examples/kernel/multiplicands/" + string("block1conv0multiplicands16_16_3_3");
+    string path1 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block1conv0multiplicands16_16_3_3");
     txtreader(temp1, path1);
     kernel_ptxt(context, temp1, block1conv0multiplicands16_16_3_3, 12, 1, 1, 16, 16, 3, ecd);
     
-    vector<double> block1conv0summands16;
-    string path1a = "/app/examples/kernel/summands/" + string("block1conv0summands16");
-    txtreader(block1conv0summands16, path1a);
+    vector<Plaintext> block1conv0summands16;
+    vector<double> temp1a;
+    string path1a = "/app/HEAAN-ResNet/kernel/summands/" + string("block1conv0summands16");
+    txtreader(temp1a, path1a);
+
+    for (int i=0; i<16; ++i){
+        Message msg(log_slots, temp1a[i]);
+        block1conv0summands16.push_back(ecd.encode(msg));
+    }
+
+
+
     
     // RB 1 - 2
     vector<double> temp2;
     vector<vector<vector<Plaintext>>> block1conv1multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
-    string path2 = "/app/examples/kernel/multiplicands/" + string("block1conv1multiplicands16_16_3_3");
+    string path2 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block1conv1multiplicands16_16_3_3");
     txtreader(temp2, path2);
     kernel_ptxt(context, temp2, block1conv1multiplicands16_16_3_3, 12, 1, 1, 16, 16, 3, ecd);
 
 
-    vector<double> block1conv1summands16;
-    string path2a = "/app/examples/kernel/summands/" + string("block1conv1summands16");
-    txtreader(block1conv1summands16, path2a);
+    vector<Plaintext> block1conv1summands16;
+    vector<double> temp2a;
+    string path2a = "/app/HEAAN-ResNet/kernel/summands/" + string("block1conv1summands16");
+    txtreader(temp2a, path2a);
+
+    for (int i=0; i<16; ++i){
+        Message msg(log_slots, temp2a[i]);
+        block1conv1summands16.push_back(ecd.encode(msg));
+    }
 
     
     // RB 1
@@ -204,26 +245,40 @@ int main() {
     // RB 2 - 1
     vector<double> temp3;
     vector<vector<vector<Plaintext>>> block2conv0multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
-    string path3 = "/app/examples/kernel/multiplicands/" + string("block2conv0multiplicands16_16_3_3");
+    string path3 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block2conv0multiplicands16_16_3_3");
     txtreader(temp3, path3);
     kernel_ptxt(context, temp3, block2conv0multiplicands16_16_3_3, 12, 1, 1, 16, 16, 3, ecd);
 
 
-    vector<double> block2conv0summands16;
-    string path3a = "/app/examples/kernel/summands/" + string("block2conv0summands16");
-    txtreader(block2conv0summands16, path3a);
+    vector<Plaintext> block2conv0summands16;
+    vector<double> temp3a;
+    string path3a = "/app/HEAAN-ResNet/kernel/summands/" + string("block2conv0summands16");
+    txtreader(temp3a, path3a);
+
+    for (int i=0; i<16; ++i){
+        Message msg(log_slots, temp3a[i]);
+        block2conv0summands16.push_back(ecd.encode(msg));
+    }
+
     
     // RB 2 - 2
     vector<double> temp4;
     vector<vector<vector<Plaintext>>> block2conv1multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
-    string path4 = "/app/examples/kernel/multiplicands/" + string("block2conv1multiplicands16_16_3_3");
+    string path4 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block2conv1multiplicands16_16_3_3");
     txtreader(temp4, path4);
     kernel_ptxt(context, temp4, block2conv1multiplicands16_16_3_3, 12, 1, 1, 16, 16, 3, ecd);
 
 
-    vector<double> block2conv1summands16;
-    string path4a = "/app/examples/kernel/summands/" + string("block2conv1summands16");
-    txtreader(block2conv1summands16, path4a);
+    vector<Plaintext> block2conv1summands16;
+    vector<double> temp4a;
+    string path4a = "/app/HEAAN-ResNet/kernel/summands/" + string("block2conv1summands16");
+    txtreader(temp4a, path4a);
+
+    for (int i=0; i<16; ++i){
+        Message msg(log_slots, temp4a[i]);
+        block2conv1summands16.push_back(ecd.encode(msg));
+    }
+
 
 
 
@@ -256,28 +311,39 @@ int main() {
     // RB 3 - 1
     vector<double> temp5;
     vector<vector<vector<Plaintext>>> block3conv0multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
-    string path5 = "/app/examples/kernel/multiplicands/" + string("block3conv0multiplicands16_16_3_3");
+    string path5 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block3conv0multiplicands16_16_3_3");
     txtreader(temp5, path5);
     kernel_ptxt(context, temp5, block3conv0multiplicands16_16_3_3, 12, 1, 1, 16, 16, 3, ecd);
 
 
-    vector<double> block3conv0summands16;
-    string path5a = "/app/examples/kernel/summands/" + string("block3conv0summands16");
-    txtreader(block3conv0summands16, path5a);
+    vector<Plaintext> block3conv0summands16;
+    vector<double> temp5a;
+    string path5a = "/app/HEAAN-ResNet/kernel/summands/" + string("block3conv0summands16");
+    txtreader(temp5a, path5a);
+
+    for (int i=0; i<16; ++i){
+        Message msg(log_slots, temp5a[i]);
+        block3conv0summands16.push_back(ecd.encode(msg));
+    }
     
     
     // RB 3 - 2
     vector<double> temp6;
     vector<vector<vector<Plaintext>>> block3conv1multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
-    string path6 = "/app/examples/kernel/multiplicands/" + string("block3conv1multiplicands16_16_3_3");
+    string path6 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block3conv1multiplicands16_16_3_3");
     txtreader(temp6, path6);
     kernel_ptxt(context, temp6, block3conv1multiplicands16_16_3_3, 12, 1, 1, 16, 16, 3, ecd);
 
 
-    vector<double> block3conv1summands16;
-    string path6a = "/app/examples/kernel/summands/" + string("block3conv1summands16");
+    vector<Plaintext> block3conv1summands16;
+    vector<double> temp6a;
+    string path6a = "/app/HEAAN-ResNet/kernel/summands/" + string("block3conv1summands16");
+    txtreader(temp6a, path6a);
 
-    txtreader(block3conv1summands16, path5a);
+    for (int i=0; i<16; ++i){
+        Message msg(log_slots, temp6a[i]);
+        block3conv1summands16.push_back(ecd.encode(msg));
+    }
 
     
     // RB 3
@@ -287,7 +353,13 @@ int main() {
     ctxt_RB3_out = RB(context, pack, eval, 0, ctxt_RB2_out, block3conv0multiplicands16_16_3_3, block3conv1multiplicands16_16_3_3,
     block3conv0summands16, block3conv1summands16);
     timer.end();
-    cout << "DONE!" << "\n";
+    cout << "DONE!, decrypted message is ... " << "\n";
+
+    dec.decrypt(ctxt_RB3_out[0][0], sk, dmsg);
+    printMessage(dmsg);
+
+    cout << "\n";
+    
     
 
     //memory delete 
@@ -309,39 +381,57 @@ int main() {
     // DSB 1 - res
     vector<double> temp7;
     vector<vector<vector<Plaintext>>> block4conv_onebyone_multiplicands32_16_1_1(32, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
-    string path7 = "/app/examples/kernel/multiplicands/" + string("block4conv_onebyone_multiplicands32_16_1_1");
+    string path7 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block4conv_onebyone_multiplicands32_16_1_1");
     txtreader(temp7, path7);
     kernel_ptxt(context, temp7, block4conv_onebyone_multiplicands32_16_1_1, 12, 1, 2, 32, 16, 1, ecd);
 
     
-    vector<double> block4conv_onebyone_summands32;
-    string path7a = "/app/examples/kernel/summands/" + string("block4conv_onebyone_summands16");
-    txtreader(block4conv_onebyone_summands32, path7a);
+    vector<Plaintext> block4conv_onebyone_summands32;
+    vector<double> temp7a;
+    string path7a = "/app/HEAAN-ResNet/kernel/summands/" + string("block4conv_onebyone_summands32");
+    txtreader(temp7a, path7a);
+
+    for (int i=0; i<32; ++i){
+        Message msg(log_slots, temp7a[i]);
+        block4conv_onebyone_summands32.push_back(ecd.encode(msg));
+    }
     
     // DSB 1 - 1
     vector<double> temp8;
     vector<vector<vector<Plaintext>>> block4conv0multiplicands32_16_3_3(32, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
-    string path8 = "/app/examples/kernel/multiplicands/" + string("block4conv0multiplicands32_16_3_3");
+    string path8 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block4conv0multiplicands32_16_3_3");
     txtreader(temp8, path8);
     kernel_ptxt(context, temp8, block4conv0multiplicands32_16_3_3, 12, 1, 2, 32, 16, 3, ecd);
 
 
-    vector<double> block4conv0summands32;
-    string path8a = "/app/examples/kernel/summands/" + string("block4conv0summands32");
-    txtreader(block4conv0summands32, path8a);
+    vector<Plaintext> block4conv0summands32;
+    vector<double> temp8a;
+    string path8a = "/app/HEAAN-ResNet/kernel/summands/" + string("block4conv0summands32");
+    txtreader(temp8a, path8a);
+
+    for (int i=0; i<32; ++i){
+        Message msg(log_slots, temp8a[i]);
+        block4conv0summands32.push_back(ecd.encode(msg));
+    }
     
     
     // DSB 1 - 2
     vector<double> temp9;
     vector<vector<vector<Plaintext>>> block4conv1multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
-    string path9 = "/app/examples/kernel/multiplicands/" + string("block4conv1multiplicands32_32_3_3");
+    string path9 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block4conv1multiplicands32_32_3_3");
     txtreader(temp9, path9);
     kernel_ptxt(context, temp9, block4conv1multiplicands32_32_3_3, 12, 2, 1, 32, 32, 3, ecd);
 
 
-    vector<double> block4conv1summands32;
-    string path9a = "/app/examples/kernel/summands/" + string("block4conv1summands32");
-    txtreader(block4conv1summands32, path9a);
+    vector<Plaintext> block4conv1summands32;
+    vector<double> temp9a;
+    string path9a = "/app/HEAAN-ResNet/kernel/summands/" + string("block4conv1summands32");
+    txtreader(temp9a, path9a);
+
+    for (int i=0; i<32; ++i){
+        Message msg(log_slots, temp9a[i]);
+        block4conv1summands32.push_back(ecd.encode(msg));
+    }
 
     
     // DSB 1
@@ -375,28 +465,40 @@ int main() {
         // RB 4 - 1
     vector<double> temp10;
     vector<vector<vector<Plaintext>>> block5conv0multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
-    string path10 = "/app/examples/kernel/multiplicands/" + string("block5conv0multiplicands32_32_3_3");
+    string path10 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block5conv0multiplicands32_32_3_3");
     txtreader(temp10, path10);
     kernel_ptxt(context, temp10, block5conv0multiplicands32_32_3_3, 12, 2, 1, 32, 32, 3, ecd);
     
     
-    vector<double> block5conv0summands32;
-    string path10a = "/app/examples/kernel/summands/" + string("block5conv0summands32");
-    txtreader(block5conv0summands32, path10a);
+    vector<Plaintext> block5conv0summands32;
+    vector<double> temp10a;
+    string path10a = "/app/HEAAN-ResNet/kernel/summands/" + string("block5conv0summands32");
+    txtreader(temp10a, path10a);
+
+    for (int i=0; i<32; ++i){
+        Message msg(log_slots, temp10a[i]);
+        block5conv0summands32.push_back(ecd.encode(msg));
+    }
     
     
     // RB 4 - 2
     vector<double> temp11;
     vector<vector<vector<Plaintext>>> block5conv1multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
-    string path11 = "/app/examples/kernel/multiplicands/" + string("block5conv1multiplicands32_32_3_3");
+    string path11 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block5conv1multiplicands32_32_3_3");
     txtreader(temp11, path11);
     kernel_ptxt(context, temp11, block5conv1multiplicands32_32_3_3, 12, 2, 1, 32, 32, 3, ecd);
     
     
-    vector<double> block5conv1summands32;
-    string path11a = "/app/examples/kernel/summands/" + string("block5conv1summands32");
-    txtreader(block5conv1summands32, path11a);
+    vector<Plaintext> block5conv1summands32;
+    vector<double> temp11a;
+    string path11a = "/app/HEAAN-ResNet/kernel/summands/" + string("block5conv1summands32");
+    txtreader(temp11a, path11a);
 
+    for (int i=0; i<32; ++i){
+        Message msg(log_slots, temp11a[i]);
+        block5conv1summands32.push_back(ecd.encode(msg));
+    }
+    
     
     // RB 4
     cout << "RB 4..." << endl;
@@ -426,25 +528,38 @@ int main() {
     // RB 5 - 1
     vector<double> temp12;
     vector<vector<vector<Plaintext>>> block6conv0multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
-    string path12 = "/app/examples/kernel/multiplicands/" + string("block6conv0multiplicands32_32_3_3");
+    string path12 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block6conv0multiplicands32_32_3_3");
     txtreader(temp12, path12);
     kernel_ptxt(context, temp12, block6conv0multiplicands32_32_3_3, 12, 2, 1, 32, 32, 3, ecd);
 
-    vector<double> block6conv0summands32;
-    string path12a = "/app/examples/kernel/summands/" + string("block6conv0summands32");
-    txtreader(block6conv0summands32, path12a);
+    vector<Plaintext> block6conv0summands32;
+    vector<double> temp12a;
+    string path12a = "/app/HEAAN-ResNet/kernel/summands/" + string("block6conv0summands32");
+    txtreader(temp12a, path12a);
+
+    for (int i=0; i<32; ++i){
+        Message msg(log_slots, temp12a[i]);
+        block6conv0summands32.push_back(ecd.encode(msg));
+    }
     
     // RB 5 - 2
     vector<double> temp13;
     vector<vector<vector<Plaintext>>> block6conv1multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
-    string path13 = "/app/examples/kernel/multiplicands/" + string("block6conv1multiplicands32_32_3_3");
+    string path13 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block6conv1multiplicands32_32_3_3");
     txtreader(temp13, path13);
     kernel_ptxt(context, temp13, block6conv1multiplicands32_32_3_3, 12, 2, 1, 32, 32, 3, ecd);
 
     
-    vector<double> block6conv1summands32;
-    string path13a = "/app/examples/kernel/summands/" + string("block6conv1summands32");
-    txtreader(block6conv1summands32, path13a);
+    vector<Plaintext> block6conv1summands32;
+    vector<double> temp13a;
+    string path13a = "/app/HEAAN-ResNet/kernel/summands/" + string("block6conv1summands32");
+    txtreader(temp13a, path13a);
+
+    for (int i=0; i<32; ++i){
+        Message msg(log_slots, temp13a[i]);
+        block6conv1summands32.push_back(ecd.encode(msg));
+    }
+    
 
     
     // RB 5
@@ -454,7 +569,13 @@ int main() {
     ctxt_RB5_out = RB(context, pack, eval, 1, ctxt_RB4_out, block6conv0multiplicands32_32_3_3, block6conv1multiplicands32_32_3_3,
     block6conv0summands32, block6conv1summands32);
     timer.end();
-    cout << "DONE!" << "\n";
+    cout << "DONE!, decrypted message is ... " << "\n";
+
+    dec.decrypt(ctxt_RB5_out[0][0], sk, dmsg);
+    printMessage(dmsg);
+
+    cout << "\n";
+    
     
 
 
@@ -475,37 +596,55 @@ int main() {
     // DSB 2
     vector<double> temp14;
     vector<vector<vector<Plaintext>>> block7conv_onebyone_multiplicands64_32_1_1(64, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
-    string path14 = "/app/examples/kernel/multiplicands/" + string("block7conv_onebyone_multiplicands64_32_1_1");
+    string path14 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block7conv_onebyone_multiplicands64_32_1_1");
     txtreader(temp14, path14);
     kernel_ptxt(context, temp14, block7conv_onebyone_multiplicands64_32_1_1, 12, 2, 2, 64, 32, 1, ecd);
 
 
-    vector<double> block7conv_onebyone_summands64;
-    string path14a = "/app/examples/kernel/summands/" + string("block7conv_onebyone_summands64");
-    txtreader(block7conv_onebyone_summands64, path14a);
+    vector<Plaintext> block7conv_onebyone_summands64;
+    vector<double> temp14a;
+    string path14a = "/app/HEAAN-ResNet/kernel/summands/" + string("block7conv_onebyone_summands64");
+    txtreader(temp14a, path14a);
+
+    for (int i=0; i<64; ++i){
+        Message msg(log_slots, temp14a[i]);
+        block7conv_onebyone_summands64.push_back(ecd.encode(msg));
+    }
     
     
     vector<double> temp15;
     vector<vector<vector<Plaintext>>> block7conv0multiplicands64_32_3_3(64, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
-    string path15 = "/app/examples/kernel/multiplicands/" + string("block7conv0multiplicands64_32_3_3");
+    string path15 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block7conv0multiplicands64_32_3_3");
     txtreader(temp15, path15);
     kernel_ptxt(context, temp15, block7conv0multiplicands64_32_3_3, 12, 2, 2, 64, 32, 3, ecd);
 
     
-    vector<double> block7conv0summands64;
-    string path15a = "/app/examples/kernel/summands/" + string("block7conv0summands64");
-    txtreader(block7conv0summands64, path15a);
+    vector<Plaintext> block7conv0summands64;
+    vector<double> temp15a;
+    string path15a = "/app/HEAAN-ResNet/kernel/summands/" + string("block7conv0summands64");
+    txtreader(temp15a, path15a);
+
+    for (int i=0; i<64; ++i){
+        Message msg(log_slots, temp15a[i]);
+        block7conv0summands64.push_back(ecd.encode(msg));
+    }
     
 
     vector<double> temp16;
     vector<vector<vector<Plaintext>>> block7conv1multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
-    string path16 = "/app/examples/kernel/multiplicands/" + string("block7conv1multiplicands64_64_3_3");
+    string path16 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block7conv1multiplicands64_64_3_3");
     txtreader(temp16, path16);
     kernel_ptxt(context, temp16, block7conv1multiplicands64_64_3_3, 12, 4, 1, 64, 64, 3, ecd);
     
-    vector<double> block7conv1summands64;
-    string path16a = "/app/examples/kernel/summands/" + string("block7conv1summands64");
-    txtreader(block7conv1summands64, path16a);
+    vector<Plaintext> block7conv1summands64;
+    vector<double> temp16a;
+    string path16a = "/app/HEAAN-ResNet/kernel/summands/" + string("block7conv1summands64");
+    txtreader(temp16a, path16a);
+
+    for (int i=0; i<64; ++i){
+        Message msg(log_slots, temp16a[i]);
+        block7conv1summands64.push_back(ecd.encode(msg));
+    }
 
     
     // DSB 2
@@ -540,24 +679,36 @@ int main() {
     // RB 6
     vector<double> temp17;
     vector<vector<vector<Plaintext>>> block8conv0multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
-    string path17 = "/app/examples/kernel/multiplicands/" + string("block8conv0multiplicands64_64_3_3");
+    string path17 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block8conv0multiplicands64_64_3_3");
     txtreader(temp17, path17);
     kernel_ptxt(context, temp17, block8conv0multiplicands64_64_3_3, 12, 4, 1, 64, 64, 3, ecd);
 
-    vector<double> block8conv0summands64;
-    string path17a = "/app/examples/kernel/summands/" + string("block8conv0summands64");
-    txtreader(block8conv0summands64, path17a);
+    vector<Plaintext> block8conv0summands64;
+    vector<double> temp17a;
+    string path17a = "/app/HEAAN-ResNet/kernel/summands/" + string("block8conv0summands64");
+    txtreader(temp17a, path17a);
+
+    for (int i=0; i<64; ++i){
+        Message msg(log_slots, temp17a[i]);
+        block8conv0summands64.push_back(ecd.encode(msg));
+    }
     
     
     vector<double> temp18;
     vector<vector<vector<Plaintext>>> block8conv1multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
-    string path18 = "/app/examples/kernel/multiplicands/" + string("block8conv1multiplicands64_64_3_3");
+    string path18 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block8conv1multiplicands64_64_3_3");
     txtreader(temp18, path18);
     kernel_ptxt(context, temp18, block8conv1multiplicands64_64_3_3, 12, 4, 1, 64, 64, 3, ecd);
 
-    vector<double> block8conv1summands64;
-    string path18a = "/app/examples/kernel/summands/" + string("block8conv1summands64");
-    txtreader(block8conv0summands64, path18a);
+    vector<Plaintext> block8conv1summands64;
+    vector<double> temp18a;
+    string path18a = "/app/HEAAN-ResNet/kernel/summands/" + string("block8conv1summands64");
+    txtreader(temp18a, path18a);
+
+    for (int i=0; i<64; ++i){
+        Message msg(log_slots, temp18a[i]);
+        block8conv1summands64.push_back(ecd.encode(msg));
+    }
 
     
     // RB 6
@@ -588,24 +739,36 @@ int main() {
     // RB 7
     vector<double> temp19;
     vector<vector<vector<Plaintext>>> block9conv0multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
-    string path19 = "/app/examples/kernel/multiplicands/" + string("block9conv0multiplicands64_64_3_3");
+    string path19 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block9conv0multiplicands64_64_3_3");
     txtreader(temp19, path19);
     kernel_ptxt(context, temp19, block9conv0multiplicands64_64_3_3, 12, 4, 1, 64, 64, 3, ecd);
 
-    vector<double> block9conv0summands64;
-    string path19a = "/app/examples/kernel/summands/" + string("block9conv0summands64");
-    txtreader(block9conv0summands64, path19a);
+    vector<Plaintext> block9conv0summands64;
+    vector<double> temp19a;
+    string path19a = "/app/HEAAN-ResNet/kernel/summands/" + string("block9conv0summands64");
+    txtreader(temp19a, path19a);
+
+    for (int i=0; i<64; ++i){
+        Message msg(log_slots, temp19a[i]);
+        block9conv0summands64.push_back(ecd.encode(msg));
+    }
     
 
     vector<double> temp20;
     vector<vector<vector<Plaintext>>> block9conv1multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
-    string path20 = "/app/examples/kernel/multiplicands/" + string("block9conv1multiplicands64_64_3_3");
+    string path20 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block9conv1multiplicands64_64_3_3");
     txtreader(temp20, path20);
     kernel_ptxt(context, temp20, block9conv1multiplicands64_64_3_3, 12, 4, 1, 64, 64, 3, ecd);
     
-    vector<double> block9conv1summands64;
-    string path20a = "/app/examples/kernel/summands/" + string("block9conv1summands64");
-    txtreader(block9conv1summands64, path20a);
+    vector<Plaintext> block9conv1summands64;
+    vector<double> temp20a;
+    string path20a = "/app/HEAAN-ResNet/kernel/summands/" + string("block9conv1summands64");
+    txtreader(temp20a, path20a);
+
+    for (int i=0; i<64; ++i){
+        Message msg(log_slots, temp20a[i]);
+        block9conv1summands64.push_back(ecd.encode(msg));
+    }
 
     
      // RB 7
@@ -615,9 +778,13 @@ int main() {
     ctxt_RB7_out = RB(context, pack, eval, 2, ctxt_RB6_out, block9conv0multiplicands64_64_3_3, block9conv1multiplicands64_64_3_3,
     block9conv0summands64, block9conv1summands64);
     timer.end();
-    cout << "DONE!" << "\n";
-    
+    cout << "DONE!, decrypted message is ... " << "\n";
 
+    dec.decrypt(ctxt_RB7_out[0][0], sk, dmsg);
+    printMessage(dmsg);
+
+    cout << "\n";
+    
 
     //memory delete
     ctxt_RB6_out.clear();
@@ -632,78 +799,84 @@ int main() {
     block9conv1summands64.shrink_to_fit();
 
 
+    // Avg Pool
+    cout << "evaluating Avgpool" << endl;
+    vector<Ciphertext> ctxt_avgp_out;
+    timer.start("* ");
+    ctxt_avgp_out = Avgpool(context, pack, eval, ctxt_RB7_out[0]);
+    timer.end();
 
-    // // Average Pooling, Flatten, FC64
-    // // Avg Pool
-    // cout << "evaluating Avgpool" << endl;
-    // timer.start("* ");
-    // ctxt = Avgpool(context, pack, eval, ctxt);
-    // timer.end();
-    // dec.decrypt(ctxt, sk, dmsg);
-    // cout << "avgpool message: " << endl;
-    // printMessage(dmsg, false, 64, 64);
 
-    // ptxt = ecd.encode(uni, 5, 0);
-    // for (size_t i = 0; i < 10; ++i) {
-    //     ptxt_vec.push_back(ptxt);
-    // }
+    //FC64 setup...
+    vector<double> temp21;
+    vector<vector<Plaintext>> fclayermultiplicands10_64(10, vector<Plaintext>(64, ptxt_init));
+    string path21 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("fclayermultiplicands10_64");
+    txtreader(temp21, path21);
 
-    // // FC64
-    // cout << "evaluating FC64" << endl;
-    // timer.start("* ");
-    // ctxt_FC64_out = FC64old(context, pack, eval, ctxt, ptxt_vec);
-    // timer.end();
-    // // dec.decrypt(ctxt_out, sk, dmsg);
-    // // cout << "decrypted message after FC64: " << endl;
-    // // printMessage(dmsg, false, 64, 64);
-    // // //(0, 8, 16, 24, 256, 264, 272, 280, 512, 520)
-    // // cout << "actual result:" << endl << "[ ";
-    // // cout << dmsg[0].real() << ", "<< dmsg[8].real() << ", "<< dmsg[16].real() << ", "<< dmsg[24].real() << ", "
-    // // << dmsg[256].real() << ", "<< dmsg[264].real() << ", "<< dmsg[272].real() << ", "<< dmsg[280].real() << ", "
-    // // << dmsg[512].real() << ", "<< dmsg[520].real() << " ]" << endl;
-    // // //must be all same
+    for (int i=0; i<10; ++i){
+        for (int j=0; j<64; ++j){
+            Message msg(log_slots, temp21[64*i+j]);
+            fclayermultiplicands10_64[i][j]=ecd.encode(msg);
+        }
+    }
 
-    // for (size_t i = 0; i < 8; ++i) {
-    //     for (size_t j = 0; j < 8; ++j) {
-    //         eval.leftRotate(msg, 4*i+32*4*j, msg_tmp);
-    //         eval.add(msg_tmp0, msg_tmp, msg_tmp0);
-    //     }
-    // }
-    // eval.mult(msg_tmp0, uni, msg_tmp0);
-    // for (size_t i = 0; i < 4; ++i) {
-    //     for (size_t j = 0; j < 4; ++j) {
-    //         for (size_t k = 0; k < 4; ++k) {
-    //             eval.leftRotate(msg_tmp0, i+32*j+32*32*k, msg_tmp);
-    //             eval.add(msg_out, msg_tmp, msg_out);
-    //         }
-    //     }
-    // }
-    // cout << "target value: " << endl;
-    // cout << msg_out[0] << endl;
+    vector<double> temp21a;
+    vector<Plaintext> fclayersummands10(10, ptxt_init);
+    string path21a = "/app/HEAAN-ResNet/kernel/summands/" + string("fclayersummands10");
+    txtreader(temp21a, path21a);
 
-    
+    for(int i=0; i<10; ++i){
+        Message msg(log_slots, temp21a[i]);
+        fclayersummands10[i]=ecd.encode(msg);
+    }
+
+
+    // FC64
+    cout << "evaluating FC64 layer" << endl;
+
+    vector<Ciphertext> ctxt_result;
+    timer.start("* ");
+    ctxt_result = FC64(context, pack, eval, ctxt_avgp_out, fclayermultiplicands10_64, fclayersummands10);
+    timer.end();
 
 
 
+    // Last Step; enumerating
+    vector<vector<double>> final_result(512, vector<double>(10, 0));
 
+    for(int j=0; j<10; ++j){
+        Message dmsg1;
+        dec.decrypt(ctxt_result[j], sk, dmsg1);
 
+        for(int i=0; i<32; ++i){
+            final_result[16*i][j] = dmsg1[1024*i].real();
+            final_result[16*i+1][j] = dmsg1[1024*i+1].real();
+            final_result[16*i+2][j] = dmsg1[1024*i+2].real();
+            final_result[16*i+3][j] = dmsg1[1024*i+3].real();
+            final_result[16*i+4][j] = dmsg1[1024*i+32].real();
+            final_result[16*i+5][j] = dmsg1[1024*i+33].real();
+            final_result[16*i+6][j] = dmsg1[1024*i+34].real();
+            final_result[16*i+7][j] = dmsg1[1024*i+35].real();
+            final_result[16*i+8][j] = dmsg1[1024*i+64].real();
+            final_result[16*i+9][j] = dmsg1[1024*i+65].real();
+            final_result[16*i+10][j] = dmsg1[1024*i+66].real();
+            final_result[16*i+11][j] = dmsg1[1024*i+67].real();
+            final_result[16*i+12][j] = dmsg1[1024*i+96].real();
+            final_result[16*i+13][j] = dmsg1[1024*i+97].real();
+            final_result[16*i+14][j] = dmsg1[1024*i+98].real();
+            final_result[16*i+15][j] = dmsg1[1024*i+99].real();
+        }
+    }
 
+    cout<<"Finaly, DONE!!!... output is ..." <<"\n";
 
-
-    
-    
-
-
-    // /////////////// Decryption ////////////////
-    // for (int i = 0; i < 4; ++i) {
-    //     for (int ch = 0; ch < 32; ++ch) {
-    //         Message dmsg;
-    //         cout << "Decrypt ... ";
-    //         dec.decrypt(ctxt_out[i][ch], sk, dmsg);
-    //         cout << "done" << endl;
-    //         // printMessage(dmsg);
-    //     }
-    // }
+    for (int i=0; i<5; ++i){
+        for (int j=0; j<10; ++j){
+            cout << final_result[0][j] << " ";
+        }
+        cout << "\n";
+    }
+    cout << "\n";
 
     return 0;
 }
