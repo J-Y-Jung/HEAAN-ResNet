@@ -82,7 +82,7 @@ int main() {
 	
 	HEaaN::EnDecoder ecd(context);
     HEaaN::Plaintext ptxt(context);
-	ptxt = ecd.encode(msg, 12, 0);
+	ptxt = ecd.encode(msg, 1, 0);
 	
     HEaaN::Ciphertext ctxt(context);
     std::cout << "Encrypt ... " << std::endl;
@@ -111,6 +111,7 @@ int main() {
 	
 	/////////////// Decryption ////////////////
     HEaaN::Message dmsg;
+	std::cout << "level:" << ctxt_out[0].getLevel();
     std::cout << "Decrypt ... ";
     dec.decrypt(ctxt_out[0], sk, dmsg);
     std::cout << "done" << std::endl;

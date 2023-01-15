@@ -99,10 +99,14 @@ vector<HEaaN::Ciphertext> FC64(HEaaN::Context context, HEaaN::KeyPack pack, HEaa
     vector<HEaaN::Ciphertext> v(64, zero_ct);
     vector<HEaaN::Ciphertext> out(10, zero_ct);
     vector<vector<HEaaN::Ciphertext>> tmp(10, v);
-    
+    int level1 = ctxt[0].getLevel();
+    int level2 = ptxt[0][0].getLevel();
     for (u64 i=0;i<10 ;i++){
 		#pragma omp parallel for 
         for (u64 j=0;j<64 ;j++){
+			if(level1 != level2){
+				ptxt[i][j].setLevel(level1);
+			}
             eval.multWithoutRescale(ctxt[j], ptxt[i][j], tmp[i][j]);
         }
 		for (u64 j=1;j<64 ;j++){
