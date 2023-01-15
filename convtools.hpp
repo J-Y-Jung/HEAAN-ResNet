@@ -7,30 +7,6 @@ namespace {
 using namespace HEaaN;
 using namespace std;
 }
-void printMessage(const Message &msg, bool is_complex = true,
-                  size_t start_num = 64, size_t end_num = 64) {
-    const size_t msg_size = msg.getSize();
-
-    cout << "[ ";
-    for (size_t i = 0; i < start_num; ++i) {
-        if (is_complex)
-            cout << msg[i] << ", ";
-        else
-            cout << msg[i].real() << ", ";
-    }
-    cout << "..., ";
-    for (size_t i = end_num; i > 1; --i) {
-        if (is_complex)
-            cout << msg[msg_size - i] << ", ";
-        else
-            cout << msg[msg_size - i].real() << ", ";
-    }
-    if (is_complex)
-        cout << msg[msg_size - 1] << " ]" << endl;
-    else
-        cout << msg[msg_size - 1].real() << " ]" << endl;
-}
-
 
 /*weight index : (weight_row_idx, weight_col_idx) 
 for 3-by-3 kernel
@@ -189,9 +165,9 @@ void weightToPtxt(Plaintext &ptxt, u64 level, double weight,
                 if (i%2==0 && (i%64)<32){            
                     msg[idx].real(weight);
                 }
-				else{
-					msg[idx].real(0.0);
-				}
+		else{
+			msg[idx].real(0.0);
+		}
             }
         }
     }
@@ -205,9 +181,9 @@ void weightToPtxt(Plaintext &ptxt, u64 level, double weight,
                     if (m%4<2 && l%4<2){    
                         msg[idx].real(weight);
                     }
-					else{
-						msg[idx].real(0.0);
-					}
+			else{
+				msg[idx].real(0.0);
+			}
                 }
             }
         }    
