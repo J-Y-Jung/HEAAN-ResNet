@@ -23,10 +23,10 @@ void levelDownBundle(HEaaN::Context context, HEaaN::KeyPack pack, HEaaN::HomEval
 
 void levelDownVector(HEaaN::Context context, HEaaN::KeyPack pack, HEaaN::HomEvaluator eval, 
 					vector<HEaaN::Ciphertext>& ctxt_vector, u64 target_level){
-	u64 d1 = ctxt_bundle.size();
+	u64 d1 = ctxt_vector.size();
 	#pragma omp parallel for
 	for (u64 i=0; i<d1; i++){
-		eval.levelDown(ctxt_bundle[i], target_level, ctxt_bundle[i]);
+		eval.levelDown(ctxt_vector[i], target_level, ctxt_vector[i]);
 	}
 	return;
 }
