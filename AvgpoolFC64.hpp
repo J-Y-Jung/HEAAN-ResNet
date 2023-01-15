@@ -3,6 +3,7 @@
 #include <omp.h>
 #include "HEaaN/heaan.hpp"
 #include "rotsum.hpp"
+#include "leveldown.hpp"
 
 namespace {
 //using namespace HEaaN::;
@@ -16,6 +17,7 @@ HEaaN::Ciphertext singleAvgpool(HEaaN::Context context, HEaaN::KeyPack pack, HEa
 }
 
 vector<HEaaN::Ciphertext> Avgpool(HEaaN::Context context, HEaaN::KeyPack pack, HEaaN::HomEvaluator eval, vector<HEaaN::Ciphertext> &ctxt) {
+	levelDownVector(ctxt, 1);
     #pragma omp parallel for
     for (u64 i=0; i<ctxt.size();i++){
         ctxt[i] = singleAvgpool(context, pack, eval, ctxt[i]);
