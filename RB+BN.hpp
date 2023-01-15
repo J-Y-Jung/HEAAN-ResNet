@@ -39,7 +39,7 @@ vector<Plaintext>& BN2_add) {
     std::cout << "DONE!" << "\n";
 
     cout << "Adding BN-(main flow) ..." << endl;
-    addBNsummands(context, eval,ctxt_conv_out_bundle, BN1_add, 16/pow(4, DSB_count), 16*pow(2, DSB_count)); // 마지막 두개가 뭐지..
+    addBNsummands(context, eval,ctxt_conv_out_bundle, BN1_add, 16/pow(4, DSB_count), 16*pow(2, DSB_count));
     cout << "DONE!" << "\n";
 
 
