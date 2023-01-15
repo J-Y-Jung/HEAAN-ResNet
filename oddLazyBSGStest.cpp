@@ -85,7 +85,7 @@ int main() {
     std::cout << std::endl << "Number of slots = " << num_slots << std::endl;
 
     for (size_t i = 0; i < num_slots; ++i) {
-        msg[i].real((double)pow(-1, i));
+        msg[i].real((double)(pow(-1, i)/33));
         msg[i].imag(0.0);
     }
 
@@ -106,7 +106,7 @@ int main() {
     std::cout << "done" << std::endl;
 
 
-    //test for evalPoly
+    cout << "test for evalPoly..." <<"\n";
     constexpr const HEaaN::Real POLY_COEFF[] = { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 ,1 };
 
     vector<double> polynomial = { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 ,1 };
@@ -143,8 +143,9 @@ int main() {
     std::cout << std::endl << "Decrypted result vector : " << std::endl;
     printMessage(dmsg1, false);
 
-    //test for AReLu.
 
+
+    cout << "test for AReLu..." <<"\n";
     cout << "Evaluating approximate ReLU function homomorphically ..."
         << endl;
 

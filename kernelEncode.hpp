@@ -26,27 +26,6 @@
 
 void kernel_ptxt(Context context, vector<double>& weight, vector<vector<vector<Plaintext>>>& output, u64 level, u64 gap_in, u64 stride, const int out_ch, const int in_ch, const int ker_size, EnDecoder ecd) {
 
-    //if (ker_size == 3) {
-    //    for (int k = 0; k < 3; ++k) {
-    //        for (int l = 0; l < 3; ++l) {
-
-    //            vector<vector<double>> temp(out_ch, vector<double>(in_ch, 0));
-
-    //            //                 for (int i = 0; i < out_ch; ++i) {
-    //            //                     for (int j = 0; j < in_ch; ++j) {
-    //            //                         temp[i][j] = weight[in_ch * 9 * i + 9 * j + 3 * k + l];
-    //            //                     }
-    //            //                 }
-
-    //            for (int i = 0; i < out_ch; ++i) {
-    //                for (int j = 0; j < in_ch; ++j) {
-    //                    weightToPtxt(output[i][j][3 * k + l], level, temp, gap_in, stride, (u64)k, (u64)l, ecd);
-    //                }
-    //            }
-    //        }
-    //    }
-    //    return;
-    //}
 
     if (ker_size == 3) {
         for (int i = 0; i < out_ch; ++i) {
@@ -60,26 +39,7 @@ void kernel_ptxt(Context context, vector<double>& weight, vector<vector<vector<P
         }
         return;
     }
-
-
-    //if (ker_size == 1) { //output vector is out_ch * in_ch * 1
-
-    //    vector<vector<double>> temp(out_ch, vector<double>(in_ch, 0));
-
-    //    //         for (int i = 0; i < out_ch; ++i) {
-    //    //             for (int j = 0; j < in_ch; ++j) {
-    //    //                 temp[i][j] = weight[in_ch * i + j];
-    //    //             }
-    //    //         }
-
-    //    for (int i = 0; i < out_ch; ++i) {
-    //        for (int j = 0; j < in_ch; ++j) {
-    //            weightToPtxt(output[i][j][0], level, temp, gap_in, stride, (u64)1, (u64)1, ecd);
-    //        }
-    //    }
-    //    return;
-    //}
-
+    
     if (ker_size == 1) { //output vector is out_ch * in_ch * 1
         for (int i = 0; i < out_ch; ++i) {
             for (int j = 0; j < in_ch; ++j) {

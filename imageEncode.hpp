@@ -48,7 +48,7 @@ vector<double> slice(const std::vector<double>& input, int a, int b) {
 //    c.insert(c.end(), b.begin(), b.end());
 //}
 
-void imageCompiler(Context context, KeyPack pack, Encryptor enc, vector<double>& image, vector<Ciphertext>& output) {
+void imageCompiler(Context context, KeyPack pack, Encryptor enc, u64 level, vector<double>& image, vector<Ciphertext>& output) {
 
     Message msg1(15), msg2(15), msg3(15);
     auto num_slots = msg1.getSize();
@@ -83,9 +83,9 @@ void imageCompiler(Context context, KeyPack pack, Encryptor enc, vector<double>&
 
     Plaintext ptxt1(context), ptxt2(context), ptxt3(context);
 
-    enc.encrypt(msg1, pack, ctxt1);
-    enc.encrypt(msg2, pack, ctxt2);
-    enc.encrypt(msg3, pack, ctxt3);
+    enc.encrypt(msg1, pack, ctxt1, level, 0);
+    enc.encrypt(msg2, pack, ctxt2, level, 0);
+    enc.encrypt(msg3, pack, ctxt3, level, 0);
 
     output.push_back(ctxt1);
     output.push_back(ctxt2);

@@ -103,6 +103,7 @@ vector<Plaintext>& BN3_add) {
             cout << "(i = " << i << ", " << "ch = " << ch << ")" << "\n";
             Ciphertext ctxt_relu_out(context);
             ApproxReLU(context, eval, ctxt_MPP_out_bundle[i][ch], ctxt_relu_out);
+            eval.levelDown(ctxt_relu_out, 5, ctxt_relu_out);
             ctxt_relu_out_allch_bundle.push_back(ctxt_relu_out);
         }
         ctxt_relu_out_bundle.push_back(ctxt_relu_out_allch_bundle);
