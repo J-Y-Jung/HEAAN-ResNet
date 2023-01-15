@@ -1,5 +1,6 @@
 #include "kernelEncode.hpp"
 #include <math.h>
+#include "leveldown.hpp"
 
 namespace {
 using namespace HEaaN;
@@ -17,6 +18,9 @@ vector<Plaintext>& BN1_add,
 vector<Plaintext>& BN2_add) {
     ///////////////////////// SetUp ////////////////////////////////
     std::cout << "RB start" << "\n";
+
+    levelDownBundle(context, pack, eval, ctxt_bundle, 5);
+
     // int num_ctxt;
     // num_ctxt = ctxt_bundle.size();
 
@@ -58,6 +62,7 @@ vector<Plaintext>& BN2_add) {
             std::cout << ch << "\n";
             HEaaN::Ciphertext ctxt_relu_out(context);
             ApproxReLU(context, eval, ctxt_conv_out_bundle[i][ch], ctxt_relu_out);
+            eval.levelDown(ctxt_relu_out, 5, ctxt_relu_out);
             ctxt_relu_out_allch_bundle.push_back(ctxt_relu_out);
         }
         ctxt_relu_out_bundle.push_back(ctxt_relu_out_allch_bundle);
@@ -71,6 +76,7 @@ vector<Plaintext>& BN2_add) {
     std::vector<std::vector<HEaaN::Ciphertext>> ctxt_conv_out2_bundle;
     for (int i = 0; i < 16/pow(4, DSB_count); ++i) {
         std::vector<HEaaN::Ciphertext> ctxt_conv_out2_allch_bundle;
+        level
         ctxt_conv_out2_allch_bundle = Conv(context, pack, eval, 32, 1, 1, 16*pow(2, DSB_count), 16*pow(2, DSB_count), ctxt_relu_out_bundle[i], kernel_bundle2);
         ctxt_conv_out2_bundle.push_back(ctxt_conv_out2_allch_bundle);
     }
