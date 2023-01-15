@@ -76,7 +76,6 @@ vector<Plaintext>& BN2_add) {
     std::vector<std::vector<HEaaN::Ciphertext>> ctxt_conv_out2_bundle;
     for (int i = 0; i < 16/pow(4, DSB_count); ++i) {
         std::vector<HEaaN::Ciphertext> ctxt_conv_out2_allch_bundle;
-        level
         ctxt_conv_out2_allch_bundle = Conv(context, pack, eval, 32, 1, 1, 16*pow(2, DSB_count), 16*pow(2, DSB_count), ctxt_relu_out_bundle[i], kernel_bundle2);
         ctxt_conv_out2_bundle.push_back(ctxt_conv_out2_allch_bundle);
     }
