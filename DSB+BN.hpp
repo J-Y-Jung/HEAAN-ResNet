@@ -1,4 +1,5 @@
 #include "kernelEncode.hpp"
+#include <math.h>
 
 namespace {
 using namespace HEaaN;
@@ -31,9 +32,9 @@ vector<Plaintext>& BN3_add) {
     cout << "First Conv-(main flow) ..." << endl;
     cout << "level of ctxt is " << ctxt_bundle[0][0].getLevel() << "\n";
     vector<vector<Ciphertext>> ctxt_conv_out_bundle;
-    for (int i = 0; i < 16; ++i) { // 서로 다른 img
+    for (int i = 0; i < 16/pow(4, DSB_count); ++i) { // 서로 다른 img
         vector<Ciphertext> ctxt_conv_out_cache;
-        ctxt_conv_out_cache = Conv(context, pack, eval, 32, 1, 2, 16, 32, ctxt_bundle[i], kernel_bundle);
+        ctxt_conv_out_cache = Conv(context, pack, eval, 32, 1, 2, 16*pow(2, DSB_count), 32*pow(2, DSB_count), ctxt_bundle[i], kernel_bundle);
         ctxt_conv_out_bundle.push_back(ctxt_conv_out_cache);
     }
     cout << "level of ctxt is " << ctxt_conv_out_bundle[0][0].getLevel() << "\n";
@@ -45,9 +46,9 @@ vector<Plaintext>& BN3_add) {
     // MPP input bundle making
     cout << "MPP-(main flow, First Conv) ..." << endl;
     vector<vector<vector<Ciphertext>>> ctxt_MPP_in;
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4/pow(4, DSB_count); ++i) {
         vector<vector<Ciphertext>> ctxt_MPP_in_allch_bundle;
-        for (int ch = 0; ch < 32; ++ch) {
+        for (int ch = 0; ch < 32*pow(2, DSB_count); ++ch) {
             vector<Ciphertext> ctxt_MPP_in_cache;
             ctxt_MPP_in_cache.push_back(ctxt_conv_out_bundle[i+0][ch]);
             ctxt_MPP_in_cache.push_back(ctxt_conv_out_bundle[i+1][ch]);
@@ -64,9 +65,9 @@ vector<Plaintext>& BN3_add) {
     // ctxt_MPP_in 첫번째 : 4개씩 묶음 index 0이상 4미만, 두번째 : ch, 세번째 : ctxt 4개에 대한 index
     // MPP
     vector<vector<Ciphertext>> ctxt_MPP_out_bundle;
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4/pow(4, DSB_count); ++i) {
         vector<Ciphertext> ctxt_MPP_out;
-        for (int ch = 0; ch < 32; ++ch) {
+        for (int ch = 0; ch < 32*pow(2, DSB_count); ++ch) {
             Ciphertext ctxt_MPP_out_cache(context);
             ctxt_MPP_out_cache = MPPacking(context, pack, eval, 32, ctxt_MPP_in[i][ch]);
             ctxt_MPP_out.push_back(ctxt_MPP_out_cache);
@@ -78,7 +79,7 @@ vector<Plaintext>& BN3_add) {
     ctxt_MPP_in.shrink_to_fit();
     cout << "DONE!" << "\n";
     cout << "Adding BN-(main flow) ..." << endl;
-    addBNsummands(context,eval ,ctxt_MPP_out_bundle, BN1_add, 4, 32);
+    addBNsummands(context,eval ,ctxt_MPP_out_bundle, BN1_add, 4/pow(4, DSB_count), 32*pow(2, DSB_count));
     // for (int i = 0; i < 4; ++i) {
     //     for (int ch = 0; ch < 32; ++ch) {
     //         // Ciphertext ctxt_BN1_out_bundle_cache(context);
@@ -96,9 +97,9 @@ vector<Plaintext>& BN3_add) {
     // AppReLU
     cout << "AppReLU-(main flow) ..." << endl;
     vector<vector<Ciphertext>> ctxt_relu_out_bundle;
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4/pow(4, DSB_count); ++i) {
         vector<Ciphertext> ctxt_relu_out_allch_bundle;
-        for (int ch = 0; ch < 32; ++ch) {
+        for (int ch = 0; ch < 32*pow(2, DSB_count); ++ch) {
             cout << "(i = " << i << ", " << "ch = " << ch << ")" << "\n";
             Ciphertext ctxt_relu_out(context);
             ApproxReLU(context, eval, ctxt_MPP_out_bundle[i][ch], ctxt_relu_out);
@@ -114,9 +115,9 @@ vector<Plaintext>& BN3_add) {
     // Second convolution
     cout << "Second Conv-(main flow) ..." << endl;
     vector<vector<Ciphertext>> ctxt_conv_out2_bundle;
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4/pow(4, DSB_count); ++i) {
         vector<Ciphertext> ctxt_conv_out2_allch_bundle;
-        ctxt_conv_out2_allch_bundle = Conv(context, pack, eval, 32, 1, 1, 32, 32, ctxt_relu_out_bundle[i], kernel_bundle2);
+        ctxt_conv_out2_allch_bundle = Conv(context, pack, eval, 32, 1, 1, 32*pow(2, DSB_count), 32*pow(2, DSB_count), ctxt_relu_out_bundle[i], kernel_bundle2);
         ctxt_conv_out2_bundle.push_back(ctxt_conv_out2_allch_bundle);
     }
     //cout << "level of ctxt is " << ctxt_conv_out2_bundle[0][0].getLevel() << "\n";
@@ -133,9 +134,9 @@ vector<Plaintext>& BN3_add) {
     // Convolution
     cout << "Residual Conv-(residual flow) ..." << endl;
     vector<vector<Ciphertext>> ctxt_residual_out_bundle;
-    for (int i = 0; i < 16; ++i) { // 서로 다른 img
+    for (int i = 0; i < 16/pow(4, DSB_count); ++i) { // 서로 다른 img
         vector<Ciphertext> ctxt_residual_out_cache;
-        ctxt_residual_out_cache = Conv(context, pack, eval, 32, 1, 2, 16, 32, ctxt_bundle[i], kernel_residual_bundle);
+        ctxt_residual_out_cache = Conv(context, pack, eval, 32, 1, 2, 16*pow(2, DSB_count), 32*pow(2, DSB_count), ctxt_bundle[i], kernel_residual_bundle);
         //에러나면 push_back 해야 할 수도 있음
         ctxt_residual_out_bundle.push_back(ctxt_residual_out_cache);
     };
@@ -144,9 +145,9 @@ vector<Plaintext>& BN3_add) {
     // MPP input bundle making
     cout << "MPP-(residual flow) ..." << endl;
     vector<vector<vector<Ciphertext>>> ctxt_MPP_in2;
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4/pow(4, DSB_count); ++i) {
         vector<vector<Ciphertext>> ctxt_MPP_in_allch_bundle2;
-        for (int ch = 0; ch < 32; ++ch) {
+        for (int ch = 0; ch < 32*pow(2, DSB_count); ++ch) {
             vector<Ciphertext> ctxt_MPP_in_cache2;
             ctxt_MPP_in_cache2.push_back(ctxt_residual_out_bundle[i+0][ch]);
             ctxt_MPP_in_cache2.push_back(ctxt_residual_out_bundle[i+1][ch]);
@@ -162,9 +163,9 @@ vector<Plaintext>& BN3_add) {
 
     // MPP
     vector<vector<Ciphertext>> ctxt_MPP_out_bundle2;
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4/pow(4, DSB_count); ++i) {
         vector<Ciphertext> ctxt_MPP_out2;
-        for (int ch = 0; ch < 32; ++ch) {
+        for (int ch = 0; ch < 32*pow(2, DSB_count); ++ch) {
             Ciphertext ctxt_MPP_out_cache2(context);
             ctxt_MPP_out_cache2 = MPPacking(context, pack, eval, 32, ctxt_MPP_in2[i][ch]);
             ctxt_MPP_out2.push_back(ctxt_MPP_out_cache2);
@@ -177,23 +178,16 @@ vector<Plaintext>& BN3_add) {
     cout << "DONE!" << "\n";
 
     cout << "Adding BN-(main flow) ..." << endl;
-    addBNsummands(context, eval,ctxt_MPP_out_bundle2, BN3_add, 4, 32);
-    // for (int i = 0; i < 4; ++i) {
-    //     for (int ch = 0; ch < 32; ++ch) {
-    //         // Ciphertext ctxt_BN2_out_bundle_cache(context);
-    //         eval.add(ctxt_MPP_out_bundle[i][ch], BN2_add[ch], ctxt_MPP_out_bundle[i][ch]);
-    //         // ctxt_MPP_out_bundle[i][ch] = ctxt_BN2_out_bundle_cache;
-    //     }
-    // }
+    addBNsummands(context, eval,ctxt_MPP_out_bundle2, BN3_add, 4/pow(4, DSB_count), 32*pow(2, DSB_count));
     cout << "DONE!" << "\n";
 
 
     //////////////////////////// Main flow + Residual flow //////////////////////////////////
     cout << "Main flow + Residual flow ..." << endl;
     vector<vector<Ciphertext>> ctxt_residual_added;
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4/pow(4, DSB_count); ++i) {
         vector<Ciphertext> ctxt_residual_added_allch_bundle;
-        for (int ch = 0; ch < 32; ++ch) {
+        for (int ch = 0; ch < 32*pow(2, DSB_count); ++ch) {
             Ciphertext ctxt_residual_added_cache(context);
             eval.add(ctxt_conv_out2_bundle[i][ch], ctxt_MPP_out_bundle2[i][ch], ctxt_residual_added_cache);
             ctxt_residual_added_allch_bundle.push_back(ctxt_residual_added_cache);
@@ -211,9 +205,9 @@ vector<Plaintext>& BN3_add) {
     // Last AppReLU
     cout << "Last AppReLU ..." << endl;
     vector<vector<Ciphertext>> ctxt_DSB_out;
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4/pow(4, DSB_count); ++i) {
         vector<Ciphertext> ctxt_DSB_out_allch_bundle;
-        for (int ch = 0; ch < 32; ++ch) {
+        for (int ch = 0; ch < 32*pow(2, DSB_count); ++ch) {
             cout << "(i = " << i << ", " << "ch = " << ch << ")" << "\n";
             Ciphertext ctxt_DSB_out_cache(context);
             ApproxReLU(context, eval, ctxt_residual_added[i][ch], ctxt_DSB_out_cache);
