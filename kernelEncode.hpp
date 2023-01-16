@@ -32,7 +32,7 @@ void kernel_ptxt(Context context, vector<double>& weight, vector<vector<vector<P
             for (int j = 0; j < in_ch; ++j) {
                 for (int k = 0; k < 3; ++k) {
                     for (int l = 0; l < 3; ++l) {
-                        weightToPtxt(output[i][j][3 * k + l], level, weight[in_ch * 9 * i + 9 * j + 3 * k + l], gap_in, k , l, ecd);
+                        weightToPtxt(output[i][j][3 * k + l], level, weight[in_ch * 9 * i + 9 * j + 3 * k + l], gap_in, stride, k , l, ecd);
                     }
                 }
             }
@@ -43,7 +43,7 @@ void kernel_ptxt(Context context, vector<double>& weight, vector<vector<vector<P
     if (ker_size == 1) { //output vector is out_ch * in_ch * 1
         for (int i = 0; i < out_ch; ++i) {
             for (int j = 0; j < in_ch; ++j) {
-                weightToPtxt(output[i][j][0], level, weight[in_ch * i + j], gap_in, 1, 1, ecd);
+                weightToPtxt(output[i][j][0], level, weight[in_ch * i + j], gap_in, stride, 1, 1, ecd);
             }
         }
         return;
