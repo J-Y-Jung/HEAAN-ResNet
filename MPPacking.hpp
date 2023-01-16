@@ -20,105 +20,55 @@ std::vector<HEaaN::Ciphertext>& ctxt_bundle) {
     }
     int gap = (int)sqrt(num_ctxt);
     // std::cout << gap << "\n";
-
-    const auto log_slots = getLogFullSlots(context);
+	
+	// Rotate ctxts
     
-    // Making MPP masks
-    std::vector<HEaaN::Message> mask_bundle;
-    HEaaN::Message mask(log_slots);
-    std::optional<size_t> num;
-    // size_t length = num.has_value() ? num.value() : mask.getSize();
-
-    for (size_t idx = 0; idx < mask.getSize(); ++idx) {
-        mask[idx].real(0.0);
-        mask[idx].imag(0.0);
-    }
-    for (size_t idx = 0; idx < mask.getSize(); ++idx) {
-        mask[idx].real(1.0);
-        mask[idx].imag(0.0);
-        idx = idx + gap - 1;
-    }
-    // printMessage(mask);
-    for (int i = 0; i < mask.getSize(); ++i) {
-        if ((i/imgsize) % gap != 0) {
-            mask[i].real(0.0);
-            mask[i].imag(0.0);
-            // std::cout << i << '\n';
-        }
-    }
-    // printMessage(mask);
-    // std::cout << mask[0] << mask[imgsize] << mask[2*imgsize] << mask[3*imgsize] << "\n";
-    // mask_bundle.push_back(mask);
-
-
-
-    // Masking
-    std::vector<HEaaN::Ciphertext> ctxt_masked_bundle;
-    HEaaN::Ciphertext ctxt_masked_cache(context);
-    for (int i = 0; i < (gap*gap); i++) {
-        eval.mult(ctxt_bundle[i], mask, ctxt_masked_cache);
-        ctxt_masked_bundle.push_back(ctxt_masked_cache);
-    }
-
-    // Rotate masked ctxts
-    std::vector<HEaaN::Ciphertext> ctxt_rotated_bundle;
-    HEaaN::Ciphertext ctxt_rotated_bundle_cache(context);
-    if (gap == 2) {
-        ctxt_rotated_bundle.push_back(ctxt_masked_bundle[0]);
-        eval.leftRotate(ctxt_masked_bundle[1], -1, ctxt_rotated_bundle_cache);
-        ctxt_rotated_bundle.push_back(ctxt_rotated_bundle_cache);
-
-        eval.leftRotate(ctxt_masked_bundle[2], -imgsize, ctxt_rotated_bundle_cache);
-        ctxt_rotated_bundle.push_back(ctxt_rotated_bundle_cache);
-        eval.leftRotate(ctxt_masked_bundle[3], -imgsize-1, ctxt_rotated_bundle_cache);
-        ctxt_rotated_bundle.push_back(ctxt_rotated_bundle_cache);
-    } else if (gap == 4) {
-        ctxt_rotated_bundle.push_back(ctxt_masked_bundle[0]);
-        eval.leftRotate(ctxt_masked_bundle[1], -1, ctxt_rotated_bundle_cache);
-        ctxt_rotated_bundle.push_back(ctxt_rotated_bundle_cache);
-        eval.leftRotate(ctxt_masked_bundle[2], -2, ctxt_rotated_bundle_cache);
-        ctxt_rotated_bundle.push_back(ctxt_rotated_bundle_cache);
-        eval.leftRotate(ctxt_masked_bundle[3], -3, ctxt_rotated_bundle_cache);
-        ctxt_rotated_bundle.push_back(ctxt_rotated_bundle_cache);
-
-        eval.leftRotate(ctxt_masked_bundle[4], -imgsize, ctxt_rotated_bundle_cache);
-        ctxt_rotated_bundle.push_back(ctxt_rotated_bundle_cache);
-        eval.leftRotate(ctxt_masked_bundle[5], -imgsize-1, ctxt_rotated_bundle_cache);
-        ctxt_rotated_bundle.push_back(ctxt_rotated_bundle_cache);
-        eval.leftRotate(ctxt_masked_bundle[6], -imgsize-2, ctxt_rotated_bundle_cache);
-        ctxt_rotated_bundle.push_back(ctxt_rotated_bundle_cache);
-        eval.leftRotate(ctxt_masked_bundle[7], -imgsize-3, ctxt_rotated_bundle_cache);
-        ctxt_rotated_bundle.push_back(ctxt_rotated_bundle_cache);
-
-        eval.leftRotate(ctxt_masked_bundle[8], -(2*imgsize), ctxt_rotated_bundle_cache);
-        ctxt_rotated_bundle.push_back(ctxt_rotated_bundle_cache);
-        eval.leftRotate(ctxt_masked_bundle[9], -(2*imgsize)-1, ctxt_rotated_bundle_cache);
-        ctxt_rotated_bundle.push_back(ctxt_rotated_bundle_cache);
-        eval.leftRotate(ctxt_masked_bundle[10], -(2*imgsize)-2, ctxt_rotated_bundle_cache);
-        ctxt_rotated_bundle.push_back(ctxt_rotated_bundle_cache);
-        eval.leftRotate(ctxt_masked_bundle[11], -(2*imgsize)-3, ctxt_rotated_bundle_cache);
-        ctxt_rotated_bundle.push_back(ctxt_rotated_bundle_cache);
-
-        eval.leftRotate(ctxt_masked_bundle[12], -(3*imgsize), ctxt_rotated_bundle_cache);
-        ctxt_rotated_bundle.push_back(ctxt_rotated_bundle_cache);
-        eval.leftRotate(ctxt_masked_bundle[13], -(3*imgsize)-1, ctxt_rotated_bundle_cache);
-        ctxt_rotated_bundle.push_back(ctxt_rotated_bundle_cache);
-        eval.leftRotate(ctxt_masked_bundle[14], -(3*imgsize)-2, ctxt_rotated_bundle_cache);
-        ctxt_rotated_bundle.push_back(ctxt_rotated_bundle_cache);
-        eval.leftRotate(ctxt_masked_bundle[15], -(3*imgsize)-3, ctxt_rotated_bundle_cache);
-        ctxt_rotated_bundle.push_back(ctxt_rotated_bundle_cache);
-    }
-    ctxt_masked_bundle.clear();
-    ctxt_masked_bundle.shrink_to_fit();
-
+    // HEaaN::Ciphertext ctxt_rotated_bundle_cache(context);
+	HEaaN::Ciphertext ctxt_init(context);
+	std::vector<HEaaN::Ciphertext> ctxt_rotated_bundle(num_ctxt, ctxt_init);
+		
+	#pragma omp parallel for collapse(2)
+	for (int i = 0; i < gap; ++i) {
+        for (int j = 0; j < gap; ++j) {
+			eval.leftRotate(ctxt_bundle[gap*i+j], -(imgsize*i)-j, ctxt_rotated_bundle[gap*i+j]);
+		}
+	}
+	
+	ctxt_bundle.clear();
+	ctxt_bundle.shrink_to_fit();
+	
     // Sum
     HEaaN::Ciphertext ctxt_sum(context);
     ctxt_sum = ctxt_rotated_bundle[0];
-    for (int i = 1; i < (gap*gap); i++) {
+    for (int i = 1; i < num_ctxt; i++) {
         eval.add(ctxt_sum, ctxt_rotated_bundle[i], ctxt_sum);
     }
+	
+	if (gap == 2){
+		#pragma omp parallel
+		{
+			eval.add(ctxt_rotated_bundle[0], ctxt_rotated_bundle[1], ctxt_rotated_bundle[0]);
+			eval.add(ctxt_rotated_bundle[2], ctxt_rotated_bundle[3], ctxt_rotated_bundle[2]);
+		}
+		eval.add(ctxt_rotated_bundle[0], ctxt_rotated_bundle[2], ctxt_sum);
+	} else if (gap == 4){
+		#pragma omp parallel for
+		for (int i = 0; i < 8; ++i) {
+			eval.add(ctxt_rotated_bundle[2*i], ctxt_rotated_bundle[2*i+1], ctxt_rotated_bundle[2*i]);
+		}
+		#pragma omp parallel for
+		for (int i = 0; i < 4; ++i) {
+			eval.add(ctxt_rotated_bundle[4*i], ctxt_rotated_bundle[4*i+2], ctxt_rotated_bundle[4*i]);
+		}
+		#pragma omp parallel for
+		for (int i = 0; i < 2; ++i) {
+			eval.add(ctxt_rotated_bundle[8*i], ctxt_rotated_bundle[8*i+4], ctxt_rotated_bundle[8*i]);
+		}
+		eval.add(ctxt_rotated_bundle[0], ctxt_rotated_bundle[8], ctxt_sum);
+	}
 
-
+	ctxt_rotated_bundle.clear();
+	ctxt_rotated_bundle.shrink_to_fit();
 
     return ctxt_sum;
 }
