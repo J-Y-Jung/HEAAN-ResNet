@@ -42,8 +42,11 @@ find_package(HEaaN REQUIRED)
 ## add_executable(thread thread.cpp) 
 ## target_link_libraries(thread PUBLIC HEaaN::HEaaN)
 
-## add_executable(dsbtest DSB_test.cpp) 
-## target_link_libraries(dsbtest PUBLIC HEaaN::HEaaN)
+add_executable(rbbn RB+BN.cpp) 
+target_link_libraries(rbbn PUBLIC HEaaN::HEaaN)
+
+add_executable(conv Conv.cpp) 
+target_link_libraries(conv PUBLIC HEaaN::HEaaN)
 
 add_executable(inference Inference.cpp) 
 target_link_libraries(inference PUBLIC HEaaN::HEaaN)

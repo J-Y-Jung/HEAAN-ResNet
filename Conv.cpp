@@ -1,160 +1,175 @@
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-// Copyleft (C) 2021-2022 Crypto Lab Inc.                                    //
-//                                                                            //
-// - This file is part of HEaaN homomorphic encryption library.               //
-// - HEaaN cannot be copied and/or distributed without the express permission //
-//  of Crypto Lab Inc.                                                        //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include<iostream>
-#include<thread>
-#include "examples.hpp"
-#include "Conv.hpp"
-#include "HEaaNTimer.hpp"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <optional>
+#include <algorithm>
 
-// #include "HEaaN/heaan.hpp"
+#include "HEaaN/heaan.hpp" // 필요한가?
+#include "examples.hpp" // 필요한가? / ㅇㅇ
+#include "Conv.hpp"
+#include "Conv_parallel.hpp"
+#include "oddLazyBSGS.hpp"
+#include "MPPacking.hpp"
+#include "HEaaNTimer.hpp"
+#include "DSB+BN.hpp"
+#include "RB+BN.hpp"
+//#include "convtools.hpp"
+#include "kernelEncode.hpp"
+#include "imageEncode.hpp"
+#include "AvgpoolFC64.hpp"
+
+namespace {
+    using namespace HEaaN;
+    using namespace std;
+}
 
 int main() {
-    HEaaN::ParameterPreset preset = HEaaN::ParameterPreset::FGb;
-    HEaaN::Context context = makeContext(preset);
-    std::cout << "Parameter : " << presetNamer(preset) << std::endl
-              << std::endl;
-
+    // SetUp
+    HEaaNTimer timer(false);
+    ParameterPreset preset = ParameterPreset::FGb;
+    Context context = makeContext(preset);
+    if (!isBootstrappableParameter(context)) {
+        // cout << "Bootstrap is not available for parameter "
+        //     << presetNamer(preset) << endl;
+        return -1;
+    }
+    // cout << "Parameter : " << presetNamer(preset) << endl
+    //     << endl;
     const auto log_slots = getLogFullSlots(context);
 
-    // Generate a new secret key
-    HEaaN::SecretKey sk(context);
+    SecretKey sk(context);
+    KeyPack pack(context);
 
-    HEaaN::KeyPack pack(context);
-    HEaaN::KeyGenerator keygen(context, sk, pack);
+    KeyGenerator keygen(context, sk, pack);
 
-    std::cout << "Generate encryption key ... ";
+    cout << "Generate encryption key ... " << endl;
     keygen.genEncryptionKey();
-    std::cout << "done" << std::endl;
+    cout << "done" << endl << endl;
 
-    std::cout << "Generate multiplication key ... ";
-    keygen.genMultiplicationKey();
-    std::cout << "done" << std::endl;
+    makeBootstrappable(context);
 
-    std::cout << "Generate rotation key ... ";
-    keygen.genRotationKeyBundle();
-    std::cout << "done" << std::endl;
+    cout << "Generate commonly used keys (mult key, rotation keys, "
+        "conjugation key) ... "
+        << endl;
+    keygen.genCommonKeys();
+    cout << "done" << endl << endl;
 
-    HEaaN::Encryptor enc(context);
-    HEaaN::Decryptor dec(context);
-    HEaaN::HomEvaluator eval(context, pack);
-    // HEaaN::HEaaNTimer timer(false);
+    Encryptor enc(context);
+    Decryptor dec(context);
 
+    cout << "Generate HomEvaluator (including pre-computing constants for "
+        "bootstrapping) ..."
+        << endl;
+    timer.start("* ");
+    HomEvaluator eval(context, pack);
+    timer.end();
 
-
+    EnDecoder ecd(context);
 
 
 
     ///////////// Message ///////////////////
-    HEaaN::Message msg(log_slots);
-    // fillRandomComplex(msg);
-    std::optional<size_t> num;
-    size_t length = num.has_value() ? num.value() : msg.getSize();
-    size_t idx = 0;
-    for (; idx < length; ++idx) {
-        msg[idx].real(1.0);
-        msg[idx].imag(0.0);
-    }
-    // If num is less than the size of msg,
-    // all remaining slots are zero.
-    for (; idx < msg.getSize(); ++idx) {
-        msg[idx].real(0.0);
-        msg[idx].imag(0.0);
-    }
-    printMessage(msg);
-
-    // Ciphertext
-    HEaaN::Ciphertext ctxt(context);
-    std::cout << "Encrypt ... ";
-    enc.encrypt(msg, pack, ctxt); // public key encryption
-    std::cout << "done" << std::endl;
 
 
+    cout << "Image Loading ..." << "\n";
+    vector<vector<Ciphertext>> imageVec;
 
-    std::vector<HEaaN::Ciphertext> ctxt_i;
-    for (int i = 0; i < 16; ++i) {   // input channel 16
-        ctxt_i.push_back(ctxt);
+    for (int i = 1; i < 17; ++i) { // 313
+
+        string str = "/app/HEAAN-ResNet/image/image_" + to_string(i) + string(".txt");
+        vector<double> temp;
+        txtreader(temp, str);
+        vector<Ciphertext> out;
+        imageCompiler(context, pack, enc, 5, temp, out);
+        imageVec.push_back(out);
+
     }
 
+    cout << "DONE, test for image encode ..." << "\n";
 
-    // std::cout << ctxt.getSize() << "\n";
+    Message dmsg;
+    dec.decrypt(imageVec[0][0], sk, dmsg);
+    printMessage(dmsg);
+
+    cout << "DONE" << "\n";
+
+    /*
+    string str = "./image/image_" + to_string(313) + ".txt";
+    vector<double> temp;
+    txtreader(temp, str);
+    for (int i = 0; i < 49152; ++i) temp.push_back(0);
+
+    vector<Ciphertext> out;
+    imageCompiler(context, pack, enc, temp, out);
+    imageVec.push_back(out);
+    */
 
 
-    /////////////// Kernel ////////////////
-    
-    std::cout << "Kernel generation ... " << std::endl;
-    HEaaN::EnDecoder ecd(context);
-    HEaaN::Plaintext ptxt(context);
-    ptxt = ecd.encode(msg, 12, 0);
+
+    Plaintext ptxt_init(context); // for initializing
+
+    // 1st conv
+    vector<double> temp0;
+    vector<vector<vector<Plaintext>>> block0conv0multiplicands16_3_3_3(16, vector<vector<Plaintext>>(3, vector<Plaintext>(9, ptxt_init)));
+    string path0 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block0conv0multiplicands16_3_3_3");
+    double cnst = (double)1 / ((double)40);
+    Scaletxtreader(temp0, path0, cnst);
+    //cout << "conv0 done" <<endl;
+    kernel_ptxt(context, temp0, block0conv0multiplicands16_3_3_3, 5, 1, 1, 16, 3, 3, ecd);
 
 
-    std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_o;
-    for (int o = 0; o < 32; ++o) { //32
-        std::vector<std::vector<HEaaN::Plaintext>> kernel_i;
-        for (int i = 0; i < 16; ++i) {   // input channel 16
-            std::vector<HEaaN::Plaintext> kernel_bundle;
-            HEaaN::Message kernel_msg(log_slots);
-            HEaaN::Plaintext kernel(context);
-            for (int k = 0; k < 9; ++k) {
-                idx = 0;
-                for (; idx < length; ++idx) {
-                    kernel_msg[idx].real(2.0);
-                    kernel_msg[idx].imag(0.0);
-                }
-                // If num is less than the size of msg,
-                // all remaining slots are zero.
-                for (; idx < kernel_msg.getSize(); ++idx) {
-                    kernel_msg[idx].real(0.0);
-                    kernel_msg[idx].imag(0.0);
-                }
-                kernel = ecd.encode(kernel_msg, 12, 0);
-                kernel_bundle.push_back(kernel);
-            }
-            kernel_i.push_back(kernel_bundle);
-        }
-        kernel_o.push_back(kernel_i);
+    vector<Plaintext> block0conv0summands16;
+    vector<double> temp0a;
+    string path0a = "/app/HEAAN-ResNet/kernel/summands/" + string("block0conv0summands16");
+    Scaletxtreader(temp0a, path0a, cnst);
+
+    for (int i = 0; i < 16; ++i) {
+        Message msg(log_slots, temp0a[i]);
+        block0conv0summands16.push_back(ecd.encode(msg, 4, 0));
     }
-    std::cout << "done" << std::endl;
 
-    // std::cout << std::thread::hardware_concurrency() << "\n";
-    HEaaN::HEaaNTimer timer(false);
-    timer.start("* ");
-    std::vector<HEaaN::Ciphertext> ctxt_out_bundle;
-    ctxt_out_bundle = Conv(context, pack, eval, 32, 2, 2, 16, 32, ctxt_i, kernel_o);
+    cout << "test for conv1 multiplicands..." << "\n";
+    printMessage(ecd.decode(block0conv0multiplicands16_3_3_3[0][0][0]));
+
+    cout << "test for conv1 summands..." << "\n";
+    printMessage(ecd.decode(block0conv0summands16[0]));
+
+
+    // Convolution 1
+    cout << "Convolution 1 ..." << endl;
+    timer.start(" Convolution 1 ");
+    vector<vector<Ciphertext>> ctxt_conv1_out_bundle;
+    for (int i = 0; i < 16; ++i) { // 서로 다른 img
+        vector<Ciphertext> ctxt_conv1_out_cache;
+        ctxt_conv1_out_cache = Conv(context, pack, eval, 32, 1, 1, 3, 16, imageVec[i], block0conv0multiplicands16_3_3_3);
+        ctxt_conv1_out_bundle.push_back(ctxt_conv1_out_cache);
+    }
+    addBNsummands(context, eval, ctxt_conv1_out_bundle, block0conv0summands16, 16, 16);
     timer.end();
+    cout << "DONE!... after conv1, result = " << "\n";
 
-    
-
-
-
-
-
-    // TEST //
-    HEaaN::Ciphertext ctxt_test(context);
+    dec.decrypt(ctxt_conv1_out_bundle[0][0], sk, dmsg);
+    printMessage(dmsg);
 
 
-
-
-
-
-
-
-    /////////////// Decryption ////////////////
-    HEaaN::Message dmsg;
-
-    for (int i = 0; i < ctxt_out_bundle.size(); ++i) {
-        // std::cout << "Decrypt ... ";
-        dec.decrypt(ctxt_out_bundle[i], sk, dmsg);
-        // std::cout << "done" << std::endl;
-        // printMessage(dmsg);
+    // parallel Convolution 1
+    cout << "parallel Convolution 1 ..." << endl;
+    timer.start(" parallel Convolution 1 ");
+    vector<vector<Ciphertext>> ctxt_conv1_out_bundle_par;
+    for (int i = 0; i < 16; ++i) { // 서로 다른 img
+        vector<Ciphertext> ctxt_conv1_out_cache;
+        ctxt_conv1_out_cache = Conv_parallel(context, pack, eval, 32, 1, 1, 3, 16, imageVec[i], block0conv0multiplicands16_3_3_3);
+        ctxt_conv1_out_bundle_par.push_back(ctxt_conv1_out_cache);
     }
+    addBNsummands(context, eval, ctxt_conv1_out_bundle_par, block0conv0summands16, 16, 16);
+    timer.end();
+    cout << "DONE!... after conv1, result = " << "\n";
+
+    dec.decrypt(ctxt_conv1_out_bundle_par[0][0], sk, dmsg);
+    printMessage(dmsg);
 
     return 0;
+
 }
