@@ -6,10 +6,9 @@
 #include <optional>
 #include <algorithm>
 
-#include "HEaaN/heaan.hpp" // ÇÊ¿äÇÑ°¡?
-#include "examples.hpp" // ÇÊ¿äÇÑ°¡? / ¤·¤·
+#include "HEaaN/heaan.hpp" // í•„ìš”í•œê°€?
+#include "examples.hpp" // í•„ìš”í•œê°€? / ã…‡ã…‡
 #include "Conv.hpp"
-#include "Conv_parallel.hpp"
 #include "oddLazyBSGS.hpp"
 #include "MPPacking.hpp"
 #include "HEaaNTimer.hpp"
@@ -128,7 +127,7 @@ int main() {
     cout << "Convolution ..." << endl;
     timer.start(" Convolution 1 ");
     vector<vector<Ciphertext>> ctxt_conv1_out_bundle;
-    for (int i = 0; i < 16; ++i) { // ¼­·Î ´Ù¸¥ img
+    for (int i = 0; i < 16; ++i) { // ì„œë¡œ ë‹¤ë¥¸ img
         vector<Ciphertext> ctxt_conv1_out_cache;
         ctxt_conv1_out_cache = Conv(context, pack, eval, 32, 1, 1, 3, 16, imageVec[i], block0conv0multiplicands16_3_3_3);
         ctxt_conv1_out_bundle.push_back(ctxt_conv1_out_cache);
@@ -182,7 +181,7 @@ int main() {
     cout << "level of ctxt is " << ctxt_conv1_out_bundle[0][0].getLevel() << "\n";
     timer.start(" block4conv_onebyone .. ");
     vector<vector<Ciphertext>> ctxt_block4conv_onebyone_out;
-    for (int i = 0; i < 16; ++i) { // ¼­·Î ´Ù¸¥ img
+    for (int i = 0; i < 16; ++i) { // ì„œë¡œ ë‹¤ë¥¸ img
         vector<Ciphertext> ctxt_residual_out_cache;
         ctxt_residual_out_cache = Conv(context, pack, eval, 32, 1, 2, 16, 32, ctxt_conv1_out_bundle[i], block4conv_onebyone_multiplicands32_16_1_1);
         ctxt_block4conv_onebyone_out.push_back(ctxt_residual_out_cache);
