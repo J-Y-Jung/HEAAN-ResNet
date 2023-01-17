@@ -106,7 +106,7 @@ int main() {
     enc.encrypt(msg, pack, ctxt);
     std::cout << "done" << std::endl;
 
-    int n = 3;
+    int n = 16;
     std::vector<std::vector<HEaaN::Ciphertext>> ctxt_bundle(n, std::vector<HEaaN::Ciphertext>(n,ctxt));
 
     Ciphertext ctxt_out2(context);
