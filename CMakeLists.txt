@@ -57,6 +57,9 @@ target_link_libraries(oddLazyBSGS PUBLIC HEaaN::HEaaN)
 add_executable(inference Inference.cpp) 
 target_link_libraries(inference PUBLIC HEaaN::HEaaN)
 
+add_executable(relubundle ReLUbundletest.cpp) 
+target_link_libraries(relubundle PUBLIC HEaaN::HEaaN)
+
 ## add_executable(rb RB+BN.cpp) 
 ## target_link_libraries(rb PUBLIC HEaaN::HEaaN)
 
