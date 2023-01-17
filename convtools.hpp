@@ -191,6 +191,7 @@ void weightToPtxt(Plaintext& ptxt, u64 level, double weight,
         #pragma omp parallel for
         for (size_t j = 0; j < num_slots; ++j) {
             msg[j].real(weight);
+            msg[j].imag(0.0);
         }
     }
 
