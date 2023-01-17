@@ -44,7 +44,10 @@ void fillRandomReal(HEaaN::Message &msg, std::optional<size_t> num) {
 }
 
 void printMessage(const HEaaN::Message &msg, bool is_complex = true,
-                  size_t start_num = 2, size_t end_num = 2) {
+                  size_t start_num = 16, size_t end_num = 2) {
+
+    std::cout.precision(7);
+
     const size_t msg_size = msg.getSize();
 
     std::cout << "[ ";

@@ -67,6 +67,7 @@ int main() {
 
     EnDecoder ecd(context);
 
+    cout.precision(7);
 
 
     ///////////// Message ///////////////////
@@ -82,6 +83,9 @@ int main() {
         txtreader(temp, str);
         vector<Ciphertext> out;
         imageCompiler(context, pack, enc, 5, temp, out);
+
+        temp.clear();
+        temp.shrink_to_fit();
         imageVec.push_back(out);
 
     }
@@ -132,10 +136,8 @@ int main() {
         block0conv0summands16.push_back(ecd.encode(msg, 4, 0));
     }
 
-
     temp0a.clear();
     temp0a.shrink_to_fit();
-
 
     cout << "test for conv1 multiplicands..." << "\n";
     printMessage(ecd.decode(block0conv0multiplicands16_3_3_3[0][0][0]));
@@ -155,6 +157,10 @@ int main() {
     }
     addBNsummands(context, eval, ctxt_block0conv0_out, block0conv0summands16, 16, 16);
     timer.end();
+
+    imageVec.clear();
+    imageVec.shrink_to_fit();
+
     cout << "DONE!, decrypted message is ... " << "\n";
 
     dec.decrypt(ctxt_block0conv0_out[0][0], sk, dmsg);
@@ -334,6 +340,7 @@ int main() {
     timer.start(" block1relu1 ");
     vector<vector<Ciphertext>> ctxt_block1relu1_out(16, vector<Ciphertext>(16, ctxt_init));
     for (int i = 0; i < 16; ++i) {
+        cout << "block1relu1 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 16; ++ch) {
             ApproxReLU(context, eval, ctxt_block1add_out[i][ch], ctxt_block1relu1_out[i][ch]);
             eval.levelDown(ctxt_block1relu1_out[i][ch], 5, ctxt_block1relu1_out[i][ch]);
@@ -499,6 +506,7 @@ int main() {
     timer.start(" block2relu1 ");
     vector<vector<Ciphertext>> ctxt_block2relu1_out(16, vector<Ciphertext>(16, ctxt_init));
     for (int i = 0; i < 16; ++i) {
+        cout << "block2relu1 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 16; ++ch) {
             ApproxReLU(context, eval, ctxt_block2add_out[i][ch], ctxt_block2relu1_out[i][ch]);
             eval.levelDown(ctxt_block2relu1_out[i][ch], 5, ctxt_block2relu1_out[i][ch]);
@@ -664,6 +672,7 @@ int main() {
     timer.start(" block3relu1 ");
     vector<vector<Ciphertext>> ctxt_block3relu1_out(16, vector<Ciphertext>(16, ctxt_init));
     for (int i = 0; i < 16; ++i) {
+        cout << "block3relu1 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 16; ++ch) {
             ApproxReLU(context, eval, ctxt_block3add_out[i][ch], ctxt_block3relu1_out[i][ch]);
             eval.levelDown(ctxt_block3relu1_out[i][ch], 5, ctxt_block3relu1_out[i][ch]);
@@ -737,7 +746,7 @@ int main() {
 
     // MPP input bundle making
     cout << "block4MPP1 and BN summand ..." << endl;
-    vector<vector<vector<Ciphertext>>> ctxt_block4MPP1_in(3, vector<vector<Ciphertext>>(32, vector<Ciphertext>(4, ctxt_init))));
+    vector<vector<vector<Ciphertext>>> ctxt_block4MPP1_in(3, vector<vector<Ciphertext>>(32, vector<Ciphertext>(4, ctxt_init)));
 
     #pragma omp parallel for collapse(3)
     for (int i = 0; i < 4; ++i) {
@@ -868,6 +877,7 @@ int main() {
     vector<vector<Ciphertext>> ctxt_block4relu0_out(4, vector<Ciphertext>(32, ctxt_init));
 
     for (int i = 0; i < 4; ++i) {
+        cout << "block4relu0 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 32; ++ch) {
             ApproxReLU(context, eval, ctxt_block4MPP0_out[i][ch], ctxt_block4relu0_out[i][ch]);
             eval.levelDown(ctxt_block4relu0_out[i][ch], 5, ctxt_block4relu0_out[i][ch]);
@@ -959,6 +969,7 @@ int main() {
     timer.start(" block4relu1 ");
     vector<vector<Ciphertext>> ctxt_block4relu1_out(4, vector<Ciphertext>(32, ctxt_init));
     for (int i = 0; i < 4; ++i) {
+        cout << "block4relu1 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 32; ++ch) {
             ApproxReLU(context, eval, ctxt_block4add_out[i][ch], ctxt_block4relu1_out[i][ch]);
             eval.levelDown(ctxt_block4relu1_out[i][ch], 5, ctxt_block4relu1_out[i][ch]);
@@ -1132,6 +1143,7 @@ int main() {
     timer.start(" block5relu1 ");
     vector<vector<Ciphertext>> ctxt_block5relu1_out(4, vector<Ciphertext>(32, ctxt_init));
     for (int i = 0; i < 4; ++i) {
+        cout << "block5relu1 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 32; ++ch) {
             ApproxReLU(context, eval, ctxt_block5add_out[i][ch], ctxt_block5relu1_out[i][ch]);
             eval.levelDown(ctxt_block5relu1_out[i][ch], 5, ctxt_block5relu1_out[i][ch]);
@@ -1302,6 +1314,7 @@ int main() {
     timer.start(" block6relu1 ");
     vector<vector<Ciphertext>> ctxt_block6relu1_out(4, vector<Ciphertext>(32, ctxt_init));
     for (int i = 0; i < 4; ++i) {
+        cout << "block6relu1 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 32; ++ch) {
             ApproxReLU(context, eval, ctxt_block6add_out[i][ch], ctxt_block6relu1_out[i][ch]);
             eval.levelDown(ctxt_block6relu1_out[i][ch], 5, ctxt_block6relu1_out[i][ch]);
@@ -1376,7 +1389,7 @@ int main() {
 
     // MPP input bundle making
     cout << "block7MPP1 and BN summand ..." << endl;
-    vector<vector<vector<Ciphertext>>> ctxt_block7MPP1_in(1, vector<vector<Ciphertext>>(64, vector<Ciphertext>(4, ctxt_init))));
+    vector<vector<vector<Ciphertext>>> ctxt_block7MPP1_in(1, vector<vector<Ciphertext>>(64, vector<Ciphertext>(4, ctxt_init)));
 
     #pragma omp parallel for collapse(3)
     for (int i = 0; i < 1; ++i) {
@@ -1505,6 +1518,7 @@ int main() {
     vector<vector<Ciphertext>> ctxt_block7relu0_out(1, vector<Ciphertext>(64, ctxt_init));
 
     for (int i = 0; i < 1; ++i) {
+        cout << "block7relu0 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 64; ++ch) {
             ApproxReLU(context, eval, ctxt_block7MPP0_out[i][ch], ctxt_block7relu0_out[i][ch]);
             eval.levelDown(ctxt_block7relu0_out[i][ch], 5, ctxt_block7relu0_out[i][ch]);
@@ -1595,6 +1609,7 @@ int main() {
     timer.start(" block7relu1 ");
     vector<vector<Ciphertext>> ctxt_block7relu1_out(1, vector<Ciphertext>(64, ctxt_init));
     for (int i = 0; i < 1; ++i) {
+        cout << "block7relu1 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 64; ++ch) {
             ApproxReLU(context, eval, ctxt_block7add_out[i][ch], ctxt_block7relu1_out[i][ch]);
             if (i == 0 && ch == 0) {
@@ -1758,6 +1773,7 @@ int main() {
     timer.start(" block8relu1 ");
     vector<vector<Ciphertext>> ctxt_block8relu1_out(1, vector<Ciphertext>(64, ctxt_init));
     for (int i = 0; i < 1; ++i) {
+        cout << "block8relu1 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 64; ++ch) {
             ApproxReLU(context, eval, ctxt_block8add_out[i][ch], ctxt_block8relu1_out[i][ch]);
             eval.levelDown(ctxt_block8relu1_out[i][ch], 5, ctxt_block8relu1_out[i][ch]);
@@ -1917,6 +1933,7 @@ int main() {
     timer.start(" block9relu1 ");
     vector<vector<Ciphertext>> ctxt_block9relu1_out(1, vector<Ciphertext>(64, ctxt_init));
     for (int i = 0; i < 1; ++i) {
+        cout << "block9relu1 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 64; ++ch) {
             ApproxReLU(context, eval, ctxt_block9add_out[i][ch], ctxt_block9relu1_out[i][ch]);
             eval.levelDown(ctxt_block9relu1_out[i][ch], 5, ctxt_block9relu1_out[i][ch]);
