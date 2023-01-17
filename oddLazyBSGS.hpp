@@ -208,6 +208,9 @@ void evalOddPolynomial(HEaaN::Context context, HEaaN::HomEvaluator eval,
     HEaaN::Ciphertext ctxt_temp(context);
     oddGiantStep(context, eval, oddBS_basis, GS_basis, polynomial, ctxt_temp, k, l);
 
+    oddBS_basis.clear();
+    evenBS_basis.shrink_to_fit();
+
     eval.relinearize(ctxt_temp, ctxt_poly);
 
 }
@@ -277,10 +280,10 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     }
 
 
-    HEaaN::Ciphertext ctxt_temp1(context);
+    //HEaaN::Ciphertext ctxt_temp(context);
 
     /*std::cout << "1st polynomial evaluation ... " << std::endl << std::endl;*/
-    evalOddPolynomial(context, eval, ctxt_real_BTS, ctxt_temp1, polynomial_1, 4, 2);
+    evalOddPolynomial(context, eval, ctxt_real_BTS, ctxt_temp, polynomial_1, 4, 2);
     /*std::cout << "done" << std::endl << std::endl;
 
     std::cout << "Ciphertext after evaluating 1st polynomial - level " << ctxt_temp1.getLevel()
@@ -289,8 +292,8 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
 
     std::cout << "2nd polynomial evaluation ... " << std::endl << std::endl;*/
 
-    HEaaN::Ciphertext ctxt_temp2(context);
-    evalOddPolynomial(context, eval, ctxt_temp1, ctxt_temp2, polynomial_2, 2, 3);
+    HEaaN::Ciphertext ctxt_temp1(context);
+    evalOddPolynomial(context, eval, ctxt_temp, ctxt_temp1, polynomial_2, 2, 3);
 
     /*std::cout << "done" << std::endl << std::endl;
 
@@ -299,8 +302,8 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
         << std::endl;*/
 
     /*std::cout << "Bootstrapping ... " << std::endl;*/
-    HEaaN::Ciphertext ctxt_BTS(context);
-    eval.bootstrap(ctxt_temp2, ctxt_BTS, true);
+    //HEaaN::Ciphertext ctxt_temp1(context);
+    eval.bootstrap(ctxt_temp1, ctxt_temp, true);
 
     /*std::cout << "Result ciphertext after bootstrapping - level "
         << ctxt_BTS.getLevel() << std::endl
@@ -310,8 +313,8 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
 
   /*  std::cout << "3rd polynomial evaluation ... " << std::endl << std::endl;*/
 
-    HEaaN::Ciphertext ctxt_sign(context);
-    evalOddPolynomial(context, eval, ctxt_BTS, ctxt_sign, polynomial_3, 4, 3);
+    //HEaaN::Ciphertext ctxt_temp1(context);
+    evalOddPolynomial(context, eval, ctxt_temp, ctxt_temp1, polynomial_3, 4, 3);
 
   /*  std::cout << "Ciphertext after evaluating 3rd polynomial - level " << ctxt_sign.getLevel()
         << std::endl
@@ -320,10 +323,10 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     //ReLU(x)= 0.5(x+x*sign(x)) = 0.5x + x * (0.5 g3 ^ g2 ^g1)(x), x=ctxt_real_BTS;
     //ctxt_sign = (0.5 g3 ^ g2 ^g1)(ctxt_real_BTS);
     
-    HEaaN::Ciphertext ctxt_half(context);
-    eval.mult(ctxt_real_BTS, 0.5, ctxt_half);
-    eval.mult(ctxt_real_BTS, ctxt_sign, ctxt_relu);
-    eval.add(ctxt_half, ctxt_relu, ctxt_relu);
+    //HEaaN::Ciphertext ctxt_half(context);
+    eval.mult(ctxt_real_BTS, 0.5, ctxt_temp);
+    eval.mult(ctxt_real_BTS, ctxt_temp1, ctxt_relu);
+    eval.add(ctxt_temp, ctxt_relu, ctxt_relu);
     
     
     //eval.mult(ctxt_real_BTS, 0.5, ctxt_real_BTS);
