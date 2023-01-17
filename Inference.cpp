@@ -737,7 +737,7 @@ int main() {
 
     // MPP input bundle making
     cout << "block4MPP1 and BN summand ..." << endl;
-    vector<vector<vector<Ciphertext>>> ctxt_block4MPP1_in;
+    vector<vector<vector<Ciphertext>>> ctxt_block4MPP1_in(3, vector<vector<Ciphertext>>(32, vector<Ciphertext>(4, ctxt_init))));
 
     #pragma omp parallel for collapse(3)
     for (int i = 0; i < 4; ++i) {
@@ -1376,7 +1376,7 @@ int main() {
 
     // MPP input bundle making
     cout << "block7MPP1 and BN summand ..." << endl;
-    vector<vector<vector<Ciphertext>>> ctxt_block7MPP1_in;
+    vector<vector<vector<Ciphertext>>> ctxt_block7MPP1_in(1, vector<vector<Ciphertext>>(64, vector<Ciphertext>(4, ctxt_init))));
 
     #pragma omp parallel for collapse(3)
     for (int i = 0; i < 1; ++i) {
