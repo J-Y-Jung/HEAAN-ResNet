@@ -4,7 +4,7 @@
 #include "HEaaN/heaan.hpp"
 
 namespace {
-//using namespace HEaaN::;
+using namespace HEaaN;
 using namespace std;
 }
 
