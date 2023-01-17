@@ -49,7 +49,7 @@ find_package(HEaaN REQUIRED)
 ## target_link_libraries(conv PUBLIC HEaaN::HEaaN)
 
 add_executable(evaloddpoly evaloddpoly.cpp) 
-target_link_libraries(inference PUBLIC HEaaN::HEaaN)
+target_link_libraries(evaloddpoly PUBLIC HEaaN::HEaaN)
 
 add_executable(oddLazyBSGS oddLazyBSGStest.cpp) 
 target_link_libraries(oddLazyBSGS PUBLIC HEaaN::HEaaN)
