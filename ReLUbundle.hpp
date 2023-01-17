@@ -4,6 +4,7 @@
 #include <omp.h>
 #include <cmath>
 #include "HEaaN/heaan.hpp"
+#include "leveldown.hpp"
 
 void multWithoutRelin(HEaaN::Context context, HEaaN::HomEvaluator eval,
     const HEaaN::Ciphertext& ctxt1, const HEaaN::Ciphertext& ctxt2, HEaaN::Ciphertext& ctxt_out) {
@@ -174,13 +175,13 @@ void evalOddPolynomial(HEaaN::Context context, HEaaN::HomEvaluator eval,
 
 
 
-void ApproxReLU_bundle(HEaaN::Context context, HEaaN::HomEvaluator eval, 
+void ApproxReLU_bundle(HEaaN::Context context, HEaaN::KeyPack pack,HEaaN::HomEvaluator eval, 
     std::vector<std::vector<HEaaN::Ciphertext>>& ctxt_bundle, std::vector<std::vector<HEaaN::Ciphertext>>& ctxt_relu_bundle){
     
     HEaaN::Ciphertext ctxt_temp(context); //for initializing
     std::vector<std::vector<HEaaN::Ciphertext>> ctxt_temp_bundle(ctxt_bundle.size() , std::vector<HEaaN::Ciphertext>(ctxt_bundle[0].size(),ctxt_temp));
     
-    std::cout << "size1 = " << ctxt_bundle.size() << " size2 = " << ctxt_bundle[0].size() << std::endl;
+    //std::cout << "size1 = " << ctxt_bundle.size() << " size2 = " << ctxt_bundle[0].size() << std::endl;
     #pragma omp parallel for collapse(2)
     for(int i = 0 ; i < ctxt_bundle.size() ; i++){
         for(int j = 0 ; j < ctxt_bundle[0].size() ; j++){
@@ -190,7 +191,7 @@ void ApproxReLU_bundle(HEaaN::Context context, HEaaN::HomEvaluator eval,
         }
     }
 
-    std::cout << "b" << std::endl;
+    ///std::cout << "b" << std::endl;
     std::vector<std::vector<HEaaN::Ciphertext>> ctxt_real_BTS_bundle(ctxt_bundle.size() , std::vector<HEaaN::Ciphertext>(ctxt_bundle[0].size(),ctxt_temp));
     //#pragma omp parallel for
     for(int i = 0 ; i < ctxt_bundle.size() ; ++i){
@@ -224,7 +225,7 @@ void ApproxReLU_bundle(HEaaN::Context context, HEaaN::HomEvaluator eval,
     -9.98181561763750e-46, 3.30651387315565, 4.69390466192199e-47, -1.82742944627533e-1
     };
 
-    std::cout << "c" << std::endl;
+    //std::cout << "c" << std::endl;
     std::vector<std::vector<HEaaN::Ciphertext>> ctxt_temp1_bundle(ctxt_bundle.size() , std::vector<HEaaN::Ciphertext>(ctxt_bundle[0].size(),ctxt_temp));
     #pragma omp parallel for collapse(2)
     for(int i = 0 ; i < ctxt_temp1_bundle.size() ; ++i){
@@ -233,7 +234,7 @@ void ApproxReLU_bundle(HEaaN::Context context, HEaaN::HomEvaluator eval,
         }
     }
     
-    std::cout << "d" << std::endl;
+    //std::cout << "d" << std::endl;
     std::vector<std::vector<HEaaN::Ciphertext>> ctxt_temp2_bundle(ctxt_bundle.size() , std::vector<HEaaN::Ciphertext>(ctxt_bundle[0].size(),ctxt_temp));
     #pragma omp parallel for collapse(2)
     for(int i = 0 ; i < ctxt_temp2_bundle.size() ; ++i){
@@ -245,7 +246,7 @@ void ApproxReLU_bundle(HEaaN::Context context, HEaaN::HomEvaluator eval,
     ctxt_temp1_bundle.shrink_to_fit();
 
     //BTS...
-    std::cout << "BTS..." << std::endl;
+    //std::cout << "BTS..." << std::endl;
     std::vector<std::vector<HEaaN::Ciphertext>> ctxt_real_BTS2_bundle(ctxt_bundle.size() , std::vector<HEaaN::Ciphertext>(ctxt_bundle[0].size(),ctxt_temp));
     //#pragma omp parallel for collapse(2)
     for(int i = 0 ; i < ctxt_real_BTS2_bundle.size() ; ++i){
@@ -257,7 +258,7 @@ void ApproxReLU_bundle(HEaaN::Context context, HEaaN::HomEvaluator eval,
     ctxt_temp2_bundle.clear();
     ctxt_temp2_bundle.shrink_to_fit();
 
-    std::cout << "e" << std::endl;
+    //std::cout << "e" << std::endl;
     std::vector<std::vector<HEaaN::Ciphertext>> ctxt_sign_bundle(ctxt_bundle.size() , std::vector<HEaaN::Ciphertext>(ctxt_bundle[0].size(),ctxt_temp));
     #pragma omp parallel for collapse(2)
     for(int i = 0 ; i < ctxt_sign_bundle.size() ; ++i){
@@ -268,7 +269,7 @@ void ApproxReLU_bundle(HEaaN::Context context, HEaaN::HomEvaluator eval,
     ctxt_real_BTS2_bundle.clear();
     ctxt_real_BTS2_bundle.shrink_to_fit();
 
-    std::cout << "f" << std::endl;
+    //std::cout << "f" << std::endl;
     //#pragma omp parallel for collapse(2)
     for(int i = 0 ; i < ctxt_bundle.size() ; ++i){
         for(int j = 0 ; j < ctxt_bundle[0].size() ; ++j){
@@ -281,11 +282,13 @@ void ApproxReLU_bundle(HEaaN::Context context, HEaaN::HomEvaluator eval,
     ctxt_sign_bundle.shrink_to_fit();
     ctxt_real_BTS_bundle.clear();
     ctxt_real_BTS_bundle.shrink_to_fit();
+    levelDownBundle(context,pack,eval,ctxt_relu_bundle,5);
 
-    }
+}
+
 
     //Aproximated ReLU function.
-void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphertext& ctxt, HEaaN::Ciphertext& ctxt_relu) {
+    void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphertext& ctxt, HEaaN::Ciphertext& ctxt_relu) {
 
     // std::cout << "Input ciphertext - level " << ctxt.getLevel()
     //     << std::endl
@@ -297,7 +300,7 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     eval.mult(ctxt_temp, 0.5, ctxt_temp);
 
     HEaaN::Ciphertext ctxt_real_BTS(context);
-//     std::cout << "Imaginary Removal Bootstrapping ... " << std::endl;
+    std::cout << "Imaginary Removal Bootstrapping ... " << std::endl;
 
     eval.bootstrap(ctxt_temp, ctxt_real_BTS, true);
 
@@ -406,3 +409,4 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     //     << std::endl
     //     << std::endl;
 }
+

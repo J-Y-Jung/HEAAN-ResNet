@@ -106,7 +106,7 @@ int main() {
     enc.encrypt(msg, pack, ctxt);
     std::cout << "done" << std::endl;
 
-    int n = 10;
+    int n = 3;
     std::vector<std::vector<HEaaN::Ciphertext>> ctxt_bundle(n, std::vector<HEaaN::Ciphertext>(n,ctxt));
 
     Ciphertext ctxt_out2(context);
@@ -141,13 +141,16 @@ int main() {
     std::vector<std::vector<HEaaN::Ciphertext>> ctxt_out_bundle2(n,std::vector<HEaaN::Ciphertext>(n,ctxt_out2));
 
     timer.start("bundle ");
-    ApproxReLU_bundle(context, eval, ctxt_bundle, ctxt_out_bundle2);
+    ApproxReLU_bundle(context, pack,eval, ctxt_bundle, ctxt_out_bundle2);
     timer.end();
 
     std::cout << "Output ciphertext of approximate ReLU - level " << ctxt_out_bundle[0][0].getLevel()
         << std::endl
         << std::endl;
+    
+    std::cout.precision(10);
 
+    
     HEaaN::Message dmsg2;
     std::cout << "Decrypt ... ";
     dec.decrypt(ctxt_out_bundle[0][0], sk, dmsg2);
@@ -155,6 +158,8 @@ int main() {
 
     std::cout << std::endl << "Decrypted result vector : " << std::endl;
     printMessage(dmsg2, false);
+    
+
 
     HEaaN::Message dmsg3;
     std::cout << "Decrypt ... ";
