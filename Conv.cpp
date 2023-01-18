@@ -154,17 +154,17 @@ int main() {
     timer.start(" parallel Convolution 1 ");
     vector<vector<Ciphertext>> ctxt_conv1_out_bundle_par(16, vector<Ciphertext>(16, ctxt_init));
 
-    #pragma omp parallel for num_thread(40)
+    #pragma omp parallel for num_threads(40)
     for (int i = 0; i < 8; ++i) {
-        #pragma omp parallel for num_thread(5)
+        #pragma omp parallel for num_threads(5)
         {
             ctxt_conv1_out_bundle_par[i] = Conv_parallel(context, pack, eval, 32, 1, 1, 3, 16, imageVec[i], block0conv0multiplicands16_3_3_3);
         }    
     }
 
-    #pragma omp parallel for num_thread(40)
+    #pragma omp parallel for num_threads(40)
     for (int i = 8; i < 16; ++i) {
-        #pragma omp parallel for num_thread(5)
+        #pragma omp parallel for num_threads(5)
         {
             ctxt_conv1_out_bundle_par[i] = Conv_parallel(context, pack, eval, 32, 1, 1, 3, 16, imageVec[i], block0conv0multiplicands16_3_3_3);
         }    
