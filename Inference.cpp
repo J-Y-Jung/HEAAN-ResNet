@@ -147,12 +147,16 @@ int main() {
     // Convolution 0
     cout << "block0conv0 ..." << endl;
     timer.start(" block0conv0 ");
-    vector<vector<Ciphertext>> ctxt_block0conv0_out;
-    for (int i = 0; i < 16; ++i) { // 서로 다른 img
-        vector<Ciphertext> ctxt_block0conv0_out_cache;
+    vector<vector<Ciphertext>> ctxt_block0conv0_out(16, vector<Ciphertext>(16, ctxt_init));
+    
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 16; ++i) { // 서로 다른 img\
+        #pragma omp parallel num_threads(5)
+        {
         ctxt_block0conv0_out_cache = Conv(context, pack, eval, 32, 1, 1, 3, 16, imageVec[i], block0conv0multiplicands16_3_3_3);
-        ctxt_block0conv0_out.push_back(ctxt_block0conv0_out_cache);
+        }
     }
+    
     addBNsummands(context, eval, ctxt_block0conv0_out, block0conv0summands16, 16, 16);
     timer.end();
 
@@ -176,17 +180,16 @@ int main() {
     cout << "block0relu0 ..." << endl;
     timer.start(" block0relu0 ");
     vector<vector<Ciphertext>> ctxt_block0relu0_out(16, vector<Ciphertext>(16, ctxt_init)); //초기화부분 추가
+    
+    
     for (int i = 0; i < 16; ++i) {
         cout << "block0relu0 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 16; ++ch) {
             ApproxReLU(context, eval, ctxt_block0conv0_out[i][ch], ctxt_block0relu0_out[i][ch]);
-            eval.levelDown(ctxt_block0relu0_out[i][ch], 5, ctxt_block0relu0_out[i][ch]);
-            if (i == 0 && ch == 0) {
-                dec.decrypt(ctxt_block0relu0_out[i][ch], sk, dmsg);
-                printMessage(dmsg);
-            }
         }
     }
+    
+    
     timer.end();
     cout << "block0 DONE!" << "\n";
 
