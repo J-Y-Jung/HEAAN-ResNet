@@ -776,7 +776,7 @@ int main() {
     for (int i = 0; i < 4; ++i) {
         for (int ch = 0; ch < 32; ++ch) {
             for (int k = 0; k < 4; ++k) {
-                ctxt_block4MPP1_in[i][ch][k] = ctxt_block4conv_onebyone_out[i + k][ch];
+                ctxt_block4MPP1_in[i][ch][k] = ctxt_block4conv_onebyone_out[4*i + k][ch];
             }
         }
     }
@@ -863,7 +863,7 @@ int main() {
     for (int i = 0; i < 4; ++i) {
         for (int ch = 0; ch < 32; ++ch) {
             for (int k = 0; k < 4; ++k) {
-                ctxt_block4MPP0_in[i][ch][k] = ctxt_block4conv0_out[i + k][ch];
+                ctxt_block4MPP0_in[i][ch][k] = ctxt_block4conv0_out[4*i + k][ch];
             }
         }
     }
@@ -1438,7 +1438,7 @@ int main() {
     for (int i = 0; i < 1; ++i) {
         for (int ch = 0; ch < 64; ++ch) {
             for (int k = 0; k < 4; ++k) {
-                ctxt_block7MPP1_in[i][ch][k] = ctxt_block7conv_onebyone_out[i + k][ch];
+                ctxt_block7MPP1_in[i][ch][k] = ctxt_block7conv_onebyone_out[4*i + k][ch];
             }
         }
     }
@@ -1519,7 +1519,7 @@ int main() {
     for (int i = 0; i < 1; ++i) {
         for (int ch = 0; ch < 64; ++ch) {
             for (int k = 0; k < 4; ++k) {
-                ctxt_block7MPP0_in[i][ch][k] = ctxt_block7conv0_out[i + k][ch];
+                ctxt_block7MPP0_in[i][ch][k] = ctxt_block7conv0_out[4*i + k][ch];
             }
         }
     }
