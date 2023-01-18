@@ -21,7 +21,7 @@ namespace {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-std::vector<HEaaN::Ciphertext> Conv(HEaaN::Context context, HEaaN::KeyPack pack,
+std::vector<HEaaN::Ciphertext> Conv_parallel(HEaaN::Context context, HEaaN::KeyPack pack,
     HEaaN::HomEvaluator eval, int imgsize, int gap, int stride, int input_channel, int output_channel,
     std::vector<HEaaN::Ciphertext>& ctxt_bundle,
     std::vector<std::vector<std::vector<HEaaN::Plaintext>>>& kernel_o) {
@@ -39,7 +39,7 @@ std::vector<HEaaN::Ciphertext> Conv(HEaaN::Context context, HEaaN::KeyPack pack,
 
         std::vector<std::vector<HEaaN::Ciphertext>> rotated_ctxts_bundle(input_channel, std::vector<HEaaN::Ciphertext>(9, ctxt_init));
 
-        //#pragma omp parallel for collapse(3)
+        #pragma omp parallel for collapse(3)
         for (int inputid = 0; inputid < (input_channel); ++inputid) {
             for (int i = 0; i < 3; ++i) {
                 for (int j = 0; j < 3; ++j) {
@@ -48,7 +48,7 @@ std::vector<HEaaN::Ciphertext> Conv(HEaaN::Context context, HEaaN::KeyPack pack,
             }
         }
 
-        //#pragma omp parallel for
+        #pragma omp parallel for
         for (int outputid = 0; outputid < output_channel; ++outputid) {
             ctxt_out_bundle[outputid] = auxiliaryFtn9(eval, context, rotated_ctxts_bundle, kernel_o[outputid], input_channel);
         }
@@ -60,7 +60,7 @@ std::vector<HEaaN::Ciphertext> Conv(HEaaN::Context context, HEaaN::KeyPack pack,
 
     else {
 
-        //#pragma omp parallel for
+        #pragma omp parallel for
         for (int outputid = 0; outputid < output_channel; ++outputid) {
             ctxt_out_bundle[outputid] = auxiliaryFtn1(eval, context, ctxt_bundle, kernel_o[outputid], input_channel);
         }
