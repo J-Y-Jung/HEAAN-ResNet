@@ -237,7 +237,7 @@ int main() {
     for (int i = 0; i < 16; ++i) {
         #pragma omp parallel num_threads(5)
         {
-        ctxt_block1conv0_out = Conv(context, pack, eval, 32, 1, 1, 16, 16, ctxt_block0relu0_out[i], block1conv0multiplicands16_16_3_3);
+            ctxt_block1conv0_out[i] = Conv(context, pack, eval, 32, 1, 1, 16, 16, ctxt_block0relu0_out[i], block1conv0multiplicands16_16_3_3);
         }
     }
 
