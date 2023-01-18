@@ -10,7 +10,7 @@
 #include "examples.hpp" // 필요한가? / ㅇㅇ
 #include "Conv.hpp"
 #include "Conv_parallel.hpp"
-#include "ReLUbundle.hpp"
+#include "ReLUbundle80.hpp"
 #include "MPPacking.hpp"
 #include "HEaaNTimer.hpp"
 #include "DSB+BN.hpp"
@@ -182,7 +182,7 @@ int main() {
     cout << "block0relu0 ..." << endl;
     timer.start(" block0relu0 ");
     vector<vector<Ciphertext>> ctxt_block0relu0_out(16, vector<Ciphertext>(16, ctxt_init)); //초기화부분 추가
-    ApproxReLU_bundle(context,pack,eval,ctxt_block0conv0_out,ctxt_block0relu0_out);
+    ApproxReLU_bundle80(context,pack,eval,ctxt_block0conv0_out,ctxt_block0relu0_out);
     /*for (int i = 0; i < 16; ++i) {
         cout << "block0relu0 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 16; ++ch) {
@@ -259,7 +259,7 @@ int main() {
     cout << "block1relu0 ..." << endl;
     timer.start(" block1relu0 ");
     vector<vector<Ciphertext>> ctxt_block1relu0_out(16, vector<Ciphertext>(16, ctxt_init));
-    ApproxReLU_bundle(context,pack,eval,ctxt_block1conv0_out,ctxt_block1relu0_out);
+    ApproxReLU_bundle80(context,pack,eval,ctxt_block1conv0_out,ctxt_block1relu0_out);
     /*for (int i = 0; i < 16; ++i) {
         cout << "block1relu0 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 16; ++ch) {
@@ -350,7 +350,7 @@ int main() {
     cout << "block1relu1 ..." << endl;
     timer.start(" block1relu1 ");
     vector<vector<Ciphertext>> ctxt_block1relu1_out(16, vector<Ciphertext>(16, ctxt_init));
-    ApproxReLU_bundle(context,pack,eval,ctxt_block1add_out,ctxt_block1relu1_out);
+    ApproxReLU_bundle80(context,pack,eval,ctxt_block1add_out,ctxt_block1relu1_out);
     /*for (int i = 0; i < 16; ++i) {
         cout << "block1relu1 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 16; ++ch) {
@@ -432,7 +432,7 @@ int main() {
     cout << "block2relu0 ..." << endl;
     timer.start(" block2relu0 ");
     vector<vector<Ciphertext>> ctxt_block2relu0_out(16, vector<Ciphertext>(16, ctxt_init));
-    ApproxReLU_bundle(context,pack,eval,ctxt_block2conv0_out,ctxt_block2relu0_out);
+    ApproxReLU_bundle80(context,pack,eval,ctxt_block2conv0_out,ctxt_block2relu0_out);
     /*for (int i = 0; i < 16; ++i) {
         cout << "block2relu0 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 16; ++ch) {
@@ -523,7 +523,7 @@ int main() {
     cout << "block2relu1 ..." << endl;
     timer.start(" block2relu1 ");
     vector<vector<Ciphertext>> ctxt_block2relu1_out(16, vector<Ciphertext>(16, ctxt_init));
-    ApproxReLU_bundle(context,pack,eval,ctxt_block2add_out,ctxt_block2relu1_out);
+    ApproxReLU_bundle80(context,pack,eval,ctxt_block2add_out,ctxt_block2relu1_out);
     /*for (int i = 0; i < 16; ++i) {
         cout << "block2relu1 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 16; ++ch) {
@@ -604,7 +604,7 @@ int main() {
     cout << "block3relu0 ..." << endl;
     timer.start(" block3relu0 ");
     vector<vector<Ciphertext>> ctxt_block3relu0_out(16, vector<Ciphertext>(16, ctxt_init));
-    ApproxReLU_bundle(context,pack,eval,ctxt_block3conv0_out,ctxt_block3relu0_out);
+    ApproxReLU_bundle80(context,pack,eval,ctxt_block3conv0_out,ctxt_block3relu0_out);
     /*for (int i = 0; i < 16; ++i) {
         cout << "block3relu0 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 16; ++ch) {
@@ -694,7 +694,7 @@ int main() {
     cout << "block3relu1 ..." << endl;
     timer.start(" block3relu1 ");
     vector<vector<Ciphertext>> ctxt_block3relu1_out(16, vector<Ciphertext>(16, ctxt_init));
-    ApproxReLU_bundle(context,pack,eval,ctxt_block3add_out,ctxt_block3relu1_out);
+    ApproxReLU_bundle80(context,pack,eval,ctxt_block3add_out,ctxt_block3relu1_out);
     /*for (int i = 0; i < 16; ++i) {
         cout << "block3relu1 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 16; ++ch) {
@@ -903,7 +903,7 @@ int main() {
     cout << "block4relu0 ..." << endl;
     timer.start(" block4relu0 ");
     vector<vector<Ciphertext>> ctxt_block4relu0_out(4, vector<Ciphertext>(32, ctxt_init));
-    ApproxReLU_bundle(context,pack,eval,ctxt_block4MPP0_out,ctxt_block4relu0_out);
+    ApproxReLU_bundle80(context,pack,eval,ctxt_block4MPP0_out,ctxt_block4relu0_out);
     /*for (int i = 0; i < 4; ++i) {
         cout << "block4relu0 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 32; ++ch) {
@@ -998,7 +998,7 @@ int main() {
     cout << "block4relu1 ..." << endl;
     timer.start(" block4relu1 ");
     vector<vector<Ciphertext>> ctxt_block4relu1_out(4, vector<Ciphertext>(32, ctxt_init));
-    ApproxReLU_bundle(context,pack,eval,ctxt_block4add_out,ctxt_block4relu1_out);
+    ApproxReLU_bundle80(context,pack,eval,ctxt_block4add_out,ctxt_block4relu1_out);
     /*for (int i = 0; i < 4; ++i) {
         cout << "block4relu1 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 32; ++ch) {
@@ -1087,7 +1087,7 @@ int main() {
     cout << "block5relu0 ..." << endl;
     timer.start(" block5relu0 ");
     vector<vector<Ciphertext>> ctxt_block5relu0_out(4, vector<Ciphertext>(32, ctxt_init));
-    ApproxReLU_bundle(context,pack,eval,ctxt_block5conv0_out,ctxt_block5relu0_out);
+    ApproxReLU_bundle80(context,pack,eval,ctxt_block5conv0_out,ctxt_block5relu0_out);
     /*for (int i = 0; i < 4; ++i) {
         cout << "block5relu0 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 32; ++ch) {
@@ -1178,7 +1178,7 @@ int main() {
     cout << "block5relu1 ..." << endl;
     timer.start(" block5relu1 ");
     vector<vector<Ciphertext>> ctxt_block5relu1_out(4, vector<Ciphertext>(32, ctxt_init));
-    ApproxReLU_bundle(context,pack,eval,ctxt_block5add_out,ctxt_block5relu1_out);
+    ApproxReLU_bundle80(context,pack,eval,ctxt_block5add_out,ctxt_block5relu1_out);
     /*for (int i = 0; i < 4; ++i) {
         cout << "block5relu1 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 32; ++ch) {
@@ -1263,7 +1263,7 @@ int main() {
     cout << "block6relu0 ..." << endl;
     timer.start(" block6relu0 ");
     vector<vector<Ciphertext>> ctxt_block6relu0_out(4, vector<Ciphertext>(32, ctxt_init));
-    ApproxReLU_bundle(context,pack,eval,ctxt_block6conv0_out,ctxt_block6relu0_out);
+    ApproxReLU_bundle80(context,pack,eval,ctxt_block6conv0_out,ctxt_block6relu0_out);
     /*for (int i = 0; i < 4; ++i) {
         cout << "block6relu0 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 32; ++ch) {
@@ -1355,8 +1355,8 @@ int main() {
     cout << "block6relu1 ..." << endl;
     timer.start(" block6relu1 ");
     vector<vector<Ciphertext>> ctxt_block6relu1_out(4, vector<Ciphertext>(32, ctxt_init));
-    ApproxReLU_bundle(context,pack,eval,ctxt_block6add_out,ctxt_block6relu1_out);
-    for (int i = 0; i < 4; ++i) {
+    ApproxReLU_bundle80(context,pack,eval,ctxt_block6add_out,ctxt_block6relu1_out);
+    /*for (int i = 0; i < 4; ++i) {
         cout << "block6relu1 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 32; ++ch) {
             ApproxReLU(context, eval, ctxt_block6add_out[i][ch], ctxt_block6relu1_out[i][ch]);
@@ -1366,7 +1366,7 @@ int main() {
                 printMessage(dmsg);
             }
         }
-    }
+    }*/
     timer.end();
 
     ctxt_block6add_out.clear();
@@ -1559,8 +1559,8 @@ int main() {
     cout << "block7relu0 ..." << endl;
     timer.start(" block7relu0 ");
     vector<vector<Ciphertext>> ctxt_block7relu0_out(1, vector<Ciphertext>(64, ctxt_init));
-
-    for (int i = 0; i < 1; ++i) {
+    ApproxReLU_bundle80(context,pack,eval,ctxt_block7MPP0_out,ctxt_block7relu0_out);
+    /*for (int i = 0; i < 1; ++i) {
         cout << "block7relu0 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 64; ++ch) {
             ApproxReLU(context, eval, ctxt_block7MPP0_out[i][ch], ctxt_block7relu0_out[i][ch]);
@@ -1570,7 +1570,7 @@ int main() {
                 printMessage(dmsg);
             }
         }
-    }
+    }*/
     timer.end();
 
     ctxt_block7MPP0_out.clear();
@@ -1649,7 +1649,7 @@ int main() {
     cout << "block7relu1 ..." << endl;
     timer.start(" block7relu1 ");
     vector<vector<Ciphertext>> ctxt_block7relu1_out(1, vector<Ciphertext>(64, ctxt_init));
-    ApproxReLU_bundle(context,pack,eval,ctxt_block7add_out,ctxt_block7relu1_out);
+    ApproxReLU_bundle80(context,pack,eval,ctxt_block7add_out,ctxt_block7relu1_out);
     /*for (int i = 0; i < 1; ++i) {
         cout << "block7relu1 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 64; ++ch) {
@@ -1723,7 +1723,7 @@ int main() {
     cout << "block8relu0 ..." << endl;
     timer.start(" block8relu0 ");
     vector<vector<Ciphertext>> ctxt_block8relu0_out(1, vector<Ciphertext>(64, ctxt_init));
-    ApproxReLU_bundle(context,pack,eval,ctxt_block8conv0_out,ctxt_block8relu0_out);
+    ApproxReLU_bundle80(context,pack,eval,ctxt_block8conv0_out,ctxt_block8relu0_out);
     /*for (int i = 0; i < 1; ++i) {
         cout << "block8relu0 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 64; ++ch) {
@@ -1811,7 +1811,7 @@ int main() {
     cout << "block8relu1 ..." << endl;
     timer.start(" block8relu1 ");
     vector<vector<Ciphertext>> ctxt_block8relu1_out(1, vector<Ciphertext>(64, ctxt_init));
-    ApproxReLU_bundle(context,pack,eval,ctxt_block8add_out,ctxt_block8relu1_out);
+    ApproxReLU_bundle80(context,pack,eval,ctxt_block8add_out,ctxt_block8relu1_out);
     /*for (int i = 0; i < 1; ++i) {
         cout << "block8relu1 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 64; ++ch) {
@@ -1890,7 +1890,7 @@ int main() {
     cout << "block9relu0 ..." << endl;
     timer.start(" block9relu0 ");
     vector<vector<Ciphertext>> ctxt_block9relu0_out(1, vector<Ciphertext>(64, ctxt_init));
-    ApproxReLU_bundle(context,pack,eval,ctxt_block9conv0_out,ctxt_block9relu0_out);
+    ApproxReLU_bundle80(context,pack,eval,ctxt_block9conv0_out,ctxt_block9relu0_out);
     /*for (int i = 0; i < 1; ++i) {
         cout << "block9relu0 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 64; ++ch) {
@@ -1969,7 +1969,7 @@ int main() {
     cout << "block9relu1 ..." << endl;
     timer.start(" block9relu1 ");
     vector<vector<Ciphertext>> ctxt_block9relu1_out(1, vector<Ciphertext>(64, ctxt_init));
-    ApproxReLU_bundle(context,pack,eval,ctxt_block9add_out,ctxt_block9relu1_out);
+    ApproxReLU_bundle80(context,pack,eval,ctxt_block9add_out,ctxt_block9relu1_out);
     /*for (int i = 0; i < 1; ++i) {
         cout << "block9relu1 for (" << i << " , ;)" << "\n";
         for (int ch = 0; ch < 64; ++ch) {
