@@ -153,7 +153,7 @@ int main() {
     for (int i = 0; i < 16; ++i) { // 서로 다른 img\
         #pragma omp parallel num_threads(5)
         {
-        ctxt_block0conv0_out_cache = Conv(context, pack, eval, 32, 1, 1, 3, 16, imageVec[i], block0conv0multiplicands16_3_3_3);
+        ctxt_block0conv0_out[i] = Conv(context, pack, eval, 32, 1, 1, 3, 16, imageVec[i], block0conv0multiplicands16_3_3_3);
         }
     }
     
