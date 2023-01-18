@@ -3,6 +3,7 @@
 #include "oddLazyBSGS.hpp"
 #include "HEaaNTimer.hpp"
 #include "examples.hpp"
+#include <omp.h>
 
 namespace {
     using namespace std;
@@ -167,8 +168,50 @@ int main() {
 
     std::cout << std::endl << "Decrypted result vector : " << std::endl;
     printMessage(dmsg2, false);
-
+    
+    
+    Ciphertext ctxt_init(context);
+    vector<Ciphertext> ctxt_vec(64, ctxt_init);
+    vector<Ciphertext> ctxt_out(64, ctxt_init);
+    
+    timer.start("method 1");
+    #pragma omp parallel for num_threads(64)
+    for(int i = 0 ; i < 16 ; ++i){
+        eval.bootstrap(ctxt_vec[i], ctxt_out[i], true); 
+    }
+    timer.end();
+    
+    timer.start("method 2");
+    #pragma omp parallel for num_threads(80)
+    for(int i = 0 ; i < 40 ; ++i){
+        #pragma omp parallel num_threads(2)
+        {
+        eval.bootstrap(ctxt_vec[i], ctxt_out[i], true); 
+        }
+    }
+    
+    #pragma omp parallel for num_threads(80)
+    for(int i = 40 ; i < 56 ; ++i){
+        #pragma omp parallel num_threads(5)
+        {
+        eval.bootstrap(ctxt_vec[i], ctxt_out[i], true); 
+        }
+    }
+    
+    #pragma omp parallel for num_threads(80)
+    for(int i = 56 ; i < 64 ; ++i){
+        #pragma omp parallel num_threads(10)
+        {
+        eval.bootstrap(ctxt_vec[i], ctxt_out[i], true); 
+        }
+    }
+    
+    timer.end();
+    
+    
     return 0;
+    
+    
 
 }
 
