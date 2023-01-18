@@ -102,7 +102,7 @@ int main() {
     vector<double> temp0;
     vector<vector<vector<Plaintext>>> block0conv0multiplicands16_3_3_3(16, vector<vector<Plaintext>>(3, vector<Plaintext>(9, ptxt_init)));
     string path0 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block0conv0multiplicands16_3_3_3");
-    double cnst = (double)1 / ((double)40);
+    double cnst = (double)(1.0/40.0);
     Scaletxtreader(temp0, path0, cnst);
     //cout << "conv0 done" <<endl;
     kernel_ptxt(context, temp0, block0conv0multiplicands16_3_3_3, 6, 1, 1, 16, 3, 3, ecd);
@@ -127,11 +127,11 @@ int main() {
 
     cout << "Convolution ..." << endl;
     timer.start(" Convolution 1 ");
-    vector<vector<Ciphertext>> ctxt_conv1_out_bundle
+    vector<vector<Ciphertext>> ctxt_conv1_out_bundle;
     #pragma omp parallel for 
     for (int i = 0; i < 16; ++i) {
         vector<Ciphertext> ctxt_conv1_out_cache;
-        ctxt_conv1_out_cache = Conv(context, pack, eval, 32, 1, 1, 3, 16, imageVec[i], block0conv0multiplicands16_3_3_3);
+        ctxt_conv1_out_cache = Conv_parallel(context, pack, eval, 32, 1, 1, 3, 16, imageVec[i], block0conv0multiplicands16_3_3_3);
         ctxt_conv1_out_bundle.push_back(ctxt_conv1_out_cache);
     }
     addBNsummands(context, eval, ctxt_conv1_out_bundle, block0conv0summands16, 16, 16);
@@ -158,7 +158,7 @@ int main() {
     for (int i = 0; i < 8; ++i) {
         #pragma omp parallel for num_threads(5)
         {
-            ctxt_conv1_out_bundle_par[i] = Conv_parallel(context, pack, eval, 32, 1, 1, 3, 16, imageVec[i], block0conv0multiplicands16_3_3_3);
+            ctxt_conv1_out_bundle_par[i] = Conv(context, pack, eval, 32, 1, 1, 3, 16, imageVec[i], block0conv0multiplicands16_3_3_3);
         }    
     }
 
@@ -166,7 +166,7 @@ int main() {
     for (int i = 8; i < 16; ++i) {
         #pragma omp parallel for num_threads(5)
         {
-            ctxt_conv1_out_bundle_par[i] = Conv_parallel(context, pack, eval, 32, 1, 1, 3, 16, imageVec[i], block0conv0multiplicands16_3_3_3);
+            ctxt_conv1_out_bundle_par[i] = Conv(context, pack, eval, 32, 1, 1, 3, 16, imageVec[i], block0conv0multiplicands16_3_3_3);
         }    
     }
 
