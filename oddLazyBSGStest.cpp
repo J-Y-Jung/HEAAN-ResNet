@@ -184,7 +184,9 @@ int main() {
     #pragma omp parallel for num_threads(80)
     for(int i = 0 ; i < 40 ; ++i){
         #pragma omp parallel num_threads(2)
+        {
         ApproxReLU(context, eval, ctxt_vec[i], ctxt_out[i]); 
+        }
     }
     
     #pragma omp parallel for num_threads(80)
