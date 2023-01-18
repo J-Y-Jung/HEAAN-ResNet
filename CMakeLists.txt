@@ -42,6 +42,9 @@ find_package(HEaaN REQUIRED)
 ## add_executable(thread thread.cpp) 
 ## target_link_libraries(thread PUBLIC HEaaN::HEaaN)
 
+add_executable(apprelu AppReLU.cpp) 
+target_link_libraries(apprelu PUBLIC HEaaN::HEaaN)
+
 add_executable(conv Conv.cpp) 
 target_link_libraries(conv PUBLIC HEaaN::HEaaN)
 
