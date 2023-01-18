@@ -372,6 +372,9 @@ void ApproxReLU_bundle80(HEaaN::Context context, HEaaN::KeyPack pack,HEaaN::HomE
             eval.add(ctxt_temp_bundle[i][j],ctxt_relu_bundle[i][j],ctxt_relu_bundle[i][j]);
         }
     }
+    
+    ctxt_real_BTS_bundle.clear();
+    ctxt_real_BTS_bundle.shrink_to_fit();
     ctxt_sign_bundle.clear();
     ctxt_sign_bundle.shrink_to_fit();
     ctxt_temp_bundle.clear();
