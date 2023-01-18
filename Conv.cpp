@@ -6,9 +6,10 @@
 #include <optional>
 #include <algorithm>
 
-#include "HEaaN/heaan.hpp" // 필요한가?
-#include "examples.hpp" // 필요한가? / ㅇㅇ
+#include "HEaaN/heaan.hpp" 
+#include "examples.hpp" 
 #include "Conv.hpp"
+#include "Conv_parallel.hpp"
 #include "oddLazyBSGS.hpp"
 #include "MPPacking.hpp"
 #include "HEaaNTimer.hpp"
@@ -81,7 +82,7 @@ int main() {
         vector<double> temp;
         txtreader(temp, str);
         vector<Ciphertext> out;
-        imageCompiler(context, pack, enc, 5, temp, out);
+        imageCompiler(context, pack, enc, 6, temp, out);
         imageVec.push_back(out);
 
     }
@@ -104,7 +105,7 @@ int main() {
     double cnst = (double)1 / ((double)40);
     Scaletxtreader(temp0, path0, cnst);
     //cout << "conv0 done" <<endl;
-    kernel_ptxt(context, temp0, block0conv0multiplicands16_3_3_3, 5, 1, 1, 16, 3, 3, ecd);
+    kernel_ptxt(context, temp0, block0conv0multiplicands16_3_3_3, 6, 1, 1, 16, 3, 3, ecd);
 
     temp0.clear();
     temp0.shrink_to_fit();
@@ -117,7 +118,7 @@ int main() {
 
     for (int i = 0; i < 16; ++i) {
         Message msg(log_slots, temp0a[i]);
-        block0conv0summands16.push_back(ecd.encode(msg, 4, 0));
+        block0conv0summands16.push_back(ecd.encode(msg, 5, 0));
     }
 
     temp0a.clear();
@@ -126,8 +127,9 @@ int main() {
 
     cout << "Convolution ..." << endl;
     timer.start(" Convolution 1 ");
-    vector<vector<Ciphertext>> ctxt_conv1_out_bundle;
-    for (int i = 0; i < 16; ++i) { // 서로 다른 img
+    vector<vector<Ciphertext>> ctxt_conv1_out_bundle
+    #pragma omp parallel for 
+    for (int i = 0; i < 16; ++i) {
         vector<Ciphertext> ctxt_conv1_out_cache;
         ctxt_conv1_out_cache = Conv(context, pack, eval, 32, 1, 1, 3, 16, imageVec[i], block0conv0multiplicands16_3_3_3);
         ctxt_conv1_out_bundle.push_back(ctxt_conv1_out_cache);
@@ -138,10 +140,6 @@ int main() {
 
     imageVec.clear();
     imageVec.shrink_to_fit();
-    block0conv0multiplicands16_3_3_3.clear();
-    block0conv0multiplicands16_3_3_3.shrink_to_fit();
-    block0conv0summands16.clear();
-    block0conv0summands16.shrink_to_fit();
 
 
     cout << "DONE!... after conv1, result = " << "\n";
@@ -150,90 +148,52 @@ int main() {
     printMessage(dmsg);
 
 
+    
+    // parallel Convolution 1
+    cout << "parallel Convolution 1 ..." << endl;
+    timer.start(" parallel Convolution 1 ");
+    vector<vector<Ciphertext>> ctxt_conv1_out_bundle_par(16, vector<Ciphertext>(16, ctxt_init));
 
-
-    cout << "\n\n\n";
-
-
-
-    vector<double> temp7;
-    vector<vector<vector<Plaintext>>> block4conv_onebyone_multiplicands32_16_1_1(32, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
-    string path7 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block4conv_onebyone_multiplicands32_16_1_1");
-    txtreader(temp7, path7);
-    kernel_ptxt(context, temp7, block4conv_onebyone_multiplicands32_16_1_1, 6, 1, 2, 32, 16, 1, ecd);
-    temp7.clear();
-    temp7.shrink_to_fit();
-
-
-    vector<Plaintext> block4conv_onebyone_summands32;
-    vector<double> temp7a;
-    string path7a = "/app/HEAAN-ResNet/kernel/summands/" + string("block4conv_onebyone_summands32");
-    Scaletxtreader(temp7a, path7a, cnst);
-
-    for (int i = 0; i < 32; ++i) {
-        Message msg(log_slots, temp7a[i]);
-        block4conv_onebyone_summands32.push_back(ecd.encode(msg, 4, 0));
-    }
-    temp7a.clear();
-    temp7a.shrink_to_fit();
-
-    cout << "block4conv_onebyone ..." << endl;
-    cout << "level of ctxt is " << ctxt_conv1_out_bundle[0][0].getLevel() << "\n";
-    timer.start(" block4conv_onebyone .. ");
-    vector<vector<Ciphertext>> ctxt_block4conv_onebyone_out;
-    for (int i = 0; i < 16; ++i) { // 서로 다른 img
-        vector<Ciphertext> ctxt_residual_out_cache;
-        ctxt_residual_out_cache = Conv(context, pack, eval, 32, 1, 2, 16, 32, ctxt_conv1_out_bundle[i], block4conv_onebyone_multiplicands32_16_1_1);
-        ctxt_block4conv_onebyone_out.push_back(ctxt_residual_out_cache);
+    #pragma omp parallel for num_thread(40)
+    for (int i = 0; i < 8; ++i) {
+        #pragma omp parallel for num_thread(5)
+        {
+            ctxt_conv1_out_bundle_par[i] = Conv_parallel(context, pack, eval, 32, 1, 1, 3, 16, imageVec[i], block0conv0multiplicands16_3_3_3);
+        }    
     }
 
-    block4conv_onebyone_multiplicands32_16_1_1.clear();
-    block4conv_onebyone_multiplicands32_16_1_1.shrink_to_fit();
-
-    cout << "Done!! level of ctxt is " << ctxt_block4conv_onebyone_out[0][0].getLevel() << "\n";
-    cout << "and decrypted message is ... " << "\n";
-    dec.decrypt(ctxt_block4conv_onebyone_out[0][0], sk, dmsg);
-    printMessage(dmsg);
-
-    // MPP input bundle making
-    cout << "block4MPP1 and BN summand ..." << endl;
-    vector<vector<vector<Ciphertext>>> ctxt_block4MPP1_in(3, vector<vector<Ciphertext>>(32, vector<Ciphertext>(4, ctxt_init)));
-
-    #pragma omp parallel for collapse(3)
-    for (int i = 0; i < 4; ++i) {
-        for (int ch = 0; ch < 32; ++ch) {
-            for (int k = 0; k < 4; ++k) {
-                ctxt_block4MPP1_in[i][ch][k] = ctxt_block4conv_onebyone_out[i + k][ch];
-            }
-        }
-    }
-    ctxt_block4conv_onebyone_out.clear();
-    ctxt_block4conv_onebyone_out.shrink_to_fit();
-
-    // MPP
-    vector<vector<Ciphertext>> ctxt_block4MPP1_out(4, vector<Ciphertext>(32, ctxt_init));
-
-    //#pragma omp parallel for collapse(2)
-    for (int i = 0; i < 4; ++i) {
-        for (int ch = 0; ch < 32; ++ch) {
-            ctxt_block4MPP1_out[i][ch] = MPPacking(context, pack, eval, 32, ctxt_block4MPP1_in[i][ch]);
-        }
+    #pragma omp parallel for num_thread(40)
+    for (int i = 8; i < 16; ++i) {
+        #pragma omp parallel for num_thread(5)
+        {
+            ctxt_conv1_out_bundle_par[i] = Conv_parallel(context, pack, eval, 32, 1, 1, 3, 16, imageVec[i], block0conv0multiplicands16_3_3_3);
+        }    
     }
 
-    ctxt_block4MPP1_in.clear();
-    ctxt_block4MPP1_in.shrink_to_fit();
 
-    addBNsummands(context, eval, ctxt_block4MPP1_out, block4conv_onebyone_summands32, 4, 32);
+
+
+    addBNsummands(context, eval, ctxt_conv1_out_bundle_par, block0conv0summands16, 16, 16);
     timer.end();
 
-    block4conv_onebyone_summands32.clear();
-    block4conv_onebyone_summands32.shrink_to_fit();
+    imageVec.clear();
+    imageVec.shrink_to_fit();
+    block0conv0multiplicands16_3_3_3.clear();
+    block0conv0multiplicands16_3_3_3.shrink_to_fit();
+    block0conv0summands16.clear();
+    block0conv0summands16.shrink_to_fit();
 
 
-    cout << "Done!! level of ctxt is " << ctxt_block4MPP1_out[0][0].getLevel() << "\n";
-    cout << "and decrypted messagee is ... " << "\n";
-    dec.decrypt(ctxt_block4MPP1_out[0][0], sk, dmsg);
+
+
+    cout << "DONE!... after parallel conv1, result = " << "\n";
+
+    dec.decrypt(ctxt_conv1_out_bundle_par[0][0], sk, dmsg);
     printMessage(dmsg);
+
+
+
+
 
 
 
