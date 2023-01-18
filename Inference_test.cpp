@@ -13,8 +13,6 @@
 #include "ReLUbundle80.hpp"
 #include "MPPacking.hpp"
 #include "HEaaNTimer.hpp"
-#include "DSB+BN.hpp"
-#include "RB+BN.hpp"
 //#include "convtools.hpp"
 #include "kernelEncode.hpp"
 #include "imageEncode.hpp"
@@ -1063,7 +1061,7 @@ int main() {
         //cout << "i = " << i << endl;
         #pragma omp parallel num_threads(20)
         {
-        ctxt_conv_out_cache = Conv(context, pack, eval, 32, 1, 1, 32, 32, ctxt_block4relu1_out[i], block5conv0multiplicands32_32_3_3);
+        ctxt_block5conv0_out[i] = Conv(context, pack, eval, 32, 1, 1, 32, 32, ctxt_block4relu1_out[i], block5conv0multiplicands32_32_3_3);
         }
     }
 
@@ -1315,7 +1313,7 @@ int main() {
     for (int i = 0; i < 4; ++i) {
         #pragma omp parallel num_threads(20)
         {
-        ctxt_conv_out2_allch_bundle = Conv(context, pack, eval, 32, 1, 1, 32, 32, ctxt_block6relu0_out[i], block6conv1multiplicands32_32_3_3);
+        ctxt_block6conv1_out[i] = Conv(context, pack, eval, 32, 1, 1, 32, 32, ctxt_block6relu0_out[i], block6conv1multiplicands32_32_3_3);
         }
     }
 
@@ -1450,7 +1448,7 @@ int main() {
     // MPP
     vector<vector<Ciphertext>> ctxt_block7MPP1_out(1, vector<Ciphertext>(64, ctxt_init));
 
-    //#pragma omp parallel for collapse(2)
+    #pragma omp parallel for collapse(2)
     for (int i = 0; i < 1; ++i) {
         for (int ch = 0; ch < 64; ++ch) {
             ctxt_block7MPP1_out[i][ch] = MPPacking(context, pack, eval, 32, ctxt_block7MPP1_in[i][ch]);
@@ -1499,7 +1497,7 @@ int main() {
     timer.start(" block7conv0 ");
     vector<vector<Ciphertext>> ctxt_block7conv0_out(1, vector<Ciphertext>(64, ctxt_init));
     for (int i = 0; i < 1; ++i) { // 서로 다른 img
-        ctxt_block7conv0_out_cache[i] = Conv_parallel(context, pack, eval, 32, 1, 2, 32, 64, ctxt_block6relu1_out[i], block7conv0multiplicands64_32_3_3);
+        ctxt_block7conv0_out[i] = Conv_parallel(context, pack, eval, 32, 1, 2, 32, 64, ctxt_block6relu1_out[i], block7conv0multiplicands64_32_3_3);
     }
 
     ctxt_block6relu1_out.clear();
@@ -1532,7 +1530,7 @@ int main() {
     // MPP
     vector<vector<Ciphertext>> ctxt_block7MPP0_out(1, vector<Ciphertext>(64, ctxt_init));
 
-    //#pragma omp parallel for collapse(2)
+    #pragma omp parallel for collapse(2)
     for (int i = 0; i < 1; ++i) {
         for (int ch = 0; ch < 64; ++ch) {
             ctxt_block7MPP0_out[i][ch] = MPPacking(context, pack, eval, 32, ctxt_block7MPP0_in[i][ch]);
@@ -1606,7 +1604,7 @@ int main() {
     timer.start(" block7conv1 ");
     vector<vector<Ciphertext>> ctxt_block7conv1_out(1, vector<Ciphertext>(64, ctxt_init));
     for (int i = 0; i < 1; ++i) {
-        ctxt_block7conv1_out2_allch_bundle = Conv_parallel(context, pack, eval, 32, 1, 1, 64, 64, ctxt_block7relu0_out[i], block7conv1multiplicands64_64_3_3);
+        ctxt_block7conv1_out[i] = Conv_parallel(context, pack, eval, 32, 1, 1, 64, 64, ctxt_block7relu0_out[i], block7conv1multiplicands64_64_3_3);
     }
 
     addBNsummands(context, eval, ctxt_block7conv1_out, block7conv1summands64, 1, 64);
