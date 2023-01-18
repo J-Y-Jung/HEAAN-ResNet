@@ -734,6 +734,9 @@ int main() {
     ctxt_block3add_out.clear();
     ctxt_block3add_out.shrink_to_fit();
     cout << "RB3 DONE! " << "\n";
+    
+    dec.decrypt(ctxt_block3relu1_out[0][0], sk, dmsg);
+    printMessage(dmsg);
 
 
 
@@ -944,6 +947,9 @@ int main() {
     ctxt_block4MPP0_out.shrink_to_fit();
 
     cout << "DONE!" << "\n";
+    
+    dec.decrypt(ctxt_block4relu0_out[0][0], sk, dmsg);
+    printMessage(dmsg);
 
     // Second convolution
 
@@ -1038,6 +1044,9 @@ int main() {
     ctxt_block4add_out.clear();
     ctxt_block4add_out.shrink_to_fit();
     cout << "DSB1 DONE!" << "\n";
+    
+    dec.decrypt(ctxt_block4relu1_out[0][0], sk, dmsg);
+    printMessage(dmsg);
 
 
 
@@ -1127,6 +1136,9 @@ int main() {
 
     ctxt_block5conv0_out.clear();
     ctxt_block5conv0_out.shrink_to_fit();
+    
+    dec.decrypt(ctxt_block5relu0_out[0][0], sk, dmsg);
+    printMessage(dmsg);
 
     // Second convolution
 
@@ -1218,6 +1230,9 @@ int main() {
     ctxt_block5add_out.clear();
     ctxt_block5add_out.shrink_to_fit();
     cout << "RB4 DONE! " << "\n";
+    
+    dec.decrypt(ctxt_block5relu1_out[0][0], sk, dmsg);
+    printMessage(dmsg);
 
 
 
@@ -1303,6 +1318,9 @@ int main() {
 
     ctxt_block6conv0_out.clear();
     ctxt_block6conv0_out.shrink_to_fit();
+    
+    dec.decrypt(ctxt_block6relu0_out[0][0], sk, dmsg);
+    printMessage(dmsg);
 
     // Second convolution
 
@@ -1395,6 +1413,9 @@ int main() {
     ctxt_block6add_out.clear();
     ctxt_block6add_out.shrink_to_fit();
     cout << "RB5 DONE! " << "\n";
+    
+    dec.decrypt(ctxt_block6relu1_out[0][0], sk, dmsg);
+    printMessage(dmsg);
 
 
 
@@ -1600,6 +1621,9 @@ int main() {
     ctxt_block7MPP0_out.shrink_to_fit();
 
     cout << "DONE!" << "\n";
+    
+    dec.decrypt(ctxt_block7relu0_out[0][0], sk, dmsg);
+    printMessage(dmsg);
 
     // Second convolution
 
@@ -1689,6 +1713,9 @@ int main() {
     ctxt_block7add_out.shrink_to_fit();
     cout << "DSB2 DONE!" << "\n";
 
+    
+    dec.decrypt(ctxt_block7relu1_out[0][0], sk, dmsg);
+    printMessage(dmsg);
 
 
     /////////////////////////////////////
@@ -1763,6 +1790,9 @@ int main() {
 
     ctxt_block8conv0_out.clear();
     ctxt_block8conv0_out.shrink_to_fit();
+    
+    dec.decrypt(ctxt_block8relu0_out[0][0], sk, dmsg);
+    printMessage(dmsg);
 
     // Second convolution
 
@@ -1851,6 +1881,9 @@ int main() {
     ctxt_block8add_out.clear();
     ctxt_block8add_out.shrink_to_fit();
     cout << "RB6 DONE! " << "\n";
+    
+    dec.decrypt(ctxt_block8relu1_out[0][0], sk, dmsg);
+    printMessage(dmsg);
 
 
 
@@ -1930,6 +1963,9 @@ int main() {
 
     ctxt_block9conv0_out.clear();
     ctxt_block9conv0_out.shrink_to_fit();
+    
+    dec.decrypt(ctxt_block9relu0_out[0][0], sk, dmsg);
+    printMessage(dmsg);
 
     // Second convolution
 
@@ -2009,6 +2045,9 @@ int main() {
     ctxt_block9add_out.clear();
     ctxt_block9add_out.shrink_to_fit();
     cout << "RB7 DONE! " << "\n";
+    
+    dec.decrypt(ctxt_block9relu1_out[0][0], sk, dmsg);
+    printMessage(dmsg);
 
 
 
