@@ -231,12 +231,14 @@ int main() {
     cout << "block1conv0 ..." << endl;
     cout << "level of ctxt is " << ctxt_block0relu0_out[0][0].getLevel() << "\n";
     timer.start(" block1conv0 ");
-    vector<vector<Ciphertext>> ctxt_block1conv0_out;
-    for (int i = 0; i < 16; ++i) { // 서로 다른 img
-        //cout << "i = " << i << endl;
-        vector<Ciphertext> ctxt_conv_out_cache;
-        ctxt_conv_out_cache = Conv(context, pack, eval, 32, 1, 1, 16, 16, ctxt_block0relu0_out[i], block1conv0multiplicands16_16_3_3);
-        ctxt_block1conv0_out.push_back(ctxt_conv_out_cache);
+    vector<vector<Ciphertext>> ctxt_block1conv0_out(16, vector<Ciphertext>(16, ctxt_init));
+    
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 16; ++i) {
+        #pragma omp parallel num_threads(5)
+        {
+        ctxt_block1conv0_out = Conv(context, pack, eval, 32, 1, 1, 16, 16, ctxt_block0relu0_out[i], block1conv0multiplicands16_16_3_3);
+        }
     }
 
     addBNsummands(context, eval, ctxt_block1conv0_out, block1conv0summands16, 16, 16);
@@ -256,6 +258,7 @@ int main() {
     // AppReLU
     cout << "block1relu0 ..." << endl;
     timer.start(" block1relu0 ");
+    
     vector<vector<Ciphertext>> ctxt_block1relu0_out(16, vector<Ciphertext>(16, ctxt_init));
     for (int i = 0; i < 16; ++i) {
         cout << "block1relu0 for (" << i << " , ;)" << "\n";
@@ -301,11 +304,14 @@ int main() {
     cout << "block1conv1 ..." << endl;
     cout << "level of ctxt is " << ctxt_block1relu0_out[0][0].getLevel() << "\n";
     timer.start(" block1conv1 ");
-    vector<vector<Ciphertext>> ctxt_block1conv1_out;
+    vector<vector<Ciphertext>> ctxt_block1conv1_out(16, vector<Ciphertext>(16, ctxt_init));
+    
+    #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 16; ++i) {
-        vector<Ciphertext> ctxt_conv_out2_allch_bundle;
-        ctxt_conv_out2_allch_bundle = Conv(context, pack, eval, 32, 1, 1, 16, 16, ctxt_block1relu0_out[i], block1conv1multiplicands16_16_3_3);
-        ctxt_block1conv1_out.push_back(ctxt_conv_out2_allch_bundle);
+        #pragma omp parallel num_threads(5)
+        {
+        ctxt_block1conv1_out[i] = Conv(context, pack, eval, 32, 1, 1, 16, 16, ctxt_block1relu0_out[i], block1conv1multiplicands16_16_3_3);
+        }
     }
 
     addBNsummands(context, eval, ctxt_block1conv1_out, block1conv1summands16, 16, 16);
@@ -333,6 +339,7 @@ int main() {
             eval.add(ctxt_block1conv1_out[i][ch], ctxt_block0relu0_out[i][ch], ctxt_block1add_out[i][ch]);
         }
     }
+    
     cout << "DONE!" << "\n";
     ctxt_block0relu0_out.clear();
     ctxt_block0relu0_out.shrink_to_fit();
@@ -397,12 +404,14 @@ int main() {
     cout << "block2conv0 ..." << endl;
     cout << "level of ctxt is " << ctxt_block1relu1_out[0][0].getLevel() << "\n";
     timer.start(" block2conv0 ");
-    vector<vector<Ciphertext>> ctxt_block2conv0_out;
-    for (int i = 0; i < 16; ++i) { // 서로 다른 img
-        //cout << "i = " << i << endl;
-        vector<Ciphertext> ctxt_conv_out_cache;
-        ctxt_conv_out_cache = Conv(context, pack, eval, 32, 1, 1, 16, 16, ctxt_block1relu1_out[i], block2conv0multiplicands16_16_3_3);
-        ctxt_block2conv0_out.push_back(ctxt_conv_out_cache);
+    vector<vector<Ciphertext>> ctxt_block2conv0_out(16, vector<Ciphertext>(16, ctxt_init));
+    
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 16; ++i) {
+        #pragma omp parallel num_threads(5)
+        {
+        ctxt_block2conv0_out[i] = Conv(context, pack, eval, 32, 1, 1, 16, 16, ctxt_block1relu1_out[i], block2conv0multiplicands16_16_3_3);
+        }
     }
 
     addBNsummands(context, eval, ctxt_block2conv0_out, block2conv0summands16, 16, 16);
