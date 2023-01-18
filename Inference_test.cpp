@@ -194,6 +194,11 @@ int main() {
     }*/
     timer.end();
     cout << "block0 DONE!" << "\n";
+    
+    
+    dec.decrypt(ctxt_block0relu0_out[0][0], sk, dmsg);
+    printMessage(dmsg);
+
 
 
 
@@ -271,6 +276,10 @@ int main() {
     }*/
     timer.end();
     cout << "DONE!" << "\n";
+    
+    dec.decrypt(ctxt_block1relu0_out[0][0], sk, dmsg);
+    printMessage(dmsg);
+
 
     ctxt_block1conv0_out.clear();
     ctxt_block1conv0_out.shrink_to_fit();
@@ -365,6 +374,10 @@ int main() {
     ctxt_block1add_out.clear();
     ctxt_block1add_out.shrink_to_fit();
     cout << "RB1 DONE! " << "\n";
+    
+    dec.decrypt(ctxt_block1relu1_out[0][0], sk, dmsg);
+    printMessage(dmsg);
+
 
 
 
@@ -444,6 +457,10 @@ int main() {
     }*/
     timer.end();
     cout << "DONE!" << "\n";
+    
+    dec.decrypt(ctxt_block2relu0_out[0][0], sk, dmsg);
+    printMessage(dmsg);
+
 
     ctxt_block2conv0_out.clear();
     ctxt_block2conv0_out.shrink_to_fit();
@@ -538,6 +555,10 @@ int main() {
     ctxt_block2add_out.clear();
     ctxt_block2add_out.shrink_to_fit();
     cout << "RB2 DONE! " << "\n";
+    
+    dec.decrypt(ctxt_block2relu1_out[0][0], sk, dmsg);
+    printMessage(dmsg);
+
 
 
 
@@ -616,9 +637,13 @@ int main() {
     }*/
     timer.end();
     cout << "DONE!" << "\n";
-
     ctxt_block3conv0_out.clear();
     ctxt_block3conv0_out.shrink_to_fit();
+    
+    dec.decrypt(ctxt_block3relu0_out[0][0], sk, dmsg);
+    printMessage(dmsg);
+
+
 
     // RB 3 - 2
     vector<double> temp6;
