@@ -175,7 +175,7 @@ void evalOddPolynomial(HEaaN::Context context, HEaaN::HomEvaluator eval,
 
 
 
-void ApproxReLU_bundle(HEaaN::Context context, HEaaN::KeyPack pack,HEaaN::HomEvaluator eval, 
+void ApproxReLU_bundle80(HEaaN::Context context, HEaaN::KeyPack pack,HEaaN::HomEvaluator eval, 
     std::vector<std::vector<HEaaN::Ciphertext>>& ctxt_bundle, std::vector<std::vector<HEaaN::Ciphertext>>& ctxt_relu_bundle){
     
     HEaaN::Ciphertext ctxt_temp(context); //for initializing
@@ -191,8 +191,7 @@ void ApproxReLU_bundle(HEaaN::Context context, HEaaN::KeyPack pack,HEaaN::HomEva
         }
     }
 
-    //std::cout << "b" << std::endl;
-    std::cout << "Imaginary BTS..." << std::cout;
+    //std::cout << "Imaginary BTS..." << std::cout;
     std::vector<std::vector<HEaaN::Ciphertext>> ctxt_real_BTS_bundle(ctxt_relu_bundle.size() , std::vector<HEaaN::Ciphertext>(ctxt_relu_bundle[0].size(),ctxt_temp));
     //#pragma omp parallel for
     //for(int i = 0 ; i < ctxt_relu_bundle.size() ; ++i){
@@ -209,11 +208,11 @@ void ApproxReLU_bundle(HEaaN::Context context, HEaaN::KeyPack pack,HEaaN::HomEva
         }
         #pragma omp parallel for num_threads(80)
         for(int i = 0 ; i < 80 ; i++){
-            eval.bootstrap(ctxt_temp_bundle[(i/16)+5][i%16],ctxt_real_BTS_bundle[i/16+3][i%16],true);
+            eval.bootstrap(ctxt_temp_bundle[(i/16)+5][i%16],ctxt_real_BTS_bundle[i/16+5][i%16],true);
         }
         #pragma omp parallel for num_threads(80)
         for(int i = 0 ; i < 80 ; i++){
-            eval.bootstrap(ctxt_temp_bundle[(i/16)+10][i%16],ctxt_real_BTS_bundle[i/16+6][i%16],true);
+            eval.bootstrap(ctxt_temp_bundle[(i/16)+10][i%16],ctxt_real_BTS_bundle[i/16+10][i%16],true);
         }
         #pragma omp parallel for num_threads(16)
         for(int i = 0 ; i < 16 ; i++){
@@ -261,7 +260,6 @@ void ApproxReLU_bundle(HEaaN::Context context, HEaaN::KeyPack pack,HEaaN::HomEva
     -9.98181561763750e-46, 3.30651387315565, 4.69390466192199e-47, -1.82742944627533e-1
     };
 
-    //std::cout << "c" << std::endl;
     std::vector<std::vector<HEaaN::Ciphertext>> ctxt_temp1_bundle(ctxt_relu_bundle.size() , std::vector<HEaaN::Ciphertext>(ctxt_relu_bundle[0].size(),ctxt_temp));
     #pragma omp parallel for collapse(2)
     for(int i = 0 ; i < ctxt_temp1_bundle.size() ; ++i){
@@ -269,8 +267,7 @@ void ApproxReLU_bundle(HEaaN::Context context, HEaaN::KeyPack pack,HEaaN::HomEva
             evalOddPolynomial(context,eval,ctxt_real_BTS_bundle[i][j],ctxt_temp1_bundle[i][j],polynomial_1,4,2);
         }
     }
-    
-    //std::cout << "d" << std::endl;
+
     std::vector<std::vector<HEaaN::Ciphertext>> ctxt_temp2_bundle(ctxt_relu_bundle.size() , std::vector<HEaaN::Ciphertext>(ctxt_relu_bundle[0].size(),ctxt_temp));
     #pragma omp parallel for collapse(2)
     for(int i = 0 ; i < ctxt_temp2_bundle.size() ; ++i){
@@ -282,7 +279,7 @@ void ApproxReLU_bundle(HEaaN::Context context, HEaaN::KeyPack pack,HEaaN::HomEva
     ctxt_temp1_bundle.shrink_to_fit();
 
     //BTS...
-    std::cout << "BTS..." << std::endl;
+    //std::cout << "BTS..." << std::endl;
     std::vector<std::vector<HEaaN::Ciphertext>> ctxt_real_BTS2_bundle(ctxt_relu_bundle.size() , std::vector<HEaaN::Ciphertext>(ctxt_relu_bundle[0].size(),ctxt_temp));
     //#pragma omp parallel for collapse(2)
     //for(int i = 0 ; i < ctxt_real_BTS2_bundle.size() ; ++i){
@@ -298,11 +295,11 @@ void ApproxReLU_bundle(HEaaN::Context context, HEaaN::KeyPack pack,HEaaN::HomEva
         }
         #pragma omp parallel for num_threads(80)
         for(int i = 0 ; i < 80 ; i++){
-            eval.bootstrap(ctxt_temp1_bundle[(i/16)+5][i%16],ctxt_real_BTS2_bundle[i/16+3][i%16],true);
+            eval.bootstrap(ctxt_temp1_bundle[(i/16)+5][i%16],ctxt_real_BTS2_bundle[i/16+5][i%16],true);
         }
         #pragma omp parallel for num_threads(80)
         for(int i = 0 ; i < 80 ; i++){
-            eval.bootstrap(ctxt_temp1_bundle[(i/16)+10][i%16],ctxt_real_BTS2_bundle[i/16+6][i%16],true);
+            eval.bootstrap(ctxt_temp1_bundle[(i/16)+10][i%16],ctxt_real_BTS2_bundle[i/16+10][i%16],true);
         }
         #pragma omp parallel for num_threads(16)
         for(int i = 0 ; i < 16 ; i++){
