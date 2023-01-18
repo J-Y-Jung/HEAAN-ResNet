@@ -353,14 +353,11 @@ void ApproxReLU_bundle80(HEaaN::Context context, HEaaN::KeyPack pack,HEaaN::HomE
         }
     }
     
-    ctxt_temp1_bundle.clear();
-    ctxt_temp1_bundle.shrink_to_fit();
-
-    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_sign_bundle(ctxt_relu_bundle.size() , std::vector<HEaaN::Ciphertext>(ctxt_relu_bundle[0].size(),ctxt_temp));
+    //std::vector<std::vector<HEaaN::Ciphertext>> ctxt_sign_bundle(ctxt_relu_bundle.size() , std::vector<HEaaN::Ciphertext>(ctxt_relu_bundle[0].size(),ctxt_temp));
     #pragma omp parallel for collapse(2)
     for(int i = 0 ; i < ctxt_sign_bundle.size() ; ++i){
         for(int j = 0 ; j < ctxt_sign_bundle[0].size() ; ++j){
-            evalOddPolynomial(context,eval,ctxt_temp_bundle[i][j],ctxt_sign_bundle[i][j],polynomial_3,4,3);
+            evalOddPolynomial(context,eval,ctxt_temp_bundle[i][j],ctxt_temp1_bundle[i][j],polynomial_3,4,3);
         }
     }
 
@@ -368,15 +365,15 @@ void ApproxReLU_bundle80(HEaaN::Context context, HEaaN::KeyPack pack,HEaaN::HomE
     for(int i = 0 ; i < ctxt_relu_bundle.size() ; ++i){
         for(int j = 0 ; j < ctxt_relu_bundle[0].size() ; ++j){
             eval.mult(ctxt_real_BTS_bundle[i][j] , 0.5 , ctxt_temp_bundle[i][j]);
-            eval.mult(ctxt_real_BTS_bundle[i][j],ctxt_sign_bundle[i][j],ctxt_relu_bundle[i][j]);
+            eval.mult(ctxt_real_BTS_bundle[i][j],ctxt_temp1_bundle[i][j],ctxt_relu_bundle[i][j]);
             eval.add(ctxt_temp_bundle[i][j],ctxt_relu_bundle[i][j],ctxt_relu_bundle[i][j]);
         }
     }
     
     ctxt_real_BTS_bundle.clear();
     ctxt_real_BTS_bundle.shrink_to_fit();
-    ctxt_sign_bundle.clear();
-    ctxt_sign_bundle.shrink_to_fit();
+    ctxt_temp1_bundle.clear();
+    ctxt_temp1_bundle.shrink_to_fit();
     ctxt_temp_bundle.clear();
     ctxt_temp_bundle.shrink_to_fit();
     levelDownBundle(context,pack,eval,ctxt_relu_bundle,5);
