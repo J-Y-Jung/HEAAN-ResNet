@@ -42,6 +42,9 @@ find_package(HEaaN REQUIRED)
 ## add_executable(thread thread.cpp) 
 ## target_link_libraries(thread PUBLIC HEaaN::HEaaN)
 
+add_executable(test Inference_test.cpp) 
+target_link_libraries(test PUBLIC HEaaN::HEaaN)
+
 add_executable(apprelu AppReLUtest.cpp) 
 target_link_libraries(apprelu PUBLIC HEaaN::HEaaN)
 
