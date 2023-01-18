@@ -137,11 +137,6 @@ int main() {
     addBNsummands(context, eval, ctxt_conv1_out_bundle, block0conv0summands16, 16, 16);
     timer.end();
 
-
-    imageVec.clear();
-    imageVec.shrink_to_fit();
-
-
     cout << "DONE!... after conv1, result = " << "\n";
 
     dec.decrypt(ctxt_conv1_out_bundle[0][0], sk, dmsg);
