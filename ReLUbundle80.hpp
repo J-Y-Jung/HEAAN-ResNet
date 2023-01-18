@@ -6,6 +6,12 @@
 #include "HEaaN/heaan.hpp"
 #include "leveldown.hpp"
 
+namespace{
+    using namespace std;
+    using namespace HEaaN;
+}
+
+
 void multWithoutRelin(HEaaN::Context context, HEaaN::HomEvaluator eval,
     const HEaaN::Ciphertext& ctxt1, const HEaaN::Ciphertext& ctxt2, HEaaN::Ciphertext& ctxt_out) {
 
