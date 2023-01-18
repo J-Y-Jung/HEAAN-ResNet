@@ -42,11 +42,8 @@ find_package(HEaaN REQUIRED)
 ## add_executable(thread thread.cpp) 
 ## target_link_libraries(thread PUBLIC HEaaN::HEaaN)
 
-## add_executable(convpar Conv_parallel.cpp) 
-## target_link_libraries(convpar PUBLIC HEaaN::HEaaN)
-
-## add_executable(conv Conv.cpp) 
-## target_link_libraries(conv PUBLIC HEaaN::HEaaN)
+add_executable(conv Conv.cpp) 
+target_link_libraries(conv PUBLIC HEaaN::HEaaN)
 
 add_executable(oddLazyBSGS oddLazyBSGStest.cpp) 
 target_link_libraries(oddLazyBSGS PUBLIC HEaaN::HEaaN)
