@@ -355,8 +355,8 @@ void ApproxReLU_bundle80(HEaaN::Context context, HEaaN::KeyPack pack,HEaaN::HomE
     
     //std::vector<std::vector<HEaaN::Ciphertext>> ctxt_sign_bundle(ctxt_relu_bundle.size() , std::vector<HEaaN::Ciphertext>(ctxt_relu_bundle[0].size(),ctxt_temp));
     #pragma omp parallel for collapse(2)
-    for(int i = 0 ; i < ctxt_sign_bundle.size() ; ++i){
-        for(int j = 0 ; j < ctxt_sign_bundle[0].size() ; ++j){
+    for(int i = 0 ; i < ctxt_temp_bundle.size() ; ++i){
+        for(int j = 0 ; j < ctxt_temp_bundle[0].size() ; ++j){
             evalOddPolynomial(context,eval,ctxt_temp_bundle[i][j],ctxt_temp1_bundle[i][j],polynomial_3,4,3);
         }
     }
