@@ -125,7 +125,7 @@ int main() {
     temp0a.shrink_to_fit();
 
 
-    cout << "Convolution ..." << endl;
+    cout << "inner parallel Convolution ..." << endl;
     timer.start(" Convolution 1 ");
     vector<vector<Ciphertext>> ctxt_conv1_out_bundle;
     #pragma omp parallel for 
@@ -150,8 +150,8 @@ int main() {
 
     
     // parallel Convolution 1
-    cout << "parallel Convolution 1 ..." << endl;
-    timer.start(" parallel Convolution 1 ");
+    cout << "outer parallel Convolution 1 ..." << endl;
+    timer.start(" Convolution 1 ");
     vector<vector<Ciphertext>> ctxt_conv1_out_bundle_par(16, vector<Ciphertext>(16, ctxt_init));
 
     #pragma omp parallel for num_threads(40)
