@@ -209,38 +209,60 @@ void ApproxReLU_bundle80(HEaaN::Context context, HEaaN::KeyPack pack,HEaaN::HomE
 
     if(ctxt_relu_bundle.size() == 16 && ctxt_relu_bundle[0].size() == 16){
         #pragma omp parallel for num_threads(80)
-        for(int i = 0 ; i < 80 ; i++){
+        for(int i = 0 ; i < 80 ; ++i){
             eval.bootstrap(ctxt_temp_bundle[i/16][i%16],ctxt_real_BTS_bundle[i/16][i%16], true);
         }
         #pragma omp parallel for num_threads(80)
-        for(int i = 0 ; i < 80 ; i++){
+        for(int i = 0 ; i < 80 ; ++i){
             eval.bootstrap(ctxt_temp_bundle[(i/16)+5][i%16],ctxt_real_BTS_bundle[i/16+5][i%16],true);
         }
         #pragma omp parallel for num_threads(80)
-        for(int i = 0 ; i < 80 ; i++){
+        for(int i = 0 ; i < 80 ; ++i){
             eval.bootstrap(ctxt_temp_bundle[(i/16)+10][i%16],ctxt_real_BTS_bundle[i/16+10][i%16],true);
         }
         #pragma omp parallel for num_threads(80)
-        for(int i = 0 ; i < 16 ; i++){
+        for(int i = 0 ; i < 16 ; ++i){
             #pragma omp parallel num_threads(5)
             {
             eval.bootstrap(ctxt_temp_bundle[15][i%16],ctxt_real_BTS_bundle[15][i%16],true);
             }
         }
     }else if(ctxt_relu_bundle.size() == 4 && ctxt_relu_bundle[0].size() == 32){
-        #pragma omp parallel for num_threads(64)
-        for(int i = 0 ; i < 64 ; i++){
-            eval.bootstrap(ctxt_temp_bundle[i/32][i%32],ctxt_real_BTS_bundle[i/32][i%32],true);
+        #pragma omp parallel for num_threads(80)
+        for(int i = 0 ; i < 80 ; ++i){
+            eval.bootstrap(ctxt_temp_bundle[i/20][i%20],ctxt_real_BTS_bundle[i/20][i%20],true);
         }
-        #pragma omp parallel for num_threads(64)
-        for(int i = 0 ; i < 64 ; i++){
-            eval.bootstrap(ctxt_temp_bundle[(i/32)+2][i%32],ctxt_real_BTS_bundle[(i/32)+2][i%32],true);
+        
+        #pragma omp parallel for num_threads(80)
+        for(int i = 0 ; i < 16 ; ++i){
+            #pragma omp parallel num_threads(5)
+            {
+            eval.bootstrap(ctxt_temp_bundle[i/4][20+(i%4)],ctxt_real_BTS_bundle[i/4][20+(i%4)],true);
+            }
         }
+        #pragma omp parallel for num_threads(80)
+        for(int i = 0 ; i < 16 ; ++i){
+            #pragma omp parallel num_threads(5)
+            {
+            eval.bootstrap(ctxt_temp_bundle[i/4][24+(i%4)],ctxt_real_BTS_bundle[i/4][24+(i%4)],true);
+            }
+        }
+        
+        #pragma omp parallel for num_threads(80)
+        for(int i = 0 ; i < 16 ; ++i){
+            #pragma omp parallel num_threads(5)
+            {
+            eval.bootstrap(ctxt_temp_bundle[i/4][28+(i%4)],ctxt_real_BTS_bundle[i/4][28+(i%4)],true);
+            }
+        }
+        
     }else{
         #pragma omp parallel for num_threads(64)
-        for(int i = 0 ; i < 64 ; i++){
+        for(int i = 0 ; i < 64 ; ++i){
             eval.bootstrap(ctxt_temp_bundle[0][i],ctxt_real_BTS_bundle[0][i],true);
         }
+        
+        
     }
 
     
