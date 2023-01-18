@@ -156,7 +156,7 @@ int main() {
 
     #pragma omp parallel for num_threads(40)
     for (int i = 0; i < 8; ++i) {
-        #pragma omp parallel for num_threads(5)
+        #pragma omp parallel num_threads(5)
         {
             ctxt_conv1_out_bundle_par[i] = Conv(context, pack, eval, 32, 1, 1, 3, 16, imageVec[i], block0conv0multiplicands16_3_3_3);
         }    
@@ -164,7 +164,7 @@ int main() {
 
     #pragma omp parallel for num_threads(40)
     for (int i = 8; i < 16; ++i) {
-        #pragma omp parallel for num_threads(5)
+        #pragma omp parallel num_threads(5)
         {
             ctxt_conv1_out_bundle_par[i] = Conv(context, pack, eval, 32, 1, 1, 3, 16, imageVec[i], block0conv0multiplicands16_3_3_3);
         }    
