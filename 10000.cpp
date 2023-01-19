@@ -87,10 +87,10 @@ int main() {
 
     cout << "10000 test images encoding ... \n";
 
-    int number;
+    int num;
 
     cout << "Choose one of bundle from 1 to 20 \n";
-    cin >> number;
+    cin >> num;
 
     cout << "\n Image Loading ..." << "\n";
 
@@ -137,7 +137,7 @@ int main() {
 
     else {
 
-        for (int i = (number-1) * 16; i < number*16; ++i) { // 313
+        for (int i = (num-1) * 16; i < num*16; ++i) { // 313
 
             string str = "/app/HEAAN-ResNet/image/image_" + to_string(i+1) + string(".txt");
             vector<double> temp;
@@ -2430,7 +2430,14 @@ int main() {
     cout << "Finaly, DONE!!!... output is ..." << "\n";
     
     
-    string filepath_last = "/app/FINAL/final_";
+    
+    
+    ////////////////////////////////
+    ///////////// save file ///////
+    //////////////////////////////
+    
+    
+    string filepath_last = string("/app/FINAL")+to_string(num)+string("/final")+to_string(num)+string("_");
     
     for (int i=0; i<512; ++i){
         string filepath = filepath_last + to_string(i+1)+string(".txt");
@@ -2442,26 +2449,22 @@ int main() {
         file.close();
     }
 
+    
+    
     cout << "[ ";
-    for (int i = 0; i < 512; ++i) {
-        int max_index = max_element(final_result[i].begin(), final_result[i].end()) - final_result[i].begin();
-        cout << max_index << ", ";
-    }
-    cout << "]\n";
-
-
-    ////////////////////////////////
-    ///////////// save file ///////
-    //////////////////////////////
-    ofstream file("/app/label_output/label.txt");
+    
+    string savelabel = string("/app/label_output/label")+to_string(num);
+    ofstream filesave(savelabel);
+    
     for (int i = 0; i < 512; ++i) {
         int max_index = max_element(final_result[i].begin(), final_result[i].end()) - final_result[i].begin();
         file << max_index << "\n";
+        cout << max_index << ", ";
     }
-
-    file.close();
-
-
-
+    
+    filesave.close();
+    cout << "]\n";
+    
+    
     return 0;
 }
