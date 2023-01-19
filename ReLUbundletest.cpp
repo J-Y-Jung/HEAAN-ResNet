@@ -142,10 +142,6 @@ int main() {
     
     dec.decrypt(ctxt_out_bundle[0][0], sk, dmsg);
     printMessage(dmsg);
-
-    timer.start("method 2");
-    ApproxReLU_bundle80(context, pack,eval, ctxt_bundle, ctxt_out_bundle);
-    timer.end();
     
     
     timer.start("method 3");
