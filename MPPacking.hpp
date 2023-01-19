@@ -70,7 +70,7 @@ std::vector<HEaaN::Ciphertext>& ctxt_bundle) {
 	HEaaN::Ciphertext ctxt_init(context);
 	std::vector<HEaaN::Ciphertext> ctxt_rotated_bundle(4, ctxt_init);
 		
-	#pragma omp parallel for collapse(2)
+	//#pragma omp parallel for collapse(2)
 	for (int i = 0; i < 2; ++i) {
         	for (int j = 0; j < 2; ++j) {
 			eval.leftRotate(ctxt_bundle[2*i+j], -(imgsize*i)-j, ctxt_rotated_bundle[2*i+j]);
@@ -83,7 +83,7 @@ std::vector<HEaaN::Ciphertext>& ctxt_bundle) {
     // Sum
     HEaaN::Ciphertext ctxt_sum(context);
    
-	#pragma omp parallel
+	//#pragma omp parallel
 	{
 		eval.add(ctxt_rotated_bundle[0], ctxt_rotated_bundle[1], ctxt_rotated_bundle[0]);
 		eval.add(ctxt_rotated_bundle[2], ctxt_rotated_bundle[3], ctxt_rotated_bundle[2]);
@@ -107,7 +107,7 @@ std::vector<HEaaN::Ciphertext>& ctxt_bundle) {
 	HEaaN::Ciphertext ctxt_init(context);
 	std::vector<HEaaN::Ciphertext> ctxt_rotated_bundle(4, ctxt_init);
 		
-	#pragma omp parallel for collapse(2)
+	//#pragma omp parallel for collapse(2)
 	for (int i = 0; i < 2; ++i) {
         	for (int j = 0; j < 2; ++j) {
 			eval.leftRotate(ctxt_bundle[2*i+j], -(imgsize*2*i)-j*2, ctxt_rotated_bundle[2*i+j]);
@@ -120,7 +120,7 @@ std::vector<HEaaN::Ciphertext>& ctxt_bundle) {
     // Sum
     HEaaN::Ciphertext ctxt_sum(context);
    
-	#pragma omp parallel
+	//#pragma omp parallel
 	{
 		eval.add(ctxt_rotated_bundle[0], ctxt_rotated_bundle[1], ctxt_rotated_bundle[0]);
 		eval.add(ctxt_rotated_bundle[2], ctxt_rotated_bundle[3], ctxt_rotated_bundle[2]);
