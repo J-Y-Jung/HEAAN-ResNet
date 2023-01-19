@@ -9,6 +9,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
+#include <fstream>
 #include <optional>
 #include <random>
 
@@ -68,6 +69,29 @@ void printMessage(const HEaaN::Message &msg, bool is_complex = true,
         std::cout << msg[msg_size - 1] << " ]" << std::endl;
     else
         std::cout << msg[msg_size - 1].real() << " ]" << std::endl;
+}
+
+void saveMessage(const HEaaN::Message &msg, bool is_complex = true,
+                  const string filepath) {
+
+    const size_t msg_size = msg.getSize();
+    
+    filepathReal = filepath + "_real.txt";
+    filepathImg = filepath + "_img.txt";
+    
+    ofstream fileReal(filepathReal);
+    ofstream fileImg(filepathImg);
+
+    for (size_t j=0; j< msg_size; ++j){
+        fileReal << afterRB3[i][ch][j].real() << "\n";
+        fileImg << afterRB3[i][ch][j].img() << "\n";
+    }
+    
+    fileReal.close();
+    fileImg.close();
+    
+    return;
+
 }
 
 std::string presetNamer(const HEaaN::ParameterPreset preset) {
