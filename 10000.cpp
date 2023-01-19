@@ -110,8 +110,8 @@ int main() {
     if (num==20){
         
         #pragma omp parallel for
-        for(int i=304; i<313; ++i){
-            string str = "/app/HEAAN-ResNet/image/image_" + to_string(i+1) + string(".txt");
+        for(int i=305; i<313; ++i){
+            string str = "/app/HEAAN-ResNet/image/image_" + to_string(i) + string(".txt");
             vector<double> temp;
             txtreader(temp, str);
             imageCompiler(context, pack, enc, 5, temp, imageVec[(i%16)]);
@@ -124,15 +124,16 @@ int main() {
         
         for (int i=0; i<49152; ++i) temp313.push_back(0);
 
-        imageCompiler(context, pack, enc, 5, temp313, imageVec[9]);
+        imageCompiler(context, pack, enc, 5, temp313, imageVec[8]);
 
     }
 
     else {
+        
+        #pragma omp parallel for
+        for (int i = (num-1) * 16+1; i <= num*16; ++i) { // 313
 
-        for (int i = (num-1) * 16; i < num*16; ++i) { // 313
-
-            string str = "/app/HEAAN-ResNet/image/image_" + to_string(i+1) + string(".txt");
+            string str = "/app/HEAAN-ResNet/image/image_" + to_string(i) + string(".txt");
             vector<double> temp;
             txtreader(temp, str);
             imageCompiler(context, pack, enc, 5, temp, imageVec[(i%16)]);
