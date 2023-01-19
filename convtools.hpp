@@ -156,7 +156,7 @@ void weightToPtxt(Plaintext& ptxt, u64 level, double weight,
     size_t idx;
 
     if (gap_in == 1 && stride == 2) {
-        #pragma omp parallel for collapse(2)
+        //#pragma omp parallel for collapse(2)
         for (size_t k = 0; k < 32; ++k) {
             for (size_t i = 0; i < 1024; ++i) {
                 msg[k * 1024 + i].imag(0.0);
@@ -168,7 +168,7 @@ void weightToPtxt(Plaintext& ptxt, u64 level, double weight,
             }
         }
     } else if (gap_in == 2 && stride == 2) {
-        #pragma omp parallel for collapse(3)
+        //#pragma omp parallel for collapse(3)
         for (size_t k = 0; k < 32; ++k) {
             for (size_t l = 0; l < 32; ++l) {
                 for (size_t m = 0; m < 32; ++m) {
@@ -182,7 +182,7 @@ void weightToPtxt(Plaintext& ptxt, u64 level, double weight,
             }
         }
     } else {
-        #pragma omp parallel for
+        //#pragma omp parallel for
         for (size_t j = 0; j < num_slots; ++j) {
             msg[j].real(weight);
             msg[j].imag(0.0);
@@ -190,7 +190,7 @@ void weightToPtxt(Plaintext& ptxt, u64 level, double weight,
     }
 
     if (weight_row_idx == 0) {
-        #pragma omp parallel for collapse(2)
+        //#pragma omp parallel for collapse(2)
         for (size_t j = 0; j < 32; ++j) {
             for (size_t i = 0; i < 32 * gap_in; ++i) {
                 msg[j * 1024 + i].real(0.0);
@@ -198,7 +198,7 @@ void weightToPtxt(Plaintext& ptxt, u64 level, double weight,
         }
     }
     else if (weight_row_idx == 2) {
-        #pragma omp parallel for collapse(2)
+        //#pragma omp parallel for collapse(2)
         for (size_t j = 0; j < 32; ++j) {
             for (size_t i = 0; i < 32 * gap_in; ++i) {
                 msg[j * 1024 + (1024 - 32 * gap_in) + i].real(0.0);
@@ -206,7 +206,7 @@ void weightToPtxt(Plaintext& ptxt, u64 level, double weight,
         }
     }
     if (weight_col_idx == 0) {
-        #pragma omp parallel for collapse(3)
+        //#pragma omp parallel for collapse(3)
         for (size_t j = 0; j < 32; ++j) {
             for (size_t i = 0; i < 32; ++i) {
                 for (size_t k = 0; k < gap_in; ++k) {
@@ -216,7 +216,7 @@ void weightToPtxt(Plaintext& ptxt, u64 level, double weight,
         }
     }
     else if (weight_col_idx == 2) {
-        #pragma omp parallel for collapse(3)
+        //#pragma omp parallel for collapse(3)
         for (size_t j = 0; j < 32; ++j) {
             for (size_t i = 0; i < 32; ++i) {
                 for (size_t k = 0; k < gap_in; ++k) {
