@@ -71,8 +71,7 @@ void printMessage(const HEaaN::Message &msg, bool is_complex = true,
         std::cout << msg[msg_size - 1].real() << " ]" << std::endl;
 }
 
-void saveMessage(const HEaaN::Message &msg, bool is_complex = true,
-                  const string filepath) {
+void saveMessage(const HEaaN::Message &msg, const string filepath) {
 
     const size_t msg_size = msg.getSize();
     
