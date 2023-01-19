@@ -95,8 +95,8 @@ int main() {
             Message msg(15);
 
             for (size_t k = 0; k < 32768; ++k) {
-                msg.real(tempReal[k]);
-                msg.imag(tempImg[k]);
+                msg[k].real(tempReal[k]);
+                msg[k].imag(tempImg[k]);
             }
 
             enc.encrypt(msg, sk, ctxt_block3relu1_out[i][j], 5, 0);
@@ -792,7 +792,7 @@ int main() {
     // Last AppReLU
     cout << "block6relu1 ..." << endl;
     timer.start(" block6relu1 ");
-    vector<vector<Ciphertext>> ctxt_block6relu1_out(4, vector<Ciphertext>(32, ctxt_init));\
+    vector<vector<Ciphertext>> ctxt_block6relu1_out(4, vector<Ciphertext>(32, ctxt_init));
     #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 80; ++i) {
         ApproxReLU(context, eval, ctxt_block6add_out[i / 20][i % 20], ctxt_block6relu1_out[i / 20][i % 20]);
