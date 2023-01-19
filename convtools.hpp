@@ -16,7 +16,7 @@ for 1-by-1 kernel, you must set
 weight index = |(1,1)|
 */
 
-void weightToPtxtOld(Plaintext& ptxt, u64 level, vector<vector<double>> weights,
+/*void weightToPtxtOld(Plaintext& ptxt, u64 level, vector<vector<double>> weights,
     u64 gap_in, u64 stride,
     u64 weight_row_idx, u64 weight_col_idx, EnDecoder ecd) {
     Message msg(15);
@@ -146,7 +146,7 @@ void weightToPtxtOld(Plaintext& ptxt, u64 level, vector<vector<double>> weights,
     }
     ptxt = ecd.encode(msg, level, 0);
     return;
-}
+}*/
 
 void weightToPtxt(Plaintext& ptxt, u64 level, double weight,
     u64 gap_in, u64 stride,
@@ -236,7 +236,7 @@ void weightToPtxt(Plaintext& ptxt, u64 level, double weight,
 }
 
 //weight for the first conv layer
-void weightToPtxt1stConvOld(Plaintext& ptxt, u64 level, vector<double> weights,
+/*void weightToPtxt1stConvOld(Plaintext& ptxt, u64 level, vector<double> weights,
     u64 weight_row_idx, u64 weight_col_idx, EnDecoder ecd) {
     Message msg(15);
     auto num_slots = msg.getSize();
@@ -300,4 +300,4 @@ void weightToPtxt1stConvOld(Plaintext& ptxt, u64 level, vector<double> weights,
     }
     ptxt = ecd.encode(msg, level, 0);
     return;
-}
+}*/
