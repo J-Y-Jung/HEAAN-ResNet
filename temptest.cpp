@@ -368,7 +368,7 @@ int main() {
     for (int i = 0; i < 4; ++i) {
         #pragma omp parallel num_threads(20)
         {
-            ctxt_block4conv1_out[i] = Conv(context, pack, eval, 32, 1, 1, 32, 32, ctxt_block4relu0_out[i], block4conv1multiplicands32_32_3_3);
+            ctxt_block4conv1_out[i] = Conv(context, pack, eval, 32, 2, 1, 32, 32, ctxt_block4relu0_out[i], block4conv1multiplicands32_32_3_3);
         }
     }
 
@@ -483,7 +483,7 @@ int main() {
         //cout << "i = " << i << endl;
         #pragma omp parallel num_threads(20)
         {
-            ctxt_block5conv0_out[i] = Conv(context, pack, eval, 32, 1, 1, 32, 32, ctxt_block4relu1_out[i], block5conv0multiplicands32_32_3_3);
+            ctxt_block5conv0_out[i] = Conv(context, pack, eval, 32, 2, 1, 32, 32, ctxt_block4relu1_out[i], block5conv0multiplicands32_32_3_3);
         }
     }
 
@@ -564,7 +564,7 @@ int main() {
     for (int i = 0; i < 4; ++i) {
     #pragma omp parallel num_threads(20)
         {
-            ctxt_block5conv1_out[i] = Conv(context, pack, eval, 32, 1, 1, 32, 32, ctxt_block5relu0_out[i], block5conv1multiplicands32_32_3_3);
+            ctxt_block5conv1_out[i] = Conv(context, pack, eval, 32, 2, 1, 32, 32, ctxt_block5relu0_out[i], block5conv1multiplicands32_32_3_3);
         }
     }
 
@@ -673,7 +673,7 @@ int main() {
         //cout << "i = " << i << endl;
         #pragma omp parallel num_threads(20)
         {
-            ctxt_block6conv0_out[i] = Conv(context, pack, eval, 32, 1, 1, 32, 32, ctxt_block5relu1_out[i], block6conv0multiplicands32_32_3_3);
+            ctxt_block6conv0_out[i] = Conv(context, pack, eval, 32, 2, 1, 32, 32, ctxt_block5relu1_out[i], block6conv0multiplicands32_32_3_3);
         }
     }
     
@@ -753,7 +753,7 @@ int main() {
     for (int i = 0; i < 4; ++i) {
         #pragma omp parallel num_threads(20)
         {
-            ctxt_block6conv1_out[i] = Conv(context, pack, eval, 32, 1, 1, 32, 32, ctxt_block6relu0_out[i], block6conv1multiplicands32_32_3_3);
+            ctxt_block6conv1_out[i] = Conv(context, pack, eval, 32, 2, 1, 32, 32, ctxt_block6relu0_out[i], block6conv1multiplicands32_32_3_3);
         }
     }
 
@@ -862,7 +862,7 @@ int main() {
     for (int i = 0; i < 4; ++i) { // 서로 다른 img
         #pragma omp parallel num_threads(20)
         {
-            ctxt_block7conv_onebyone_out[i] = Conv(context, pack, eval, 32, 1, 2, 32, 64, ctxt_block6relu1_out[i], block7conv_onebyone_multiplicands64_32_1_1);
+            ctxt_block7conv_onebyone_out[i] = Conv(context, pack, eval, 32, 2, 2, 32, 64, ctxt_block6relu1_out[i], block7conv_onebyone_multiplicands64_32_1_1);
         }
     }
 
@@ -950,7 +950,7 @@ int main() {
     timer.start(" block7conv0 ");
     vector<vector<Ciphertext>> ctxt_block7conv0_out(1, vector<Ciphertext>(64, ctxt_init));
     for (int i = 0; i < 1; ++i) { // 서로 다른 img
-        ctxt_block7conv0_out[i] = Conv_parallel(context, pack, eval, 32, 1, 2, 32, 64, ctxt_block6relu1_out[i], block7conv0multiplicands64_32_3_3);
+        ctxt_block7conv0_out[i] = Conv_parallel(context, pack, eval, 32, 2, 2, 32, 64, ctxt_block6relu1_out[i], block7conv0multiplicands64_32_3_3);
     }
 
     ctxt_block6relu1_out.clear();
@@ -1062,7 +1062,7 @@ int main() {
     timer.start(" block7conv1 ");
     vector<vector<Ciphertext>> ctxt_block7conv1_out(1, vector<Ciphertext>(64, ctxt_init));
     for (int i = 0; i < 1; ++i) {
-        ctxt_block7conv1_out[i] = Conv_parallel(context, pack, eval, 32, 1, 1, 64, 64, ctxt_block7relu0_out[i], block7conv1multiplicands64_64_3_3);
+        ctxt_block7conv1_out[i] = Conv_parallel(context, pack, eval, 32, 4, 1, 64, 64, ctxt_block7relu0_out[i], block7conv1multiplicands64_64_3_3);
     }
 
     addBNsummands(context, eval, ctxt_block7conv1_out, block7conv1summands64, 1, 64);
@@ -1156,7 +1156,7 @@ int main() {
     vector<vector<Ciphertext>> ctxt_block8conv0_out(1, vector<Ciphertext>(64, ctxt_init));
     for (int i = 0; i < 1; ++i) { // 서로 다른 img
         //cout << "i = " << i << endl;
-        ctxt_block8conv0_out[i] = Conv_parallel(context, pack, eval, 32, 1, 1, 64, 64, ctxt_block7relu1_out[i], block8conv0multiplicands64_64_3_3);
+        ctxt_block8conv0_out[i] = Conv_parallel(context, pack, eval, 32, 4, 1, 64, 64, ctxt_block7relu1_out[i], block8conv0multiplicands64_64_3_3);
     }
 
     addBNsummands(context, eval, ctxt_block8conv0_out, block8conv0summands64, 1, 64);
@@ -1223,7 +1223,7 @@ int main() {
     timer.start(" block8conv1 ");
     vector<vector<Ciphertext>> ctxt_block8conv1_out(1, vector<Ciphertext>(64, ctxt_init));
     for (int i = 0; i < 1; ++i) {
-        ctxt_block8conv1_out[i] = Conv_parallel(context, pack, eval, 32, 1, 1, 64, 64, ctxt_block8relu0_out[i], block8conv1multiplicands64_64_3_3);
+        ctxt_block8conv1_out[i] = Conv_parallel(context, pack, eval, 32, 4, 1, 64, 64, ctxt_block8relu0_out[i], block8conv1multiplicands64_64_3_3);
     }
 
     addBNsummands(context, eval, ctxt_block8conv1_out, block8conv1summands64, 1, 64);
@@ -1314,7 +1314,7 @@ int main() {
     vector<vector<Ciphertext>> ctxt_block9conv0_out(1, vector<Ciphertext>(64, ctxt_init));
     for (int i = 0; i < 1; ++i) { // 서로 다른 img
         //cout << "i = " << i << endl;
-        ctxt_block9conv0_out[i] = Conv_parallel(context, pack, eval, 32, 1, 1, 64, 64, ctxt_block8relu1_out[i], block9conv0multiplicands64_64_3_3);
+        ctxt_block9conv0_out[i] = Conv_parallel(context, pack, eval, 32, 4, 1, 64, 64, ctxt_block8relu1_out[i], block9conv0multiplicands64_64_3_3);
     }
 
     addBNsummands(context, eval, ctxt_block9conv0_out, block9conv0summands64, 1, 64);
@@ -1372,7 +1372,7 @@ int main() {
     timer.start(" block9conv1 ");
     vector<vector<Ciphertext>> ctxt_block9conv1_out(1, vector<Ciphertext>(64, ctxt_init));
     for (int i = 0; i < 1; ++i) {
-        ctxt_block9conv1_out[i] = Conv_parallel(context, pack, eval, 32, 1, 1, 64, 64, ctxt_block9relu0_out[i], block9conv1multiplicands64_64_3_3);
+        ctxt_block9conv1_out[i] = Conv_parallel(context, pack, eval, 32, 4, 1, 64, 64, ctxt_block9relu0_out[i], block9conv1multiplicands64_64_3_3);
     }
 
     addBNsummands(context, eval, ctxt_block9conv1_out, block9conv1summands64, 1, 64);
