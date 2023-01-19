@@ -178,21 +178,21 @@ int main() {
     vector<Ciphertext> ctxt_out(48, ctxt);
     
     timer.start("method 1 : ");
-    #pragma omp parallel for num_threads(48);
+    #pragma omp parallel for num_threads(48)
     for(int i=0; i<48; ++i){
         eval.bootstrap(ctxt_vec[i], ctxt_out[i], true);
     }
     timer.end();
     
     timer.start("method 2 : ");
-    #pragma omp parallel for num_threads(80);
+    #pragma omp parallel for num_threads(80)
     for(int i=0; i<48; ++i){
         eval.bootstrap(ctxt_vec[i], ctxt_out[i], true);
     }
     timer.end();
     
     timer.start("method 3 : ");
-    #pragma omp parallel for;
+    #pragma omp parallel for
     for(int i=0; i<48; ++i){
         eval.bootstrap(ctxt_vec[i], ctxt_out[i], true);
     }
