@@ -53,9 +53,10 @@ void imageCompiler(Context context, KeyPack pack, Encryptor enc, u64 level, vect
     Message msg1(15), msg2(15), msg3(15);
     auto num_slots = msg1.getSize();
     vector<double> input1, input2, input3;
-
-    Ciphertext ctxt1(context), ctxt2(context), ctxt3(context);
     
+    
+    Ciphertext ctxt1(context), ctxt2(context), ctxt3(context);
+    #pragma omp parallel for
     for (int i = 0; i < 32; ++i) {
         vector<double> temp1 = slice(image, 3072 * i, 3072 * i + 1024);
         vector<double> temp2 = slice(image, 3072 * i + 1024, 3072 * i + 2048);
@@ -68,7 +69,7 @@ void imageCompiler(Context context, KeyPack pack, Encryptor enc, u64 level, vect
 
     }
     
-
+    #pragma omp parallel for
     for (size_t i = 0; i < num_slots; ++i) {
         msg1[i].real(input1[i]);
         msg1[i].imag(0.0);
