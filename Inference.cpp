@@ -807,7 +807,7 @@ int main() {
     #pragma omp parallel for collapse(2)
     for (int i = 0; i < 4; ++i) {
         for (int ch = 0; ch < 32; ++ch) {
-            ctxt_block4MPP1_out[i][ch] = MPPacking(context, pack, eval, 32, ctxt_block4MPP1_in[i][ch]);
+            ctxt_block4MPP1_out[i][ch] = MPPacking1(context, pack, eval, 32, ctxt_block4MPP1_in[i][ch]);
         }
     }
 
@@ -893,7 +893,7 @@ int main() {
     #pragma omp parallel for collapse(2)
     for (int i = 0; i < 4; ++i) {
         for (int ch = 0; ch < 32; ++ch) {
-            ctxt_block4MPP0_out[i][ch] = MPPacking(context, pack, eval, 32, ctxt_block4MPP0_in[i][ch]);
+            ctxt_block4MPP0_out[i][ch] = MPPacking1(context, pack, eval, 32, ctxt_block4MPP0_in[i][ch]);
         }
     }
 
@@ -1450,7 +1450,7 @@ int main() {
     #pragma omp parallel for collapse(2)
     for (int i = 0; i < 1; ++i) {
         for (int ch = 0; ch < 64; ++ch) {
-            ctxt_block7MPP1_out[i][ch] = MPPacking(context, pack, eval, 32, ctxt_block7MPP1_in[i][ch]);
+            ctxt_block7MPP1_out[i][ch] = MPPacking2(context, pack, eval, 32, ctxt_block7MPP1_in[i][ch]);
         }
     }
 
@@ -1534,7 +1534,7 @@ int main() {
     #pragma omp parallel for collapse(2)
     for (int i = 0; i < 1; ++i) {
         for (int ch = 0; ch < 64; ++ch) {
-            ctxt_block7MPP0_out[i][ch] = MPPacking(context, pack, eval, 32, ctxt_block7MPP0_in[i][ch]);
+            ctxt_block7MPP0_out[i][ch] = MPPacking2(context, pack, eval, 32, ctxt_block7MPP0_in[i][ch]);
         }
     }
 
