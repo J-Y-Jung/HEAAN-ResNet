@@ -10,7 +10,7 @@
 #include "examples.hpp" // 필요한가? / ㅇㅇ
 #include "Conv.hpp"
 #include "Conv_parallel.hpp"
-#include "ReLUbundle80.hpp"
+#include "ReLUbundle.hpp"
 #include "MPPacking.hpp"
 #include "HEaaNTimer.hpp"
 //#include "convtools.hpp"
