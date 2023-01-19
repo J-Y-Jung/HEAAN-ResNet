@@ -39,10 +39,10 @@ std::vector<HEaaN::Ciphertext>& ctxt_bundle) {
 	
     // Sum
     HEaaN::Ciphertext ctxt_sum(context);
-    ctxt_sum = ctxt_rotated_bundle[0];
-    for (int i = 1; i < num_ctxt; i++) {
-        eval.add(ctxt_sum, ctxt_rotated_bundle[i], ctxt_sum);
-    }
+    //ctxt_sum = ctxt_rotated_bundle[0];
+    //for (int i = 1; i < num_ctxt; i++) {
+    //    eval.add(ctxt_sum, ctxt_rotated_bundle[i], ctxt_sum);
+    //}
 	
 	if (gap == 2){
 		#pragma omp parallel
