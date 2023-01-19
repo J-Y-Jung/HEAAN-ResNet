@@ -197,7 +197,7 @@ void ApproxReLU_bundle80(HEaaN::Context context, HEaaN::KeyPack pack,HEaaN::HomE
         }
     }
 
-    //std::cout << "Imaginary BTS..." << std::cout;
+    //std::cout << "Imaginary BTS..." << std::endl;
     std::vector<std::vector<HEaaN::Ciphertext>> ctxt_real_BTS_bundle(ctxt_relu_bundle.size() , std::vector<HEaaN::Ciphertext>(ctxt_relu_bundle[0].size(),ctxt_temp));
     //#pragma omp parallel for
     //for(int i = 0 ; i < ctxt_relu_bundle.size() ; ++i){
@@ -209,30 +209,27 @@ void ApproxReLU_bundle80(HEaaN::Context context, HEaaN::KeyPack pack,HEaaN::HomE
 
     if(ctxt_relu_bundle.size() == 16 && ctxt_relu_bundle[0].size() == 16){
         #pragma omp parallel for num_threads(80)
-        for(int i = 0 ; i < 80 ; ++i){
-            eval.bootstrap(ctxt_temp_bundle[i/16][i%16],ctxt_real_BTS_bundle[i/16][i%16], true);
+        for(int i = 0 ; i < 80 ; i++){
+            eval.bootstrap(ctxt_temp_bundle[i/16][i%16],ctxt_real_BTS_bundle[i/16][i%16],true);
         }
         #pragma omp parallel for num_threads(80)
-        for(int i = 0 ; i < 80 ; ++i){
+        for(int i = 0 ; i < 80 ; i++){
             eval.bootstrap(ctxt_temp_bundle[(i/16)+5][i%16],ctxt_real_BTS_bundle[i/16+5][i%16],true);
         }
         #pragma omp parallel for num_threads(80)
-        for(int i = 0 ; i < 80 ; ++i){
+        for(int i = 0 ; i < 80 ; i++){
             eval.bootstrap(ctxt_temp_bundle[(i/16)+10][i%16],ctxt_real_BTS_bundle[i/16+10][i%16],true);
         }
         #pragma omp parallel for num_threads(80)
-        for(int i = 0 ; i < 16 ; ++i){
-            #pragma omp parallel num_threads(5)
-            {
+        for(int i = 0 ; i < 16 ; i++){
+            #pragma omp parallel num_thread(5)
             eval.bootstrap(ctxt_temp_bundle[15][i%16],ctxt_real_BTS_bundle[15][i%16],true);
-            }
         }
     }else if(ctxt_relu_bundle.size() == 4 && ctxt_relu_bundle[0].size() == 32){
         #pragma omp parallel for num_threads(80)
         for(int i = 0 ; i < 80 ; ++i){
             eval.bootstrap(ctxt_temp_bundle[i/20][i%20],ctxt_real_BTS_bundle[i/20][i%20],true);
         }
-        
         #pragma omp parallel for num_threads(80)
         for(int i = 0 ; i < 16 ; ++i){
             #pragma omp parallel num_threads(5)
@@ -247,7 +244,6 @@ void ApproxReLU_bundle80(HEaaN::Context context, HEaaN::KeyPack pack,HEaaN::HomE
             eval.bootstrap(ctxt_temp_bundle[i/4][24+(i%4)],ctxt_real_BTS_bundle[i/4][24+(i%4)],true);
             }
         }
-        
         #pragma omp parallel for num_threads(80)
         for(int i = 0 ; i < 16 ; ++i){
             #pragma omp parallel num_threads(5)
@@ -255,15 +251,14 @@ void ApproxReLU_bundle80(HEaaN::Context context, HEaaN::KeyPack pack,HEaaN::HomE
             eval.bootstrap(ctxt_temp_bundle[i/4][28+(i%4)],ctxt_real_BTS_bundle[i/4][28+(i%4)],true);
             }
         }
-        
     }else{
         #pragma omp parallel for num_threads(64)
-        for(int i = 0 ; i < 64 ; ++i){
+        for(int i = 0 ; i < 64 ; i++){
             eval.bootstrap(ctxt_temp_bundle[0][i],ctxt_real_BTS_bundle[0][i],true);
         }
-        
-        
     }
+    ctxt_temp_bundle.clear();
+    ctxt_temp_bundle.shrink_to_fit();
 
     
 
@@ -291,25 +286,27 @@ void ApproxReLU_bundle80(HEaaN::Context context, HEaaN::KeyPack pack,HEaaN::HomE
     -9.98181561763750e-46, 3.30651387315565, 4.69390466192199e-47, -1.82742944627533e-1
     };
 
-    
+    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_temp1_bundle(ctxt_relu_bundle.size() , std::vector<HEaaN::Ciphertext>(ctxt_relu_bundle[0].size(),ctxt_temp));
     #pragma omp parallel for collapse(2)
-    for(int i = 0 ; i < ctxt_temp_bundle.size() ; ++i){
-        for(int j = 0 ; j < ctxt_temp_bundle[0].size() ; ++j){
-            evalOddPolynomial(context,eval,ctxt_real_BTS_bundle[i][j],ctxt_temp_bundle[i][j],polynomial_1,4,2);
+    for(int i = 0 ; i < ctxt_temp1_bundle.size() ; ++i){
+        for(int j = 0 ; j < ctxt_temp1_bundle[0].size() ; ++j){
+            evalOddPolynomial(context,eval,ctxt_real_BTS_bundle[i][j],ctxt_temp1_bundle[i][j],polynomial_1,4,2);
         }
     }
 
-    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_temp1_bundle(ctxt_relu_bundle.size() , std::vector<HEaaN::Ciphertext>(ctxt_relu_bundle[0].size(),ctxt_temp));
+    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_temp2_bundle(ctxt_relu_bundle.size() , std::vector<HEaaN::Ciphertext>(ctxt_relu_bundle[0].size(),ctxt_temp));
     #pragma omp parallel for collapse(2)
-    for(int i = 0 ; i < ctxt_temp_bundle.size() ; ++i){
-        for(int j = 0 ; j < ctxt_temp_bundle[0].size() ; ++j){
-            evalOddPolynomial(context,eval,ctxt_temp_bundle[i][j],ctxt_temp1_bundle[i][j],polynomial_2,2,3);
+    for(int i = 0 ; i < ctxt_temp2_bundle.size() ; ++i){
+        for(int j = 0 ; j < ctxt_temp2_bundle[0].size() ; ++j){
+            evalOddPolynomial(context,eval,ctxt_temp1_bundle[i][j],ctxt_temp2_bundle[i][j],polynomial_2,2,3);
         }
     }
+    ctxt_temp1_bundle.clear();
+    ctxt_temp1_bundle.shrink_to_fit();
 
     //BTS...
     //std::cout << "BTS..." << std::endl;
-    //std::vector<std::vector<HEaaN::Ciphertext>> ctxt_temp1_bundle(ctxt_relu_bundle.size() , std::vector<HEaaN::Ciphertext>(ctxt_relu_bundle[0].size(),ctxt_temp));
+    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_real_BTS2_bundle(ctxt_relu_bundle.size() , std::vector<HEaaN::Ciphertext>(ctxt_relu_bundle[0].size(),ctxt_temp));
     //#pragma omp parallel for collapse(2)
     //for(int i = 0 ; i < ctxt_real_BTS2_bundle.size() ; ++i){
     //    //#pragma omp parallel for
@@ -320,63 +317,78 @@ void ApproxReLU_bundle80(HEaaN::Context context, HEaaN::KeyPack pack,HEaaN::HomE
     if(ctxt_relu_bundle.size() == 16 && ctxt_relu_bundle[0].size() == 16){
         #pragma omp parallel for num_threads(80)
         for(int i = 0 ; i < 80 ; i++){
-            eval.bootstrap(ctxt_temp1_bundle[i/16][i%16],ctxt_temp_bundle[i/16][i%16],true);
+            eval.bootstrap(ctxt_temp2_bundle[i/16][i%16],ctxt_real_BTS2_bundle[i/16][i%16],true);
         }
         #pragma omp parallel for num_threads(80)
         for(int i = 0 ; i < 80 ; i++){
-            eval.bootstrap(ctxt_temp1_bundle[(i/16)+5][i%16],ctxt_temp_bundle[i/16+5][i%16],true);
+            eval.bootstrap(ctxt_temp2_bundle[(i/16)+5][i%16],ctxt_real_BTS2_bundle[i/16+5][i%16],true);
         }
         #pragma omp parallel for num_threads(80)
         for(int i = 0 ; i < 80 ; i++){
-            eval.bootstrap(ctxt_temp1_bundle[(i/16)+10][i%16],ctxt_temp_bundle[i/16+10][i%16],true);
+            eval.bootstrap(ctxt_temp2_bundle[(i/16)+10][i%16],ctxt_real_BTS2_bundle[i/16+10][i%16],true);
         }
         #pragma omp parallel for num_threads(80)
         for(int i = 0 ; i < 16 ; i++){
             #pragma omp parallel num_threads(5)
-            {
-            eval.bootstrap(ctxt_temp1_bundle[15][i%16],ctxt_temp_bundle[15][i%16],true);
-            }
+            eval.bootstrap(ctxt_temp2_bundle[15][i%16],ctxt_real_BTS2_bundle[15][i%16],true);
         }
     }else if(ctxt_relu_bundle.size() == 4 && ctxt_relu_bundle[0].size() == 32){
-        #pragma omp parallel for num_threads(64)
-        for(int i = 0 ; i < 64 ; i++){
-            eval.bootstrap(ctxt_temp1_bundle[i/32][i%32],ctxt_temp_bundle[i/32][i%32],true);
+        #pragma omp parallel for num_threads(80)
+        for(int i = 0 ; i < 80 ; ++i){
+            eval.bootstrap(ctxt_temp2_bundle[i/20][i%20],ctxt_real_BTS2_bundle[i/20][i%20],true);
         }
-        #pragma omp parallel for num_threads(64)
-        for(int i = 0 ; i < 64 ; i++){
-            eval.bootstrap(ctxt_temp1_bundle[(i/32)+2][i%32],ctxt_temp_bundle[(i/32)+2][i%32],true);
+        #pragma omp parallel for num_threads(80)
+        for(int i = 0 ; i < 16 ; ++i){
+            #pragma omp parallel num_threads(5)
+            {
+            eval.bootstrap(ctxt_temp2_bundle[i/4][20+(i%4)],ctxt_real_BTS2_bundle[i/4][20+(i%4)],true);
+            }
+        }
+        #pragma omp parallel for num_threads(80)
+        for(int i = 0 ; i < 16 ; ++i){
+            #pragma omp parallel num_threads(5)
+            {
+            eval.bootstrap(ctxt_temp2_bundle[i/4][24+(i%4)],ctxt_real_BTS2_bundle[i/4][24+(i%4)],true);
+            }
+        }
+        #pragma omp parallel for num_threads(80)
+        for(int i = 0 ; i < 16 ; ++i){
+            #pragma omp parallel num_threads(5)
+            {
+            eval.bootstrap(ctxt_temp2_bundle[i/4][28+(i%4)],ctxt_real_BTS2_bundle[i/4][28+(i%4)],true);
+            }
         }
     }else{
         #pragma omp parallel for num_threads(64)
         for(int i = 0 ; i < 64 ; i++){
-            eval.bootstrap(ctxt_temp1_bundle[0][i],ctxt_temp_bundle[0][i],true);
+            eval.bootstrap(ctxt_temp2_bundle[0][i],ctxt_real_BTS2_bundle[0][i],true);
         }
     }
     
-    //std::vector<std::vector<HEaaN::Ciphertext>> ctxt_sign_bundle(ctxt_relu_bundle.size() , std::vector<HEaaN::Ciphertext>(ctxt_relu_bundle[0].size(),ctxt_temp));
+    ctxt_temp2_bundle.clear();
+    ctxt_temp2_bundle.shrink_to_fit();
+
+    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_sign_bundle(ctxt_relu_bundle.size() , std::vector<HEaaN::Ciphertext>(ctxt_relu_bundle[0].size(),ctxt_temp));
     #pragma omp parallel for collapse(2)
-    for(int i = 0 ; i < ctxt_temp_bundle.size() ; ++i){
-        for(int j = 0 ; j < ctxt_temp_bundle[0].size() ; ++j){
-            evalOddPolynomial(context,eval,ctxt_temp_bundle[i][j],ctxt_temp1_bundle[i][j],polynomial_3,4,3);
+    for(int i = 0 ; i < ctxt_sign_bundle.size() ; ++i){
+        for(int j = 0 ; j < ctxt_sign_bundle[0].size() ; ++j){
+            evalOddPolynomial(context,eval,ctxt_real_BTS2_bundle[i][j],ctxt_sign_bundle[i][j],polynomial_3,4,3);
         }
     }
+    ctxt_real_BTS2_bundle.clear();
+    ctxt_real_BTS2_bundle.shrink_to_fit();
 
     #pragma omp parallel for collapse(2)
     for(int i = 0 ; i < ctxt_relu_bundle.size() ; ++i){
         for(int j = 0 ; j < ctxt_relu_bundle[0].size() ; ++j){
-            eval.mult(ctxt_real_BTS_bundle[i][j] , 0.5 , ctxt_temp_bundle[i][j]);
-            eval.mult(ctxt_real_BTS_bundle[i][j],ctxt_temp1_bundle[i][j],ctxt_relu_bundle[i][j]);
-            eval.add(ctxt_temp_bundle[i][j],ctxt_relu_bundle[i][j],ctxt_relu_bundle[i][j]);
+            eval.mult(ctxt_real_BTS_bundle[i][j] , 0.5 , ctxt_real_BTS_bundle[i][j]);
+            eval.mult(ctxt_real_BTS_bundle[i][j],ctxt_sign_bundle[i][j],ctxt_relu_bundle[i][j]);
+            eval.add(ctxt_real_BTS_bundle[i][j],ctxt_relu_bundle[i][j],ctxt_relu_bundle[i][j]);
         }
     }
-    
+    ctxt_sign_bundle.clear();
+    ctxt_sign_bundle.shrink_to_fit();
     ctxt_real_BTS_bundle.clear();
     ctxt_real_BTS_bundle.shrink_to_fit();
-    ctxt_temp1_bundle.clear();
-    ctxt_temp1_bundle.shrink_to_fit();
-    ctxt_temp_bundle.clear();
-    ctxt_temp_bundle.shrink_to_fit();
     levelDownBundle(context,pack,eval,ctxt_relu_bundle,5);
-
 }
-
