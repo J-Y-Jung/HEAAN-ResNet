@@ -187,14 +187,18 @@ int main() {
     temp0.clear();
     temp0.shrink_to_fit();
 
-    vector<Plaintext> block0conv0summands16;
+    vector<Plaintext> block0conv0summands16(16, ptxt_init);
     vector<double> temp0a;
     string path0a = "/app/HEAAN-ResNet/kernel/summands/" + string("block0conv0summands16");
     Scaletxtreader(temp0a, path0a, cnst);
-
+    
+    #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 16; ++i) {
+        #pragma omp parallel num_threads(5)
+        {
         Message msg(log_slots, temp0a[i]);
-        block0conv0summands16.push_back(ecd.encode(msg, 4, 0));
+        block0conv0summands16[i]=ecd.encode(msg, 4, 0);
+        }
     }
 
     temp0a.clear();
@@ -300,14 +304,18 @@ int main() {
     temp1.clear();
     temp1.shrink_to_fit();
 
-    vector<Plaintext> block1conv0summands16;
+    vector<Plaintext> block1conv0summands16(16, ptxt_init);
     vector<double> temp1a;
     string path1a = "/app/HEAAN-ResNet/kernel/summands/" + string("block1conv0summands16");
     Scaletxtreader(temp1a, path1a, cnst);
-
+    
+    #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 16; ++i) {
+        #pragma omp parallel num_threads(5)
+        {
         Message msg(log_slots, temp1a[i]);
-        block1conv0summands16.push_back(ecd.encode(msg, 4, 0));
+        block1conv0summands16[i]=ecd.encode(msg, 4, 0);
+        }
     }
     temp1a.clear();
     temp1a.shrink_to_fit();
@@ -412,14 +420,18 @@ int main() {
     temp2.shrink_to_fit();
 
 
-    vector<Plaintext> block1conv1summands16;
+    vector<Plaintext> block1conv1summands16(16, ptxt_init);
     vector<double> temp2a;
     string path2a = "/app/HEAAN-ResNet/kernel/summands/" + string("block1conv1summands16");
     Scaletxtreader(temp2a, path2a, cnst);
-
+    
+    #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 16; ++i) {
+        #pragma omp parallel num_threads(5)
+        {
         Message msg(log_slots, temp2a[i]);
-        block1conv1summands16.push_back(ecd.encode(msg, 4, 0));
+        block1conv1summands16[i] = ecd.encode(msg, 4, 0);
+        }
     }
 
     temp2a.clear();
@@ -530,14 +542,18 @@ int main() {
     temp3.shrink_to_fit();
 
 
-    vector<Plaintext> block2conv0summands16;
+    vector<Plaintext> block2conv0summands16(16, ptxt_init);
     vector<double> temp3a;
     string path3a = "/app/HEAAN-ResNet/kernel/summands/" + string("block2conv0summands16");
     Scaletxtreader(temp3a, path3a, cnst);
-
+    
+    #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 16; ++i) {
+        #pragma omp parallel num_threads(5)
+        {
         Message msg(log_slots, temp3a[i]);
-        block2conv0summands16.push_back(ecd.encode(msg, 4, 0));
+        block2conv0summands16[i] = ecd.encode(msg, 4, 0);
+        }
     }
     temp3a.clear();
     temp3a.shrink_to_fit();
@@ -628,14 +644,18 @@ int main() {
     temp4.shrink_to_fit();
 
 
-    vector<Plaintext> block2conv1summands16;
+    vector<Plaintext> block2conv1summands16(16, ptxt_init);
     vector<double> temp4a;
     string path4a = "/app/HEAAN-ResNet/kernel/summands/" + string("block2conv1summands16");
     Scaletxtreader(temp4a, path4a, cnst);
 
+    #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 16; ++i) {
+        #pragma omp parallel num_threads(5)
+        {
         Message msg(log_slots, temp4a[i]);
-        block2conv1summands16.push_back(ecd.encode(msg, 4, 0));
+        block2conv1summands16[i]=ecd.encode(msg, 4, 0);
+        }
     }
     temp4a.clear();
     temp4a.shrink_to_fit();
@@ -749,14 +769,18 @@ int main() {
     temp5.shrink_to_fit();
 
 
-    vector<Plaintext> block3conv0summands16;
+    vector<Plaintext> block3conv0summands16(16, ptxt_init);
     vector<double> temp5a;
     string path5a = "/app/HEAAN-ResNet/kernel/summands/" + string("block3conv0summands16");
     Scaletxtreader(temp5a, path5a, cnst);
 
+    #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 16; ++i) {
+        #pragma omp parallel num_threads(5)
+        {
         Message msg(log_slots, temp5a[i]);
-        block3conv0summands16.push_back(ecd.encode(msg, 4, 0));
+        block3conv0summands16[i]=ecd.encode(msg, 4, 0);
+        }
     }
     temp5a.clear();
     temp5a.shrink_to_fit();
@@ -841,14 +865,17 @@ int main() {
     temp6.shrink_to_fit();
 
 
-    vector<Plaintext> block3conv1summands16;
+    vector<Plaintext> block3conv1summands16(16, ptxt_init);
     vector<double> temp6a;
     string path6a = "/app/HEAAN-ResNet/kernel/summands/" + string("block3conv1summands16");
     Scaletxtreader(temp6a, path6a, cnst);
-
+    #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 16; ++i) {
+        #pragma omp parallel num_threads(5)
+        {
         Message msg(log_slots, temp6a[i]);
-        block3conv1summands16.push_back(ecd.encode(msg, 4, 0));
+        block3conv1summands16[i]=ecd.encode(msg, 4, 0);
+        }
     }
     temp6a.clear();
     temp6a.shrink_to_fit();
@@ -1007,14 +1034,17 @@ int main() {
     temp7.shrink_to_fit();
 
 
-    vector<Plaintext> block4conv_onebyone_summands32;
+    vector<Plaintext> block4conv_onebyone_summands32(32, ptxt_init);
     vector<double> temp7a;
     string path7a = "/app/HEAAN-ResNet/kernel/summands/" + string("block4conv_onebyone_summands32");
     Scaletxtreader(temp7a, path7a, cnst);
-
+    #pragma omp parallel for num_threads(64)
     for (int i = 0; i < 32; ++i) {
+        #pragma omp parallel num_threads(2)
+        {
         Message msg(log_slots, temp7a[i]);
-        block4conv_onebyone_summands32.push_back(ecd.encode(msg, 4, 0));
+        block4conv_onebyone_summands32[i]=ecd.encode(msg, 4, 0);
+        }
     }
     temp7a.clear();
     temp7a.shrink_to_fit();
@@ -1101,14 +1131,17 @@ int main() {
     temp8.shrink_to_fit();
 
 
-    vector<Plaintext> block4conv0summands32;
+    vector<Plaintext> block4conv0summands32(32, ptxt_init);
     vector<double> temp8a;
     string path8a = "/app/HEAAN-ResNet/kernel/summands/" + string("block4conv0summands32");
     Scaletxtreader(temp8a, path8a, cnst);
-
+    #pragma omp parallel for num_threads(64)
     for (int i = 0; i < 32; ++i) {
+        #pragma omp parallel num_threads(2)
+        {
         Message msg(log_slots, temp8a[i]);
-        block4conv0summands32.push_back(ecd.encode(msg, 4, 0));
+        block4conv0summands32[i]=ecd.encode(msg, 4, 0);
+        }
     }
     temp8a.clear();
     temp8a.shrink_to_fit();
@@ -1225,14 +1258,17 @@ int main() {
     temp9.shrink_to_fit();
 
 
-    vector<Plaintext> block4conv1summands32;
+    vector<Plaintext> block4conv1summands32(32, ptxt_init);
     vector<double> temp9a;
     string path9a = "/app/HEAAN-ResNet/kernel/summands/" + string("block4conv1summands32");
     Scaletxtreader(temp9a, path9a, cnst);
-
+    #pragma omp parallel for num_threads(64)
     for (int i = 0; i < 32; ++i) {
+        #pragma omp parallel num_threads(2)
+        {
         Message msg(log_slots, temp9a[i]);
-        block4conv1summands32.push_back(ecd.encode(msg, 4, 0));
+        block4conv1summands32[i]=ecd.encode(msg, 4, 0);
+        }
     }
     temp9a.clear();
     temp9a.shrink_to_fit();
@@ -1340,14 +1376,17 @@ int main() {
     temp10.shrink_to_fit();
 
 
-    vector<Plaintext> block5conv0summands32;
+    vector<Plaintext> block5conv0summands32(32, ptxt_init);
     vector<double> temp10a;
     string path10a = "/app/HEAAN-ResNet/kernel/summands/" + string("block5conv0summands32");
     Scaletxtreader(temp10a, path10a, cnst);
-
+    #pragma omp parallel for num_threads(64)
     for (int i = 0; i < 32; ++i) {
+        #pragma omp parallel num_threads(2)
+        {
         Message msg(log_slots, temp10a[i]);
-        block5conv0summands32.push_back(ecd.encode(msg, 4, 0));
+        block5conv0summands32[i]=ecd.encode(msg, 4, 0);
+        }
     }
 
 
@@ -1420,14 +1459,17 @@ int main() {
     temp11.shrink_to_fit();
 
 
-    vector<Plaintext> block5conv1summands32;
+    vector<Plaintext> block5conv1summands32(32, ptxt_init);
     vector<double> temp11a;
     string path11a = "/app/HEAAN-ResNet/kernel/summands/" + string("block5conv1summands32");
     Scaletxtreader(temp11a, path11a, cnst);
-
+    #pragma omp parallel for num_threads(64)
     for (int i = 0; i < 32; ++i) {
+        #pragma omp parallel num_threads(2)
+        {
         Message msg(log_slots, temp11a[i]);
-        block5conv1summands32.push_back(ecd.encode(msg, 4, 0));
+        block5conv1summands32[i]=ecd.encode(msg, 4, 0);
+        }
     }
     temp11a.clear();
     temp11a.shrink_to_fit();
@@ -1527,14 +1569,17 @@ int main() {
     temp12.clear();
     temp12.shrink_to_fit();
 
-    vector<Plaintext> block6conv0summands32;
+    vector<Plaintext> block6conv0summands32(32, ptxt_init);
     vector<double> temp12a;
     string path12a = "/app/HEAAN-ResNet/kernel/summands/" + string("block6conv0summands32");
     Scaletxtreader(temp12a, path12a, cnst);
-
+    #pragma omp parallel for num_threads(64)
     for (int i = 0; i < 32; ++i) {
+        #pragma omp parallel num_threads(2)
+        {
         Message msg(log_slots, temp12a[i]);
-        block6conv0summands32.push_back(ecd.encode(msg, 4, 0));
+        block6conv0summands32[i]=ecd.encode(msg, 4, 0);
+        }
     }
     temp12a.clear();
     temp12a.shrink_to_fit();
@@ -1608,14 +1653,17 @@ int main() {
     temp13.shrink_to_fit();
 
 
-    vector<Plaintext> block6conv1summands32;
+    vector<Plaintext> block6conv1summands32(32, ptxt_init);
     vector<double> temp13a;
     string path13a = "/app/HEAAN-ResNet/kernel/summands/" + string("block6conv1summands32");
     Scaletxtreader(temp13a, path13a, cnst);
-
+    #pragma omp parallel for num_threads(64)
     for (int i = 0; i < 32; ++i) {
+        #pragma omp parallel num_threads(2)
+        {
         Message msg(log_slots, temp13a[i]);
-        block6conv1summands32.push_back(ecd.encode(msg, 4, 0));
+        block6conv1summands32[i]=ecd.encode(msg, 4, 0);
+        }
     }
     temp13a.clear();
     temp13a.shrink_to_fit();
@@ -1717,15 +1765,15 @@ int main() {
     temp14.clear();
     temp14.shrink_to_fit();
 
-    vector<Plaintext> block7conv_onebyone_summands64;
+    vector<Plaintext> block7conv_onebyone_summands64(64, ptxt_init);
     vector<double> temp14a;
     string path14a = "/app/HEAAN-ResNet/kernel/summands/" + string("block7conv_onebyone_summands64");
     Scaletxtreader(temp14a, path14a, cnst);
 
-
+    #pragma omp parallel for num_threads(64)
     for (int i = 0; i < 64; ++i) {
         Message msg(log_slots, temp14a[i]);
-        block7conv_onebyone_summands64.push_back(ecd.encode(msg, 4, 0));
+        block7conv_onebyone_summands64[i]=ecd.encode(msg, 4, 0);
     }
     temp14a.clear();
     temp14a.shrink_to_fit();
@@ -1811,14 +1859,14 @@ int main() {
     temp15.shrink_to_fit();
 
 
-    vector<Plaintext> block7conv0summands64;
+    vector<Plaintext> block7conv0summands64(64, ptxt_init);
     vector<double> temp15a;
     string path15a = "/app/HEAAN-ResNet/kernel/summands/" + string("block7conv0summands64");
     Scaletxtreader(temp15a, path15a, cnst);
-
+    #pragma omp parallel for num_threads(64)
     for (int i = 0; i < 64; ++i) {
         Message msg(log_slots, temp15a[i]);
-        block7conv0summands64.push_back(ecd.encode(msg, 4, 0));
+        block7conv0summands64[i]=ecd.encode(msg, 4, 0);
     }
     temp15a.clear();
     temp15a.shrink_to_fit();
@@ -1921,14 +1969,14 @@ int main() {
     temp16.clear();
     temp16.shrink_to_fit();
 
-    vector<Plaintext> block7conv1summands64;
+    vector<Plaintext> block7conv1summands64(64, ptxt_init);
     vector<double> temp16a;
     string path16a = "/app/HEAAN-ResNet/kernel/summands/" + string("block7conv1summands64");
     Scaletxtreader(temp16a, path16a, cnst);
-
+    #pragma omp parallel for num_threads(64)
     for (int i = 0; i < 64; ++i) {
         Message msg(log_slots, temp16a[i]);
-        block7conv1summands64.push_back(ecd.encode(msg, 4, 0));
+        block7conv1summands64[i]=ecd.encode(msg, 4, 0);
     }
 
     temp16a.clear();
@@ -2013,14 +2061,14 @@ int main() {
     temp17.clear();
     temp17.shrink_to_fit();
 
-    vector<Plaintext> block8conv0summands64;
+    vector<Plaintext> block8conv0summands64(64, ptxt_init);
     vector<double> temp17a;
     string path17a = "/app/HEAAN-ResNet/kernel/summands/" + string("block8conv0summands64");
     Scaletxtreader(temp17a, path17a, cnst);
-
+    #pragma omp parallel for num_threads(64)
     for (int i = 0; i < 64; ++i) {
         Message msg(log_slots, temp17a[i]);
-        block8conv0summands64.push_back(ecd.encode(msg, 4, 0));
+        block8conv0summands64[i]=ecd.encode(msg, 4, 0);
     }
     temp17a.clear();
     temp17a.shrink_to_fit();
@@ -2080,14 +2128,14 @@ int main() {
     temp18.clear();
     temp18.shrink_to_fit();
 
-    vector<Plaintext> block8conv1summands64;
+    vector<Plaintext> block8conv1summands64(64, ptxt_init);
     vector<double> temp18a;
     string path18a = "/app/HEAAN-ResNet/kernel/summands/" + string("block8conv1summands64");
     Scaletxtreader(temp18a, path18a, cnst);
-
+    #pragma omp parallel for num_threads(64)
     for (int i = 0; i < 64; ++i) {
         Message msg(log_slots, temp18a[i]);
-        block8conv1summands64.push_back(ecd.encode(msg, 4, 0));
+        block8conv1summands64[i]=ecd.encode(msg, 4, 0);
     }
 
     temp18a.clear();
@@ -2170,14 +2218,14 @@ int main() {
     temp19.clear();
     temp19.shrink_to_fit();
 
-    vector<Plaintext> block9conv0summands64;
+    vector<Plaintext> block9conv0summands64(64, ptxt_init);
     vector<double> temp19a;
     string path19a = "/app/HEAAN-ResNet/kernel/summands/" + string("block9conv0summands64");
     Scaletxtreader(temp19a, path19a, cnst);
-
+    #pragma omp parallel for num_threads(64)
     for (int i = 0; i < 64; ++i) {
         Message msg(log_slots, temp19a[i]);
-        block9conv0summands64.push_back(ecd.encode(msg, 4, 0));
+        block9conv0summands64[i]=ecd.encode(msg, 4, 0);
     }
 
     temp19a.clear();
@@ -2234,14 +2282,14 @@ int main() {
     txtreader(temp20, path20);
     kernel_ptxt(context, temp20, block9conv1multiplicands64_64_3_3, 5, 4, 1, 64, 64, 3, ecd);
 
-    vector<Plaintext> block9conv1summands64;
+    vector<Plaintext> block9conv1summands64(64, ptxt_init);
     vector<double> temp20a;
     string path20a = "/app/HEAAN-ResNet/kernel/summands/" + string("block9conv1summands64");
     Scaletxtreader(temp20a, path20a, cnst);
-
+    #pragma omp parallel for num_threads(64)
     for (int i = 0; i < 64; ++i) {
         Message msg(log_slots, temp20a[i]);
-        block9conv1summands64.push_back(ecd.encode(msg, 4, 0));
+        block9conv1summands64[i]=ecd.encode(msg, 4, 0);
     }
 
     cout << "block9conv1 ..." << endl;
@@ -2335,10 +2383,14 @@ int main() {
 
     double cnst1 = (double)(64.0 / 40.0);
     Scaletxtreader(temp21a, path21a, cnst1);
-
+    
+    #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 10; ++i) {
+        #pragma omp parallel num_threads(8)
+        {
         Message msg(log_slots, temp21a[i]);
         fclayersummands10[i] = ecd.encode(msg, 0, 0);
+        }
     }
 
     temp21a.clear();
