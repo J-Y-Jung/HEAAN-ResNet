@@ -6,7 +6,7 @@
 #include "leveldown.hpp"
 
 namespace {
-//using namespace HEaaN::;
+using namespace HEaaN::;
 using namespace std;
 }
 
