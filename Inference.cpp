@@ -704,6 +704,63 @@ int main() {
     ctxt_block3add_out.clear();
     ctxt_block3add_out.shrink_to_fit();
     cout << "RB3 DONE! " << "\n";
+    
+    
+    
+    //////////////////////////////////////////////////////////////////////
+    ////////////////////////// temp /////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+    
+    
+    Message msg_init(15);
+    vector<vector<Message>> afterRB3(16, vector<Message>(16, msg_init));
+    
+    string path = "/app/HEAAN-ResNet/afterRB3/msgRB3_";
+    
+    #pragma omp parallel for collapse(2)
+    for (int i=0; i<16; ++i){
+        for (int ch=0; ch<16; ++ch){
+            dec.decrypt(ctxt_block3relu1_out[i][ch], sk, afterRB3[i][ch]);
+            string temp = path+to_string(i)+"_"+to_string(ch);
+            saveMessage(afterRB3[i][ch], temp);
+        }
+    }
+    
+    
+    ////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////
+    
+    
+    
+    
+    void printMessage(const HEaaN::Message &msg, bool is_complex = true,
+                  size_t start_num = 16, size_t end_num = 2) {
+
+    std::cout.precision(7);
+
+    const size_t msg_size = msg.getSize();
+
+    std::cout << "[ ";
+    for (size_t i = 0; i < start_num; ++i) {
+        if (is_complex)
+            std::cout << msg[i] << ", ";
+        else
+            std::cout << msg[i].real() << ", ";
+    }
+    std::cout << "..., ";
+    for (size_t i = end_num; i > 1; --i) {
+        if (is_complex)
+            std::cout << msg[msg_size - i] << ", ";
+        else
+            std::cout << msg[msg_size - i].real() << ", ";
+    }
+    if (is_complex)
+        std::cout << msg[msg_size - 1] << " ]" << std::endl;
+    else
+        std::cout << msg[msg_size - 1].real() << " ]" << std::endl;
+}
+
+    
 
 
 
@@ -1117,7 +1174,7 @@ int main() {
     cout << "level of ctxt is " << ctxt_block5relu0_out[0][0].getLevel() << "\n";
     timer.start(" block5conv1 ");
     vector<vector<Ciphertext>> ctxt_block5conv1_out;
-    for (int i = 0; i < 16; ++i) {
+    for (int i = 0; i < 4; ++i) {
         vector<Ciphertext> ctxt_conv_out2_allch_bundle;
         ctxt_conv_out2_allch_bundle = Conv(context, pack, eval, 32, 2, 1, 32, 32, ctxt_block5relu0_out[i], block5conv1multiplicands32_32_3_3);
         ctxt_block5conv1_out.push_back(ctxt_conv_out2_allch_bundle);
