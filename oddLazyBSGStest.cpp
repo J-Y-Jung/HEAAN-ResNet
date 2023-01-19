@@ -3,6 +3,8 @@
 #include "oddLazyBSGS.hpp"
 #include "HEaaNTimer.hpp"
 #include "examples.hpp"
+#include "kernelEncode.hpp"
+#include "imageEncode.hpp"
 #include <omp.h>
 
 namespace {
