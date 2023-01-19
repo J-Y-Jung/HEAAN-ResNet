@@ -102,7 +102,7 @@ int main() {
 
     vector<Ciphertext> ctxtVec_zero(3, ctxt_zero);
 
-    if (n==20){
+    if (num==20){
 
         for(int i=304; i<313; ++i){
 
@@ -2458,7 +2458,7 @@ int main() {
     
     for (int i = 0; i < 512; ++i) {
         int max_index = max_element(final_result[i].begin(), final_result[i].end()) - final_result[i].begin();
-        file << max_index << "\n";
+        filesave << max_index << "\n";
         cout << max_index << ", ";
     }
     
