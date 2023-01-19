@@ -96,7 +96,7 @@ int main() {
     
     
     Message msg_zero(log_slots, 0);
-    Plaintest ptxt_zero(context);
+    Plaintext ptxt_zero(context);
     ptxt_zero = ecd.encode(msg_zero, 5, 0);
 
     Ciphertext ctxt_zero(context);
