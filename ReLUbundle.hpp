@@ -605,7 +605,7 @@ void ApproxReLU_bundle80(HEaaN::Context context, HEaaN::KeyPack pack,HEaaN::HomE
         }
         #pragma omp parallel for num_threads(80)
         for(int i = 0 ; i < 16 ; i++){
-            #pragma omp parallel for num_threads(5)
+            #pragma omp parallel num_threads(5)
             {
                 eval.bootstrap(ctxt_temp_bundle[15][i%16],ctxt_real_BTS_bundle[15][i%16],true);
             }
