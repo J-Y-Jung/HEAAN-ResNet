@@ -107,7 +107,8 @@ int main() {
     std::cout << "Encrypt ... ";
     enc.encrypt(msg, pack, ctxt);
     std::cout << "done" << std::endl;
-
+    
+    EnDecoder ecd(context);
 
     cout << "test for evalPoly..." <<"\n";
     constexpr const HEaaN::Real POLY_COEFF[] = { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 ,1 };
