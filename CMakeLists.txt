@@ -39,8 +39,8 @@ target_link_libraries(temptest PUBLIC HEaaN::HEaaN)
 add_executable(oddLazyBSGS oddLazyBSGStest.cpp) 
 target_link_libraries(oddLazyBSGS PUBLIC HEaaN::HEaaN)
 
-## add_executable(inference Inference.cpp) 
-## target_link_libraries(inference PUBLIC HEaaN::HEaaN)
+add_executable(inference Inference.cpp) 
+target_link_libraries(inference PUBLIC HEaaN::HEaaN)
 
 ## add_executable(relubundle ReLUbundletest.cpp) 
 ## target_link_libraries(relubundle PUBLIC HEaaN::HEaaN)
