@@ -36,6 +36,9 @@ target_link_libraries(temptest PUBLIC HEaaN::HEaaN)
 ## add_executable(conv Conv.cpp) 
 ## target_link_libraries(conv PUBLIC HEaaN::HEaaN)
 
+add_executable(10000test 10000.cpp) 
+target_link_libraries(10000test PUBLIC HEaaN::HEaaN)
+
 add_executable(oddLazyBSGS oddLazyBSGStest.cpp) 
 target_link_libraries(oddLazyBSGS PUBLIC HEaaN::HEaaN)
 
