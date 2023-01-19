@@ -148,37 +148,13 @@ int main() {
     printMessage(dmsg1, false);
 
     
-    Plaintext ptxt_init(context);
-    double cnst =(double)(1.0/40.0);
-
-    vector<double> temp7;
-    vector<vector<vector<Plaintext>>> block4conv_onebyone_multiplicands32_16_1_1(32, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
-    string path7 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block4conv_onebyone_multiplicands32_16_1_1");
-    txtreader(temp7, path7);
-    kernel_ptxt(context, temp7, block4conv_onebyone_multiplicands32_16_1_1, 5, 1, 2, 32, 16, 1, ecd);
-    temp7.clear();
-    temp7.shrink_to_fit();
-    
-    printMessage(ecd.decode(block4conv_onebyone_multiplicands32_16_1_1[0][0][0]));
-    printMessage(ecd.decode(block4conv_onebyone_multiplicands32_16_1_1[0][0][1]));
-    
-    vector<Plaintext> block4conv_onebyone_summands32;
-    vector<double> temp7a;
-    string path7a = "/app/HEAAN-ResNet/kernel/summands/" + string("block4conv_onebyone_summands32");
-    Scaletxtreader(temp7a, path7a, cnst);
-
-    for (int i = 0; i < 32; ++i) {
-        Message msg(log_slots, temp7a[i]);
-        block4conv_onebyone_summands32.push_back(ecd.encode(msg, 4, 0));
+    ofstream file("/app/HEAAN-ResNet/savetest.txt");
+    for (int i = 0; i < 512; ++i) {
+        int max_index = i;
+        file << max_index << "\n";
     }
-    temp7a.clear();
-    temp7a.shrink_to_fit();
-    
-    printMessage(ecd.decode(block4conv_onebyone_summands32[0]));
-    printMessage(ecd.decode(block4conv_onebyone_summands32[1]));
-    
-    return 0;
-    
+
+    file.close();
     
 }
 
