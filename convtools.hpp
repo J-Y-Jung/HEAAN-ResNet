@@ -159,35 +159,29 @@ void weightToPtxt(Plaintext& ptxt, u64 level, double weight,
         #pragma omp parallel for collapse(2)
         for (size_t k = 0; k < 32; ++k) {
             for (size_t i = 0; i < 1024; ++i) {
-                idx = k * 1024 + i;
-                msg[idx].imag(0.0);
+                msg[k * 1024 + i].imag(0.0);
                 if (i % 2 == 0 && (i % 64) < 32) {
-                    msg[idx].real(weight);
-                }
-                else {
-                    msg[idx].real(0.0);
+                    msg[k * 1024 + i].real(weight);
+                } else {
+                    msg[k * 1024 + i].real(0.0);
                 }
             }
         }
-    }
-    else if (gap_in == 2 && stride == 2) {
+    } else if (gap_in == 2 && stride == 2) {
         #pragma omp parallel for collapse(3)
         for (size_t k = 0; k < 32; ++k) {
             for (size_t l = 0; l < 32; ++l) {
                 for (size_t m = 0; m < 32; ++m) {
-                    idx = k * 1024 + l * 32 + m;
-                    msg[idx].imag(0.0);
+                    msg[k * 1024 + l * 32 + m].imag(0.0);
                     if (m % 4 < 2 && l % 4 < 2) {
-                        msg[idx].real(weight);
-                    }
-                    else {
-                        msg[idx].real(0.0);
+                        msg[k * 1024 + l * 32 + m].real(weight);
+                    } else {
+                        msg[k * 1024 + l * 32 + m].real(0.0);
                     }
                 }
             }
         }
-    }
-    else {
+    } else {
         #pragma omp parallel for
         for (size_t j = 0; j < num_slots; ++j) {
             msg[j].real(weight);
