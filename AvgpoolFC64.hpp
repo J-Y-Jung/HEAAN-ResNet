@@ -6,7 +6,7 @@
 #include "leveldown.hpp"
 
 namespace {
-using namespace HEaaN::;
+using namespace HEaaN;
 using namespace std;
 }
 
@@ -104,9 +104,9 @@ vector<HEaaN::Ciphertext> FC64(HEaaN::Context context, HEaaN::KeyPack pack, HEaa
     int level1 = ctxt[0].getLevel();
     int level2 = ptxt[0][0].getLevel();
     for (u64 i=0;i<10 ;i++){
-		#pragma omp parallel for 
+	#pragma omp parallel for 
         for (u64 j=0;j<64 ;j++){
-			if(level1 != level2){
+		if(level1 != level2){
 				ptxt[i][j].setLevel(level1);
 			}
             eval.multWithoutRescale(ctxt[j], ptxt[i][j], tmp[i][j]);
