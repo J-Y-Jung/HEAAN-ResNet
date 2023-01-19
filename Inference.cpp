@@ -9,6 +9,7 @@
 #include "HEaaN/heaan.hpp" // 필요한가?
 #include "examples.hpp" // 필요한가? / ㅇㅇ
 #include "Conv.hpp"
+#include "Conv_parallel.hpp"
 #include "oddLazyBSGS.hpp"
 #include "MPPacking.hpp"
 #include "HEaaNTimer.hpp"
