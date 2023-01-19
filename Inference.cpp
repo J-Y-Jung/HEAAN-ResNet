@@ -13,8 +13,6 @@
 #include "oddLazyBSGS.hpp"
 #include "MPPacking.hpp"
 #include "HEaaNTimer.hpp"
-#include "DSB+BN.hpp"
-#include "RB+BN.hpp"
 //#include "convtools.hpp"
 #include "kernelEncode.hpp"
 #include "imageEncode.hpp"
