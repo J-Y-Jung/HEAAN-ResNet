@@ -84,14 +84,16 @@ void saveMessage(const HEaaN::Message &msg, const string filepath) {
     string filepathImg = filepath + "_img.txt";
     
     ofstream fileReal(filepathReal);
-    ofstream fileImg(filepathImg);
-
     for (size_t j=0; j< msg_size; ++j){
         fileReal << msg[j].real() << "\n";
+    }
+    fileReal.close();
+    
+    ofstream fileImg(filepathImg);
+    for (size_t j=0; j< msg_size; ++j){
         fileImg << msg[j].imag() << "\n";
     }
     
-    fileReal.close();
     fileImg.close();
     
     return;
