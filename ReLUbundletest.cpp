@@ -106,25 +106,27 @@ int main() {
     enc.encrypt(msg, pack, ctxt);
     std::cout << "done" << std::endl;
 
-    int n = 16;
-    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_bundle(n, std::vector<HEaaN::Ciphertext>(n,ctxt));
+    vector<vector<Ciphertext>> ctxt_bundle(4, vector<Ciphertext>(32, ctxt));
 
-    Ciphertext ctxt_out2(context);
-    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_out_bundle(n, std::vector<HEaaN::Ciphertext>(n,ctxt_out2));
-
-
+    Ciphertext ctxt_init(context);
+    vector<vector<Ciphertext>> ctxt_out_bundle(4, vector<Ciphertext>(32, ctxt_init));
     
+    Message dmsg;
+
     timer.start("normal");
-    for(int i = 0 ; i < n ; i++){
-        for(int j = 0 ; j < n ; j++){
+    for(int i = 0 ; i < 4 ; i++){
+        for(int j = 0 ; j < 32 ; j++){
             ApproxReLU(context,eval,ctxt_bundle[i][j] , ctxt_out_bundle[i][j]);
         }
     }
     timer.end();
     
+    dec.decrypt(ctxt_out_bundle[0][0], sk, dmsg);
+    printMessage(dmsg);
+    
 
     /*
-    timer.start("parallel normal");
+    timer.start("method 1");
     #pragma omp parallel for collapse(2)
     for(int i = 0 ; i < n ; i++){
         for(int j = 0 ; j < n ; j++){
@@ -134,55 +136,33 @@ int main() {
     timer.end();
     */
 
-
-
-
-   // Ciphertext ctxt_out2(context);
-    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_out_bundle2(n,std::vector<HEaaN::Ciphertext>(n,ctxt_out2));
-
-    timer.start("bundle ");
-    ApproxReLU_bundle(context, pack,eval, ctxt_bundle, ctxt_out_bundle2);
+    timer.start("method 2");
+    ApproxReLU_bundle80(context, pack,eval, ctxt_bundle, ctxt_out_bundle);
     timer.end();
-
-    std::cout << "Output ciphertext of approximate ReLU - level " << ctxt_out_bundle2[0][0].getLevel()
-        << std::endl
-        << std::endl;
     
-    std::cout.precision(10);
+    dec.decrypt(ctxt_out_bundle[0][0], sk, dmsg);
+    printMessage(dmsg);
 
-
-    std::vector<std::vector<HEaaN::Ciphertext>> ctxt_out_bundle3(n,std::vector<HEaaN::Ciphertext>(n,ctxt_out2));
-
-    timer.start("bundle80 ");
-    ApproxReLU_bundle80(context, pack,eval, ctxt_bundle, ctxt_out_bundle3);
+    timer.start("method 2");
+    ApproxReLU_bundle80(context, pack,eval, ctxt_bundle, ctxt_out_bundle);
     timer.end();
-
-    std::cout << "Output ciphertext of approximate ReLU - level " << ctxt_out_bundle2[0][0].getLevel()
-        << std::endl
-        << std::endl;
     
-    std::cout.precision(10);
-
     
-
+    timer.start("method 3");
+    #pragma omp parallel for num_threads(80)
+    for(int i = 0 ; i < 80 ; ++i){
+        ApproxReLU(context, eval, ctxt_bundle[i/20][(i%20)] , ctxt_out_bundle[i/20][(i%20)]);
+    }
     
-    HEaaN::Message dmsg2;
-    std::cout << "Decrypt ... ";
-    dec.decrypt(ctxt_out_bundle2[0][0], sk, dmsg2);
-    std::cout << "done" << std::endl;
-
-    std::cout << std::endl << "Decrypted result vector : " << std::endl;
-    printMessage(dmsg2, false);
+    #pragma omp parallel for num_threads(80)
+    for(int i = 0 ; i < 48 ; ++i){
+        ApproxReLU(context, eval, ctxt_bundle[i/12][20+(i%12)] , ctxt_out_bundle[i/12][20+(i%12)]);
+    }
+    timer.end();
     
-
-
-    HEaaN::Message dmsg3;
-    std::cout << "Decrypt80 ... ";
-    dec.decrypt(ctxt_out_bundle3[0][0], sk, dmsg3);
-    std::cout << "done" << std::endl;
-
-    std::cout << std::endl << "Decrypted result vector : " << std::endl;
-    printMessage(dmsg3, false);
+    dec.decrypt(ctxt_out_bundle[0][0], sk, dmsg);
+    printMessage(dmsg);
+    
 
     return 0;
 
