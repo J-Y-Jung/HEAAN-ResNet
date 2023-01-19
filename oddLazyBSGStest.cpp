@@ -174,46 +174,76 @@ int main() {
     return 0;
     
     
-    vector<Ciphertext> ctxt_vec(64, ctxt);
-    // vector<Ciphertext> ctxt_out(64, ctxt);
+    vector<Ciphertext> ctxt_vec(48, ctxt);
+    vector<Ciphertext> ctxt_out(48, ctxt);
     
-    // timer.start("method 1");
-    // #pragma omp parallel for num_threads(64)
-    // for(int i = 0 ; i < 64 ; ++i){
-    //     ApproxReLU(context, eval, ctxt_vec[i], ctxt_out[i]); 
-    // }
-    // timer.end();
+    timer.start("method 1 : ");
+    #pragma omp parallel for num_threads(48);
+    for(int i=0; i<48; ++i){
+        eval.bootstrap(context, eval, ctxt_vec, ctxt_out);
+    }
+    timer.end();
     
-    // timer.start("method 2");
-    // #pragma omp parallel for num_threads(80)
-    // for(int i = 0 ; i < 40 ; ++i){
-    //     #pragma omp parallel num_threads(2)
-    //     {
-    //     ApproxReLU(context, eval, ctxt_vec[i], ctxt_out[i]); 
-    //     }
-    // }
+    timer.start("method 2 : ");
+    #pragma omp parallel for num_threads(80);
+    for(int i=0; i<48; ++i){
+        eval.bootstrap(context, eval, ctxt_vec, ctxt_out);
+    }
+    timer.end();
     
-    // #pragma omp parallel for num_threads(80)
-    // for(int i = 40 ; i < 56 ; ++i){
-    //     #pragma omp parallel num_threads(5)
-    //     {
-    //     ApproxReLU(context, eval, ctxt_vec[i], ctxt_out[i]); 
-    //     }
-    // }
+    timer.start("method 3 : ");
+    #pragma omp parallel for;
+    for(int i=0; i<48; ++i){
+        eval.bootstrap(context, eval, ctxt_vec, ctxt_out);
+    }
+    timer.end();
     
-    // #pragma omp parallel for num_threads(80)
-    // for(int i = 56 ; i < 64 ; ++i){
-    //     #pragma omp parallel num_threads(10)
-    //     {
-    //     ApproxReLU(context, eval, ctxt_vec[i], ctxt_out[i]); 
-    //     }
-    // }
+    timer.start("method 4 : ");
+    #pragma omp parallel for num_threads(80)
+    for(int i=0; i<40; ++i){
+        #pragma omp parallel num_threads(2)
+        {
+            eval.bootstrap(context, eval, ctxt_vec, ctxt_out);
+        }
+    }
     
+    #pragma omp parallel for num_threads(80)
+    for(int i=40; i<48; ++i){
+        #pragma omp parallel num_threads(2)
+        {
+            eval.bootstrap(context, eval, ctxt_vec, ctxt_out);
+        }
+    }
     
-    // timer.end();
-    // return 0;
-  
-
+    timer.end();
+    
+    timer.start("method 5 : ");
+    #pragma omp parallel for num_threads(80)
+    for(int i=0; i<16; ++i){
+        #pragma omp parallel num_threads(5)
+        {
+            eval.bootstrap(context, eval, ctxt_vec, ctxt_out);
+        }
+    }
+    
+    #pragma omp parallel for num_threads(80)
+    for(int i=16; i<32; ++i){
+        #pragma omp parallel num_threads(5)
+        {
+            eval.bootstrap(context, eval, ctxt_vec, ctxt_out);
+        }
+    }
+    
+    #pragma omp parallel for num_threads(80)
+    for(int i=32; i<48; ++i){
+        #pragma omp parallel num_threads(5)
+        {
+            eval.bootstrap(context, eval, ctxt_vec, ctxt_out);
+        }
+    }
+    timer.end();
+    
+    return 0;
 }
 
 
