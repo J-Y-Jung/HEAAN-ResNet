@@ -146,6 +146,9 @@ int main() {
     std::cout << std::endl << "Decrypted result vector : " << std::endl;
     printMessage(dmsg1, false);
 
+    
+    Plaintext ptxt_init(context);
+    double cnst =(double)(1.0/40.0);
 
     vector<double> temp7;
     vector<vector<vector<Plaintext>>> block4conv_onebyone_multiplicands32_16_1_1(32, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
