@@ -15,6 +15,11 @@
 
 #include "HEaaN/heaan.hpp"
 
+namespace {
+    using namespace HEaaN;
+    using namespace std;
+}
+
 std::default_random_engine gen{std::random_device()()};
 
 inline long double randNum() {
@@ -75,15 +80,15 @@ void saveMessage(const HEaaN::Message &msg, const string filepath) {
 
     const size_t msg_size = msg.getSize();
     
-    filepathReal = filepath + "_real.txt";
-    filepathImg = filepath + "_img.txt";
+    string filepathReal = filepath + "_real.txt";
+    string filepathImg = filepath + "_img.txt";
     
     ofstream fileReal(filepathReal);
     ofstream fileImg(filepathImg);
 
     for (size_t j=0; j< msg_size; ++j){
-        fileReal << afterRB3[i][ch][j].real() << "\n";
-        fileImg << afterRB3[i][ch][j].img() << "\n";
+        fileReal << msg][j].real() << "\n";
+        fileImg << msg[j].img() << "\n";
     }
     
     fileReal.close();
