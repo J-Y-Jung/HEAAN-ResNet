@@ -43,7 +43,7 @@ std::vector<HEaaN::Ciphertext> Conv_parallel(HEaaN::Context context, HEaaN::KeyP
         for (int inputid = 0; inputid < (input_channel); ++inputid) {
             for (int i = 0; i < 3; ++i) {
                 for (int j = 0; j < 3; ++j) {
-                    eval.leftRotate(ctxt_bundle[inputid], (i - 1) * imgsize + (j - 1) * (gap * stride), rotated_ctxts_bundle[inputid][3 * i + j]);
+                    eval.leftRotate(ctxt_bundle[inputid], (i - 1) * imgsize * gap + (j - 1) * gap, rotated_ctxts_bundle[inputid][3 * i + j]);
                 }
             }
         }
