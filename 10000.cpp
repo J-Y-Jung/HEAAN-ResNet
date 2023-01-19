@@ -94,44 +94,26 @@ int main() {
 
     cout << "\n Image Loading ..." << "\n";
 
-    vector<vector<Ciphertext>> imageVec;
-
-    Message msg_zero(log_slots, 0);
-    Ciphertext ctxt_zero(context);
-    enc.encrypt(msg_zero, pack, ctxt_zero, 5, 0);
-
-    vector<Ciphertext> ctxtVec_zero(3, ctxt_zero);
+    
 
     if (num==20){
-
+        
+        #pragma omp parallel for
         for(int i=304; i<313; ++i){
-
             string str = "/app/HEAAN-ResNet/image/image_" + to_string(i+1) + string(".txt");
             vector<double> temp;
             txtreader(temp, str);
-            vector<Ciphertext> out;
-            imageCompiler(context, pack, enc, 5, temp, out);
-
-            temp.clear();
-            temp.shrink_to_fit();
-            imageVec.push_back(out);
-
+            imageCompiler(context, pack, enc, 5, temp, imageVec[(i%16)]);
         }
 
 
         string str313 = "/app/HEAAN-ResNet/image/image_" + to_string(313) + string(".txt");
         vector<double> temp313;
         txtreader(temp313, str313);
-
+        
         for (int i=0; i<49152; ++i) temp313.push_back(0);
 
-        vector<Ciphertext> out313;
-        imageCompiler(context, pack, enc, 5, temp313, out313);
-
-        imageVec.push_back(out313);
-
-        for (int i=0; i<6; ++i) imageVec.push_back(ctxtVec_zero);
-
+        imageCompiler(context, pack, enc, 5, temp313, imageVec[9]);
 
     }
 
@@ -142,16 +124,12 @@ int main() {
             string str = "/app/HEAAN-ResNet/image/image_" + to_string(i+1) + string(".txt");
             vector<double> temp;
             txtreader(temp, str);
-            vector<Ciphertext> out;
-            imageCompiler(context, pack, enc, 5, temp, out);
-
-            temp.clear();
-            temp.shrink_to_fit();
-            imageVec.push_back(out);
+            imageCompiler(context, pack, enc, 5, temp, imageVec[(i%16)]);
 
         }
 
     }
+
 
     cout << "DONE, test for image encode ..." << "\n";
 
