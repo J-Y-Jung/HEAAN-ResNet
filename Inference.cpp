@@ -65,6 +65,9 @@ int main() {
     timer.end();
 
     EnDecoder ecd(context);
+    Plaintext ptxt_init(context); // for initializing
+    Ciphertext ctxt_init(context); //추가
+    double cnst = (double)(1.0 /40.0);
 
 
     ///////////// Message ///////////////////
@@ -106,9 +109,6 @@ int main() {
     imageVec.push_back(out);
     */
 
-    Plaintext ptxt_init(context); // for initializing
-    Ciphertext ctxt_init(context); //추가
-    double cnst = (double)(1.0 /40.0);
 
     // 1st conv
     vector<double> temp0;
