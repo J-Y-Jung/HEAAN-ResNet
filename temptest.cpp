@@ -948,8 +948,8 @@ int main() {
 
     cout << "block7conv0 ..." << endl;
     timer.start(" block7conv0 ");
-    vector<vector<Ciphertext>> ctxt_block7conv0_out(1, vector<Ciphertext>(64, ctxt_init));
-    for (int i = 0; i < 1; ++i) { // 서로 다른 img
+    vector<vector<Ciphertext>> ctxt_block7conv0_out(4, vector<Ciphertext>(64, ctxt_init));
+    for (int i = 0; i < 4; ++i) { // 서로 다른 img
         ctxt_block7conv0_out[i] = Conv_parallel(context, pack, eval, 32, 2, 2, 32, 64, ctxt_block6relu1_out[i], block7conv0multiplicands64_32_3_3);
     }
 
@@ -1469,7 +1469,7 @@ int main() {
 
 
     // FC64
-    cout << "evaluating FC64 layer" << endl;
+    cout << "evaluating FC64 layer\n" << endl;
 
     vector<Ciphertext> ctxt_result;
     timer.start(" FC64 layer * ");
@@ -1484,11 +1484,11 @@ int main() {
 
     // Last Step; enumerating
     vector<vector<double>> final_result(512, vector<double>(10, 0));
-
+    
     for (int j = 0; j < 10; ++j) {
         dec.decrypt(ctxt_result[j], sk, dmsg);
 
-    #pragma omp parallel for collapse(3)
+        #pragma omp parallel for collapse(3)
         for (int i = 0; i < 32; ++i) {
             for (int k = 0; k < 4; ++k) {
                 for (int l = 0; l < 4; ++l) {
@@ -1496,12 +1496,22 @@ int main() {
                 }
             }
         }
-
     }
 
     cout << "Finaly, DONE!!!... output is ..." << "\n";
-
-
+    
+    
+    string filepath_last = "/app/FINAL/final_";
+    
+    for (int i=0; i<512; ++i){
+        string filepath = filepath_last + to_string(i+1)+string(".txt");
+        ofstream file(filepath);
+        for (int j=0; j< 10; ++j){
+            file << final_result[i][j] << "\n";
+        }
+        
+        file.close();
+    }
 
     cout << "[ ";
     for (int i = 0; i < 512; ++i) {
@@ -1514,7 +1524,7 @@ int main() {
     ////////////////////////////////
     ///////////// save file ///////
     //////////////////////////////
-    ofstream file("/app/HEAAN-ResNet/output.txt");
+    ofstream file("/app/label_output/label.txt");
     for (int i = 0; i < 512; ++i) {
         int max_index = max_element(final_result[i].begin(), final_result[i].end()) - final_result[i].begin();
         file << max_index << "\n";
