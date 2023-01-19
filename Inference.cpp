@@ -728,40 +728,7 @@ int main() {
     
     
     ////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////
-    
-    
-    
-    
-    void printMessage(const HEaaN::Message &msg, bool is_complex = true,
-                  size_t start_num = 16, size_t end_num = 2) {
-
-    std::cout.precision(7);
-
-    const size_t msg_size = msg.getSize();
-
-    std::cout << "[ ";
-    for (size_t i = 0; i < start_num; ++i) {
-        if (is_complex)
-            std::cout << msg[i] << ", ";
-        else
-            std::cout << msg[i].real() << ", ";
-    }
-    std::cout << "..., ";
-    for (size_t i = end_num; i > 1; --i) {
-        if (is_complex)
-            std::cout << msg[msg_size - i] << ", ";
-        else
-            std::cout << msg[msg_size - i].real() << ", ";
-    }
-    if (is_complex)
-        std::cout << msg[msg_size - 1] << " ]" << std::endl;
-    else
-        std::cout << msg[msg_size - 1].real() << " ]" << std::endl;
-}
-
-    
-
+    /////////////////////////////////////////////////
 
 
 
