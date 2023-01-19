@@ -555,7 +555,7 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     eval.mult(ctxt_real_BTS, 0.5, ctxt_temp);
     eval.mult(ctxt_real_BTS, ctxt_temp1, ctxt_relu);
     eval.add(ctxt_temp, ctxt_relu, ctxt_relu);
-    eval.levelDown(ctxt_reul, 5, ctxt_reul);
+    eval.levelDown(ctxt_relu, 5, ctxt_relu);
     
     //eval.mult(ctxt_real_BTS, 0.5, ctxt_real_BTS);
     //eval.mult(ctxt_real_BTS, ctxt_sign, ctxt_relu);
