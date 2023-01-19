@@ -145,105 +145,35 @@ int main() {
     printMessage(dmsg1, false);
 
 
-
-    cout << "test for AReLu..." <<"\n";
-    cout << "Evaluating approximate ReLU function homomorphically ..."
-        << endl;
-
-    Ciphertext ctxt_out2(context);
-
-
-    timer.start("* ");
-    ApproxReLU(context, eval, ctxt, ctxt_out2);
-    timer.end();
-
-    std::cout << "Output ciphertext of approximate ReLU - level " << ctxt_out2.getLevel()
-        << std::endl
-        << std::endl;
-
-    HEaaN::Message dmsg2;
-    std::cout << "Decrypt ... ";
-    dec.decrypt(ctxt_out2, sk, dmsg2);
-    std::cout << "done" << std::endl;
-
-    std::cout << std::endl << "Decrypted result vector : " << std::endl;
-    printMessage(dmsg2, false);
+    vector<double> temp7;
+    vector<vector<vector<Plaintext>>> block4conv_onebyone_multiplicands32_16_1_1(32, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
+    string path7 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block4conv_onebyone_multiplicands32_16_1_1");
+    txtreader(temp7, path7);
+    kernel_ptxt(context, temp7, block4conv_onebyone_multiplicands32_16_1_1, 5, 1, 2, 32, 16, 1, ecd);
+    temp7.clear();
+    temp7.shrink_to_fit();
     
-    saveMessage(dmsg2, "app/HEAAN-ResNet/reluOut");
+    printMessage(ecd.decode(block4conv_onebyone_multiplicands32_16_1_1[0][0][0]));
+    printMessage(ecd.decode(block4conv_onebyone_multiplicands32_16_1_1[0][0][1]));
+    
+    vector<Plaintext> block4conv_onebyone_summands32;
+    vector<double> temp7a;
+    string path7a = "/app/HEAAN-ResNet/kernel/summands/" + string("block4conv_onebyone_summands32");
+    Scaletxtreader(temp7a, path7a, cnst);
+
+    for (int i = 0; i < 32; ++i) {
+        Message msg(log_slots, temp7a[i]);
+        block4conv_onebyone_summands32.push_back(ecd.encode(msg, 4, 0));
+    }
+    temp7a.clear();
+    temp7a.shrink_to_fit();
+    
+    printMessage(ecd.decode(block4conv_onebyone_summands32[0]));
+    printMessage(ecd.decode(block4conv_onebyone_summands32[1]));
     
     return 0;
     
     
-    vector<Ciphertext> ctxt_vec(48, ctxt);
-    vector<Ciphertext> ctxt_out(48, ctxt);
-    
-    timer.start("method 1 : ");
-    #pragma omp parallel for num_threads(48)
-    for(int i=0; i<48; ++i){
-        eval.bootstrap(ctxt_vec[i], ctxt_out[i], true);
-    }
-    timer.end();
-    
-    timer.start("method 2 : ");
-    #pragma omp parallel for num_threads(80)
-    for(int i=0; i<48; ++i){
-        eval.bootstrap(ctxt_vec[i], ctxt_out[i], true);
-    }
-    timer.end();
-    
-    timer.start("method 3 : ");
-    #pragma omp parallel for
-    for(int i=0; i<48; ++i){
-        eval.bootstrap(ctxt_vec[i], ctxt_out[i], true);
-    }
-    timer.end();
-    
-    timer.start("method 4 : ");
-    #pragma omp parallel for num_threads(80)
-    for(int i=0; i<40; ++i){
-        #pragma omp parallel num_threads(2)
-        {
-            eval.bootstrap(ctxt_vec[i], ctxt_out[i], true);
-        }
-    }
-    
-    #pragma omp parallel for num_threads(80)
-    for(int i=40; i<48; ++i){
-        #pragma omp parallel num_threads(2)
-        {
-            eval.bootstrap(ctxt_vec[i], ctxt_out[i], true);
-        }
-    }
-    
-    timer.end();
-    
-    timer.start("method 5 : ");
-    #pragma omp parallel for num_threads(80)
-    for(int i=0; i<16; ++i){
-        #pragma omp parallel num_threads(5)
-        {
-            eval.bootstrap(ctxt_vec[i], ctxt_out[i], true);
-        }
-    }
-    
-    #pragma omp parallel for num_threads(80)
-    for(int i=16; i<32; ++i){
-        #pragma omp parallel num_threads(5)
-        {
-            eval.bootstrap(ctxt_vec[i], ctxt_out[i], true);
-        }
-    }
-    
-    #pragma omp parallel for num_threads(80)
-    for(int i=32; i<48; ++i){
-        #pragma omp parallel num_threads(5)
-        {
-            eval.bootstrap(ctxt_vec[i], ctxt_out[i], true);
-        }
-    }
-    timer.end();
-    
-    return 0;
 }
 
 
