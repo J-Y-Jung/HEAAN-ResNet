@@ -169,45 +169,10 @@ int main() {
     std::cout << std::endl << "Decrypted result vector : " << std::endl;
     printMessage(dmsg2, false);
     
-  
-    vector<Ciphertext> ctxt_vec(64, ctxt);
-    vector<Ciphertext> ctxt_out(64, ctxt);
+    saveMessage(dmsg2, "app/HEAAN-ResNet/reluOut");
     
-    timer.start("method 1");
-    #pragma omp parallel for num_threads(64)
-    for(int i = 0 ; i < 64 ; ++i){
-        ApproxReLU(context, eval, ctxt_vec[i], ctxt_out[i]); 
-    }
-    timer.end();
-    
-    timer.start("method 2");
-    #pragma omp parallel for num_threads(80)
-    for(int i = 0 ; i < 40 ; ++i){
-        #pragma omp parallel num_threads(2)
-        {
-        ApproxReLU(context, eval, ctxt_vec[i], ctxt_out[i]); 
-        }
-    }
-    
-    #pragma omp parallel for num_threads(80)
-    for(int i = 40 ; i < 56 ; ++i){
-        #pragma omp parallel num_threads(5)
-        {
-        ApproxReLU(context, eval, ctxt_vec[i], ctxt_out[i]); 
-        }
-    }
-    
-    #pragma omp parallel for num_threads(80)
-    for(int i = 56 ; i < 64 ; ++i){
-        #pragma omp parallel num_threads(10)
-        {
-        ApproxReLU(context, eval, ctxt_vec[i], ctxt_out[i]); 
-        }
-    }
-    
-    
-    timer.end();
     return 0;
+  
 
 }
 
