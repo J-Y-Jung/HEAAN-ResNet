@@ -180,21 +180,21 @@ int main() {
     timer.start("method 1 : ");
     #pragma omp parallel for num_threads(48);
     for(int i=0; i<48; ++i){
-        eval.bootstrap(context, eval, ctxt_vec, ctxt_out);
+        eval.bootstrap(ctxt_vec[i], ctxt_out[i], true);
     }
     timer.end();
     
     timer.start("method 2 : ");
     #pragma omp parallel for num_threads(80);
     for(int i=0; i<48; ++i){
-        eval.bootstrap(context, eval, ctxt_vec, ctxt_out);
+        eval.bootstrap(ctxt_vec[i], ctxt_out[i], true);
     }
     timer.end();
     
     timer.start("method 3 : ");
     #pragma omp parallel for;
     for(int i=0; i<48; ++i){
-        eval.bootstrap(context, eval, ctxt_vec, ctxt_out);
+        eval.bootstrap(ctxt_vec[i], ctxt_out[i], true);
     }
     timer.end();
     
@@ -203,7 +203,7 @@ int main() {
     for(int i=0; i<40; ++i){
         #pragma omp parallel num_threads(2)
         {
-            eval.bootstrap(context, eval, ctxt_vec, ctxt_out);
+            eval.bootstrap(ctxt_vec[i], ctxt_out[i], true);
         }
     }
     
@@ -211,7 +211,7 @@ int main() {
     for(int i=40; i<48; ++i){
         #pragma omp parallel num_threads(2)
         {
-            eval.bootstrap(context, eval, ctxt_vec, ctxt_out);
+            eval.bootstrap(ctxt_vec[i], ctxt_out[i], true);
         }
     }
     
@@ -222,7 +222,7 @@ int main() {
     for(int i=0; i<16; ++i){
         #pragma omp parallel num_threads(5)
         {
-            eval.bootstrap(context, eval, ctxt_vec, ctxt_out);
+            eval.bootstrap(ctxt_vec[i], ctxt_out[i], true);
         }
     }
     
@@ -230,7 +230,7 @@ int main() {
     for(int i=16; i<32; ++i){
         #pragma omp parallel num_threads(5)
         {
-            eval.bootstrap(context, eval, ctxt_vec, ctxt_out);
+            eval.bootstrap(ctxt_vec[i], ctxt_out[i], true);
         }
     }
     
@@ -238,7 +238,7 @@ int main() {
     for(int i=32; i<48; ++i){
         #pragma omp parallel num_threads(5)
         {
-            eval.bootstrap(context, eval, ctxt_vec, ctxt_out);
+            eval.bootstrap(ctxt_vec[i], ctxt_out[i], true);
         }
     }
     timer.end();
