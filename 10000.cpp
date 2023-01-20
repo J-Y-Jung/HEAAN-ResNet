@@ -79,7 +79,7 @@ int main() {
     Ciphertext ctxt_init(context);
     enc.encrypt(msg_zero, pack, ctxt_init, 0, 0);
     Plaintext ptxt_init(context);
-    ecd.encode(msg_zero, pack, ctxt_zero, 0, 0);
+    ptxt_init = ecd.encode(msg_zero, pack, 0, 0);
 
 
     ///////////////////////
