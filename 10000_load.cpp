@@ -2303,23 +2303,34 @@ int main() {
     fclayersummands10.shrink_to_fit();
 
 
-    // Last Step; enumerating
-    vector<vector<double>> final_result(512, vector<double>(10, 0));
     
-    for (int j = 0; j < 10; ++j) {
-        dec.decrypt(ctxt_result[j], sk, dmsg);
+    // Last Step; enumerating
+    vector<vector<double>> orderVec(512, vector<double>(10, 0));
+    vector<int> idx_table = {0, 1, 4, 5, 2, 3, 6, 7, 8, 9, 12, 13, 10, 11, 14, 15};
+    
+    for (int t = 0; t < 10; ++t) {
+        dec.decrypt(ctxt_result[t], sk, dmsg);
 
         #pragma omp parallel for collapse(3)
-        for (int i = 0; i < 32; ++i) {
-            for (int k = 0; k < 4; ++k) {
-                for (int l = 0; l < 4; ++l) {
-                    final_result[16 * i + 4 * k + l][j] = dmsg[1024 * i + 32 * k + l].real();
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                for (int k = 0; k < 32; ++k) {
+                    orderVec[32* idx_table[4*i+j]+k][t] = dmsg[1024 * k + 32 * i + j].real();
                 }
             }
         }
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
-    cout << "Finaly, DONE!!!... output is ..." << "\n";
+    cout << "Finaly, DONE!!!" << "\n\n";
     
     timer.end();
     
@@ -2335,28 +2346,28 @@ int main() {
         string filepath = filepath_last + to_string(i)+string(".txt");
         ofstream file(filepath);
         for (int j=0; j< 10; ++j){
-            file << final_result[i-1][j] << "\n";
+            file << orderVec[i-1][j] << "\n";
         }
         
         file.close();
     }
 
     
-    
     cout << "[ ";
     
     string savelabel = string("/app/label_output/label")+to_string(num);
     ofstream filesave(savelabel);
+    vector<double
     
     for (int i = 0; i < 512; ++i) {
-        int max_index = max_element(final_result[i].begin(), final_result[i].end()) - final_result[i].begin();
+        int max_index = max_element(orderVec[i].begin(), orderVec[i].end()) - orderVec[i].begin();
         filesave << max_index << "\n";
         cout << max_index << ", ";
     }
     
     filesave.close();
     cout << "]\n";
-    
+  
     
     return 0;
 }
