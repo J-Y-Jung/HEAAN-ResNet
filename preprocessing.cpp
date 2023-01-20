@@ -192,7 +192,7 @@ int main() {
     cout<< "Uploading for block1conv1 ...\n\n";
     vector<double> temp2;
     vector<vector<vector<Plaintext>>> block1conv1multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
-    string path2 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block1conv1multiplicands16_16_3_3/");
+    string path2 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block1conv1multiplicands16_16_3_3");
     txtreader(temp2, path2);
     kernel_ptxt(context, temp2, block1conv1multiplicands16_16_3_3, 5, 1, 1, 16, 16, 3, ecd);
     temp2.clear();
@@ -201,7 +201,7 @@ int main() {
 
     vector<Plaintext> block1conv1summands16(16, ptxt_init);
     vector<double> temp2a;
-    string path2a = "/app/HEAAN-ResNet/kernel/summands/" + string("block1conv1summands16/");
+    string path2a = "/app/HEAAN-ResNet/kernel/summands/" + string("block1conv1summands16");
     Scaletxtreader(temp2a, path2a, cnst);
     
     #pragma omp parallel for num_threads(80)
