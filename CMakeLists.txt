@@ -33,6 +33,9 @@ target_link_libraries(load PUBLIC HEaaN::HEaaN)
 add_executable(pre preprocessing.cpp) 
 target_link_libraries(pre PUBLIC HEaaN::HEaaN)
 
+add_executable(relutest ReLUbundletest.cpp) 
+target_link_libraries(relutest PUBLIC HEaaN::HEaaN)
+
 ## add_executable(apprelu AppReLUtest.cpp) 
 ## target_link_libraries(apprelu PUBLIC HEaaN::HEaaN)
 
