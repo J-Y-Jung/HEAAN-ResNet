@@ -270,7 +270,7 @@ int main() {
     ////timer.end();
     cout << "DONE!, decrypted message is ... " << "\n";
 
-    dec.decrypt(ctxt_block0conv0_out[0][0], sk, dmsg);
+    dec.decrypt(ctxt_block0relu0_out[0][0], sk, dmsg);
     printMessage(dmsg);
 
     cout << "block0 DONE!\n" << "\n";
@@ -495,6 +495,12 @@ int main() {
     }
 
     ////timer.end();
+    
+    cout << "DONE!, decrypted message is ... " << "\n";
+
+    dec.decrypt(ctxt_block1relu1_out[0][0], sk, dmsg);
+    printMessage(dmsg);
+    cout <<"\n";
 
     ctxt_block1add_out.clear();
     ctxt_block1add_out.shrink_to_fit();
@@ -809,7 +815,13 @@ int main() {
     }
 
     //timer.end();
-    cout << "DONE!" << "\n";
+    
+    
+    cout << "DONE!, decrypted message is ... " << "\n";
+
+    dec.decrypt(ctxt_block3relu0_out[0][0], sk, dmsg);
+    printMessage(dmsg);
+    cout <<"\n";
 
     ctxt_block3conv0_out.clear();
     ctxt_block3conv0_out.shrink_to_fit();
@@ -818,7 +830,7 @@ int main() {
     vector<vector<vector<Plaintext>>> block3conv1multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     #pragma omp parallel for collapse(3)
         for(int i=0; i<16; ++i){
-            for(int j=0; j<3; ++j){
+            for(int j=0; j<16; ++j){
                 for(int k=0; k<9; ++k){
                     string temp = string("/app/parameters/multiplicands/block3conv1multiplicands16_16_3_3/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
                     block3conv1multiplicands16_16_3_3[i][j][k].load(temp);
@@ -915,6 +927,8 @@ int main() {
             ApproxReLU(context, eval, ctxt_block3add_out[15][i % 16], ctxt_block3relu1_out[15][i % 16]);
         }
     }
+    
+
 
 
 
@@ -922,8 +936,12 @@ int main() {
     //timer.end();
 
     ctxt_block3add_out.clear();
-    ctxt_block3add_out.shrink_to_fit();
-    cout << "RB3 DONE! " << "\n";
+    ctxt_block3add_out.shrink_to_fit(); 
+    
+    cout << "DONE!, decrypted message is ... " << "\n";
+
+    dec.decrypt(ctxt_block3relu1_out[0][0], sk, dmsg);
+    printMessage(dmsg);
 
 
 
