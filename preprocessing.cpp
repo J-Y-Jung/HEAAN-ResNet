@@ -1070,7 +1070,7 @@ int main() {
     temp21a.shrink_to_fit();
     
 
-    #pragma omp parallel for collapse(3)
+    #pragma omp parallel for collapse(2)
     for(int i=0; i<10; ++i){
         for(int j=0; j<64; ++j){
             string temp = string("/app/parameters/multiplicands/fclayermultiplicands10_64/") +to_string(i)+string("_")+to_string(j)+string(".bin");
