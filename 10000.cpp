@@ -2360,7 +2360,8 @@ int main() {
     vector<double> temp21;
     vector<vector<Plaintext>> fclayermultiplicands10_64(10, vector<Plaintext>(64, ptxt_init));
     string path21 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("fclayermultiplicands10_64");
-    txtreader(temp21, path21);
+    double cnst2 = (double)(1.0/64.0);
+    Scaletxtreader(temp21, path21, cnst2);
 
     for (int i = 0; i < 10; ++i) {
         for (int j = 0; j < 64; ++j) {
@@ -2376,7 +2377,7 @@ int main() {
     vector<Plaintext> fclayersummands10(10, ptxt_init);
     string path21a = "/app/HEAAN-ResNet/kernel/summands/" + string("fclayersummands10");
 
-    double cnst1 = (double)(64.0 / 40.0);
+    double cnst1 = (double)(1.0 / 40.0);
     Scaletxtreader(temp21a, path21a, cnst1);
     
     #pragma omp parallel for num_threads(80)
