@@ -91,6 +91,7 @@ int main() {
     
     // 1st conv
     cout << "uploading for block0conv0 ...\n\n";
+    timer.start(" * ");
     vector<double> temp0;
     vector<vector<vector<Plaintext>>> block0conv0multiplicands16_3_3_3(16, vector<vector<Plaintext>>(3, vector<Plaintext>(9, ptxt_init)));
     string path0 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block0conv0multiplicands16_3_3_3");
@@ -139,12 +140,15 @@ int main() {
         block0conv0summands16[i].save(temp);
     }
     
+    timer.end();
+    
 
 
    
 
     // RB 1 - 1
     cout << "uploading for block1conv0 ...\n\n";
+    timer.start(" * ");
     vector<double> temp1;
     vector<vector<vector<Plaintext>>> block1conv0multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path1 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block1conv0multiplicands16_16_3_3");
@@ -184,12 +188,16 @@ int main() {
         string temp = string("/app/parameters/summands/block1conv0summands16/")+to_string(i)+string(".bin");
         block1conv0summands16[i].save(temp);
     }
+    
+    
+    timer.end();
 
 
 
 
     // RB 1 - 2
     cout<< "Uploading for block1conv1 ...\n\n";
+    timer.start(" * ");
     vector<double> temp2;
     vector<vector<vector<Plaintext>>> block1conv1multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path2 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block1conv1multiplicands16_16_3_3");
@@ -234,11 +242,15 @@ int main() {
         string temp = string("/app/parameters/summands/block1conv1summands16/")+to_string(i)+string(".bin");
         block1conv1summands16[i].save(temp);
     }
+    
+    
+    timer.end();
 
   
 
     // RB 2 - 1
     cout << "Uploading for block2conv0...\n\n";
+    timer.start(" * ");
     vector<double> temp3;
     vector<vector<vector<Plaintext>>> block2conv0multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path3 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block2conv0multiplicands16_16_3_3");
@@ -252,7 +264,6 @@ int main() {
     vector<double> temp3a;
     string path3a = "/app/HEAAN-ResNet/kernel/summands/" + string("block2conv0summands16");
     Scaletxtreader(temp3a, path3a, cnst);
-    std::cout << "here" << std::endl;
     #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 16; ++i) {
         #pragma omp parallel num_threads(5)
@@ -263,7 +274,6 @@ int main() {
     }
     temp3a.clear();
     temp3a.shrink_to_fit();
-    std::cout << "here2" << std::endl;
 
 
     #pragma omp parallel for collapse(3)
@@ -283,10 +293,16 @@ int main() {
         string temp = string("/app/parameters/summands/block2conv0summands16/")+to_string(i)+string(".bin");
         block2conv0summands16[i].save(temp);
     }
+    
+    
+    timer.end();
 
 
 
     // RB 2 - 2
+    
+    cout << "uploading for block2conv1 ...\n\n";
+    timer.start(" * ");
     vector<double> temp4;
     vector<vector<vector<Plaintext>>> block2conv1multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path4 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block2conv1multiplicands16_16_3_3");
@@ -330,9 +346,15 @@ int main() {
         string temp = string("/app/parameters/summands/block2conv1summands16/")+to_string(i)+string(".bin");
         block2conv1summands16[i].save(temp);
     }
+    
+    
+    timer.end();
 
 
     // RB 3 - 1
+    
+    cout << "uploading for block3conv0 ...\n\n";
+    timer.start(" * ");
     vector<double> temp5;
     vector<vector<vector<Plaintext>>> block3conv0multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path5 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block3conv0multiplicands16_16_3_3");
@@ -373,12 +395,19 @@ int main() {
         string temp = string("/app/parameters/summands/block3conv0summands16/")+to_string(i)+string(".bin");
         block3conv0summands16[i].save(temp);
     }
+    
+    
+    
+    timer.end();
 
 
 
 
     // RB 3 - 2
-    vector<double> temp6;
+    
+    cout << "uploading for block3conv1 ...\n\n";
+    timer.start(" * ");
+    vector<double> temp6
     vector<vector<vector<Plaintext>>> block3conv1multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path6 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block3conv1multiplicands16_16_3_3");
     txtreader(temp6, path6);
@@ -416,10 +445,15 @@ int main() {
         string temp = string("/app/parameters/summands/block3conv1summands16/")+to_string(i)+string(".bin");
         block3conv1summands16[i].save(temp);
     }
+    
+    
+    timer.end();
 
 
 
     // DSB 1 - res
+    cout << "uploading for block4conv_onebyone ...\n\n";
+    timer.start(" * ");
     vector<double> temp7;
     vector<vector<vector<Plaintext>>> block4conv_onebyone_multiplicands32_16_1_1(32, vector<vector<Plaintext>>(16, vector<Plaintext>(1, ptxt_init)));
     string path7 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block4conv_onebyone_multiplicands32_16_1_1");
@@ -458,10 +492,16 @@ int main() {
         string temp = string("/app/parameters/summands/block4conv_onebyone_summands32/")+to_string(i)+string(".bin");
         block4conv_onebyone_summands32[i].save(temp);
     }
+    
+    
+    timer.end();
 
 
 
     // DSB 1 - 1
+    
+    cout << "uploading for block4conv0 ...\n\n";
+    timer.start(" * ");
     vector<double> temp8;
     vector<vector<vector<Plaintext>>> block4conv0multiplicands32_16_3_3(32, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path8 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block4conv0multiplicands32_16_3_3");
@@ -501,10 +541,16 @@ int main() {
         string temp = string("/app/parameters/summands/block4conv0summands32/")+to_string(i)+string(".bin");
         block4conv0summands32[i].save(temp);
     }
+    
+    
+    timer.end();
 
 
     
     // DSB 1 - 2
+    
+    cout << "uploading for block4conv1 ...\n\n";
+    timer.start(" * ");
     vector<double> temp9;
     vector<vector<vector<Plaintext>>> block4conv1multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
     string path9 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block4conv1multiplicands32_32_3_3");
@@ -543,9 +589,16 @@ int main() {
         string temp = string("/app/parameters/summands/block4conv1summands32/")+to_string(i)+string(".bin");
         block4conv1summands32[i].save(temp);
     }
+    
+    
+    timer.end();
 
 
         // RB 4 - 1
+    
+    
+    cout << "uploading for block5conv0 ...\n\n";
+    timer.start(" * ");
     vector<double> temp10;
     vector<vector<vector<Plaintext>>> block5conv0multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
     string path10 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block5conv0multiplicands32_32_3_3");
@@ -588,10 +641,16 @@ int main() {
         string temp = string("/app/parameters/summands/block5conv0summands32/")+to_string(i)+string(".bin");
         block5conv0summands32[i].save(temp);
     }
+    
+    
+    timer.end();
 
 
 
     // RB 4 - 2
+    
+    cout << "uploading for block5conv1 ...\n\n";
+    timer.start(" * ");
     vector<double> temp11;
     vector<vector<vector<Plaintext>>> block5conv1multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
     string path11 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block5conv1multiplicands32_32_3_3");
@@ -632,9 +691,14 @@ int main() {
         string temp = string("/app/parameters/summands/block5conv1summands32/")+to_string(i)+string(".bin");
         block5conv1summands32[i].save(temp);
     }
+    
+    
+    timer.end();
 
 
     // RB 5 - 1
+    cout << "uploading for block6conv0 ...\n\n";
+    timer.start(" * ");
     vector<double> temp12;
     vector<vector<vector<Plaintext>>> block6conv0multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
     string path12 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block6conv0multiplicands32_32_3_3");
@@ -673,10 +737,15 @@ int main() {
         string temp = string("/app/parameters/summands/block6conv0summands32/")+to_string(i)+string(".bin");
         block6conv0summands32[i].save(temp);
     }
+    
+    timer.end();
 
 
 
     // RB 5 - 2
+    
+    cout << "uploading for block6conv1 ...\n\n";
+    timer.start(" * ");
     vector<double> temp13;
     vector<vector<vector<Plaintext>>> block6conv1multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
     string path13 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block6conv1multiplicands32_32_3_3");
@@ -716,6 +785,9 @@ int main() {
         string temp = string("/app/parameters/summands/block6conv1summands32/")+to_string(i)+string(".bin");
         block6conv1summands32[i].save(temp);
     }
+    
+    
+    timer.end();
 
 
 
@@ -733,7 +805,9 @@ int main() {
     ///////////////////// Residual flow ////////////////////////////
     // Convolution
 
-
+    
+    cout << "uploading for block7conv_onebyone ...\n\n";
+    timer.start(" * ");
     vector<double> temp14;
     vector<vector<vector<Plaintext>>> block7conv_onebyone_multiplicands64_32_1_1(64, vector<vector<Plaintext>>(32, vector<Plaintext>(1, ptxt_init)));
     string path14 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block7conv_onebyone_multiplicands64_32_1_1");
@@ -771,9 +845,16 @@ int main() {
         string temp = string("/app/parameters/summands/block7conv_onebyone_summands64/")+to_string(i)+string(".bin");
         block7conv_onebyone_summands64[i].save(temp);
     }
+    
+    
+    timer.end();
 
 
 //////////
+    
+    
+    cout << "uploading for block7conv0 ...\n\n";
+    timer.start(" * ");
 
     vector<double> temp15;
     vector<vector<vector<Plaintext>>> block7conv0multiplicands64_32_3_3(64, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
@@ -811,9 +892,16 @@ int main() {
         string temp = string("/app/parameters/summands/block7conv0summands64/")+to_string(i)+string(".bin");
         block7conv0summands64[i].save(temp);
     }
+    
+    
+    timer.end();
 
 
     // Second convolution
+    
+    
+    cout << "uploading for block7conv1 ...\n\n";
+    timer.start(" * ");
 
     vector<double> temp16;
     vector<vector<vector<Plaintext>>> block7conv1multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
@@ -851,6 +939,9 @@ int main() {
         string temp = string("/app/parameters/summands/block7conv1summands64/")+to_string(i)+string(".bin");
         block7conv1summands64[i].save(temp);
     }
+    
+    
+    timer.end();
 
 
 
@@ -860,6 +951,10 @@ int main() {
 
 
     ///////////////////////// Main flow /////////////////////////////////////////
+    
+    
+    cout << "uploading for block8conv0 ...\n\n";
+    timer.start(" * ");
     vector<double> temp17;
     vector<vector<vector<Plaintext>>> block8conv0multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
     string path17 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block8conv0multiplicands64_64_3_3");
@@ -895,13 +990,19 @@ int main() {
         string temp = string("/app/parameters/summands/block8conv0summands64/")+to_string(i)+string(".bin");
         block8conv0summands64[i].save(temp);
     }
+    
+    
+    
+    timer.end();
 
 
 
     // Second convolution
 
 
-
+    
+    cout << "uploading for block8conv1 ...\n\n";
+    timer.start(" * ");
     vector<double> temp18;
     vector<vector<vector<Plaintext>>> block8conv1multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
     string path18 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block8conv1multiplicands64_64_3_3");
@@ -939,6 +1040,9 @@ int main() {
         string temp = string("/app/parameters/summands/block8conv1summands64/")+to_string(i)+string(".bin");
         block8conv1summands64[i].save(temp);
     }
+    
+    
+    timer.end();
 
 
 
@@ -952,6 +1056,10 @@ int main() {
 
 
     ///////////////////////// Main flow /////////////////////////////////////////
+    
+    
+    cout << "uploading for block9conv0 ...\n\n";
+    timer.start(" * ");
 
     vector<double> temp19;
     vector<vector<vector<Plaintext>>> block9conv0multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
@@ -990,10 +1098,17 @@ int main() {
         string temp = string("/app/parameters/summands/block9conv0summands64/")+to_string(i)+string(".bin");
         block9conv0summands64[i].save(temp);
     }
+    
+    
+    timer.end();
 
 
 
     // Second convolution
+    
+    
+    cout << "uploading for block9conv1 ...\n\n";
+    timer.start(" * ");
 
     vector<double> temp20;
     vector<vector<vector<Plaintext>>> block9conv1multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
@@ -1032,8 +1147,14 @@ int main() {
         string temp = string("/app/parameters/summands/block9conv1summands64/")+to_string(i)+string(".bin");
         block9conv1summands64[i].save(temp);
     }
+    
+    
+    timer.end();
 
     //FC64 setup...
+    
+    
+    cout << "uploading for FC64 layer ...\n\n";
     vector<double> temp21;
     vector<vector<Plaintext>> fclayermultiplicands10_64(10, vector<Plaintext>(64, ptxt_init));
     string path21 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("fclayermultiplicands10_64");
@@ -1083,6 +1204,9 @@ int main() {
         string temp = string("/app/parameters/summands/fclayersummands10/")+to_string(i)+string(".bin");
         fclayersummands10[i].save(temp);
     }
+    
+    
+    timer.end();
 
 
 
