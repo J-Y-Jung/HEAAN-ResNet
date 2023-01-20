@@ -27,8 +27,8 @@ find_package(HEaaN REQUIRED)
 ## add_executable(test Inference_test.cpp) 
 ## target_link_libraries(test PUBLIC HEaaN::HEaaN)
 
-add_executable(temptest temptest.cpp) 
-target_link_libraries(temptest PUBLIC HEaaN::HEaaN)
+add_executable(load 10000_load.cpp)
+target_link_libraries(load PUBLIC HEaaN::HEaaN)
 
 add_executable(pre preprocessing.cpp) 
 target_link_libraries(pre PUBLIC HEaaN::HEaaN)
