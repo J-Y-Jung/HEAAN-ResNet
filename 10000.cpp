@@ -67,11 +67,19 @@ int main() {
     EnDecoder ecd(context);
 
     cout.precision(7);
-
+    
+    
+    
+    Message msg_zero(log_slots, 0);
+    Plaintext ptxt_zero(context);
+    ptxt_zero = ecd.encode(msg_zero, 5, 0);
+    
 
     double cnst = (double)(1.0 / 40.0);
     Ciphertext ctxt_init(context);
+    enc.encrypt(msg_zero, pack, ctxt_init, 0, 0);
     Plaintext ptxt_init(context);
+    ecd.encode(msg_zero, pack, ctxt_zero, 0, 0);
 
 
     ///////////////////////
@@ -94,10 +102,6 @@ int main() {
 
     cout << "\n Image Loading ..." << "\n";
     
-    
-    Message msg_zero(log_slots, 0);
-    Plaintext ptxt_zero(context);
-    ptxt_zero = ecd.encode(msg_zero, 5, 0);
 
     Ciphertext ctxt_zero(context);
     enc.encrypt(msg_zero, pack, ctxt_zero, 5, 0);
@@ -2429,11 +2433,11 @@ int main() {
     
     string filepath_last = string("/app/FINAL")+to_string(num)+string("/final")+to_string(num)+string("_");
     
-    for (int i=0; i<512; ++i){
-        string filepath = filepath_last + to_string(i+1)+string(".txt");
+    for (int i=1; i<=512; ++i){
+        string filepath = filepath_last + to_string(i)+string(".txt");
         ofstream file(filepath);
         for (int j=0; j< 10; ++j){
-            file << final_result[i][j] << "\n";
+            file << final_result[i-1][j] << "\n";
         }
         
         file.close();
