@@ -71,15 +71,18 @@ int main() {
     
     
     Message msg_zero(log_slots, 0);
+    
     Plaintext ptxt_zero(context);
     ptxt_zero = ecd.encode(msg_zero, 5, 0);
     
+    Ciphertext ctxt_zero(context);
+    enc.encrypt(msg_zero, pack, ctxt_zero, 5, 0);
 
     double cnst = (double)(1.0 / 40.0);
     Ciphertext ctxt_init(context);
     enc.encrypt(msg_zero, pack, ctxt_init, 0, 0);
     Plaintext ptxt_init(context);
-    ptxt_init = ecd.encode(msg_zero, pack, 0, 0);
+    ptxt_init = ecd.encode(msg_zero, 0, 0);
 
 
     ///////////////////////
@@ -103,8 +106,6 @@ int main() {
     cout << "\n Image Loading ..." << "\n";
     
 
-    Ciphertext ctxt_zero(context);
-    enc.encrypt(msg_zero, pack, ctxt_zero, 5, 0);
     
     vector<vector<Ciphertext>> imageVec(16, vector<Ciphertext>(3, ctxt_zero));
 
