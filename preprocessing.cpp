@@ -6,8 +6,7 @@
 #include <optional>
 #include <algorithm>
 
-#include "HEaaN/heaan.hpp" 
-#include "HEAAN-ResNet.hpp" 
+#include "HEaaN/heaan.hpp"
 #include "Conv.hpp"
 #include "Conv_parallel.hpp"
 #include "ReLUbundle.hpp"
