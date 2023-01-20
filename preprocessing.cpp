@@ -407,7 +407,7 @@ int main() {
     
     cout << "uploading for block3conv1 ...\n\n";
     timer.start(" * ");
-    vector<double> temp6
+    vector<double> temp6;
     vector<vector<vector<Plaintext>>> block3conv1multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path6 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block3conv1multiplicands16_16_3_3");
     txtreader(temp6, path6);
@@ -432,7 +432,7 @@ int main() {
     temp6a.shrink_to_fit();
     #pragma omp parallel for collapse(3)
     for(int i=0; i<16; ++i){
-        for(int j=0; j<3; ++j){
+        for(int j=0; j<16; ++j){
             for(int k=0; k<9; ++k){
                 string temp = string("/app/parameters/multiplicands/block3conv1multiplicands16_16_3_3/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
                 block3conv1multiplicands16_16_3_3[i][j][k].save(temp);
