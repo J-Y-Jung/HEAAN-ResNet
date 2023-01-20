@@ -12,7 +12,7 @@
 #include "Conv_parallel.hpp"
 #include "ReLUbundle.hpp"
 #include "MPPacking.hpp"
-#include "HEaaN//timer.hpp"
+#include "HEaaNTimer.hpp"
 //#include "convtools.hpp"
 #include "kernelEncode.hpp"
 #include "imageEncode.hpp"
