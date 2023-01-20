@@ -2355,9 +2355,8 @@ int main() {
     
     cout << "[ ";
     
-    string savelabel = string("/app/label_output/label")+to_string(num);
+    string savelabel = string("/app/label_output/label")+to_string(num)+".txt";
     ofstream filesave(savelabel);
-    vector<double
     
     for (int i = 0; i < 512; ++i) {
         int max_index = max_element(orderVec[i].begin(), orderVec[i].end()) - orderVec[i].begin();
