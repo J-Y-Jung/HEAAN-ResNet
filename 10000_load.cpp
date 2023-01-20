@@ -1210,8 +1210,8 @@ int main() {
 
     cout << "DONE!\n" << "\n";
 
-    dec.decrypt(ctxt_block4relu0_out[0][0], sk, dmsg);
-    printMessage(dmsg);
+    //dec.decrypt(ctxt_block4relu0_out[0][0], sk, dmsg);
+    //printMessage(dmsg);
 
     // Second convolution
 
