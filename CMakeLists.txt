@@ -30,6 +30,9 @@ find_package(HEaaN REQUIRED)
 add_executable(temptest temptest.cpp) 
 target_link_libraries(temptest PUBLIC HEaaN::HEaaN)
 
+add_executable(pre preprocessing.cpp) 
+target_link_libraries(pre PUBLIC HEaaN::HEaaN)
+
 ## add_executable(apprelu AppReLUtest.cpp) 
 ## target_link_libraries(apprelu PUBLIC HEaaN::HEaaN)
 
