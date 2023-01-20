@@ -1405,8 +1405,8 @@ int main() {
     ctxt_block5conv0_out.clear();
     ctxt_block5conv0_out.shrink_to_fit();
 
-    dec.decrypt(ctxt_block5relu0_out[0][0], sk, dmsg);
-    printMessage(dmsg);
+    //dec.decrypt(ctxt_block5relu0_out[0][0], sk, dmsg);
+    //printMessage(dmsg);
 
     // Second convolution
 
