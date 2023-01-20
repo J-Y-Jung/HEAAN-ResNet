@@ -98,7 +98,6 @@ int main() {
     std::cout << path0 << std::endl;
     Scaletxtreader(temp0, path0, cnst);
 
-    cout << temp0.size() <<endl;
     kernel_ptxt(context, temp0, block0conv0multiplicands16_3_3_3, 5, 1, 1, 16, 3, 3, ecd);
 
 
@@ -111,7 +110,6 @@ int main() {
     Scaletxtreader(temp0a, path0a, cnst);
 
 
-    std::cout << temp0a.size() << std::endl;
     #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 16; ++i) {
         #pragma omp parallel num_threads(5)
