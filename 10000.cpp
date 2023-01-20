@@ -92,7 +92,7 @@ int main() {
 
 
 
-    ////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////
      ///////////// 10000 test image Encoding ///////////////////
      ////////////////////////////////////////////////////////////
 
@@ -115,8 +115,9 @@ int main() {
     if (num==20){
         
         #pragma omp parallel for
-        for(int i=305; i<313; ++i){
-            string str = "/app/HEAAN-ResNet/image/image_" + to_string(i) + string(".txt");
+        for(int i=304; i<312; ++i){
+            int ind = i+1;
+            string str = "/app/HEAAN-ResNet/image/image_" + to_string(ind) + string(".txt");
             vector<double> temp;
             txtreader(temp, str);
             imageCompiler(context, pack, enc, 5, temp, imageVec[(i%16)]);
@@ -136,9 +137,9 @@ int main() {
     else {
         
         #pragma omp parallel for
-        for (int i = (num-1) * 16+1; i <= num*16; ++i) { // 313
-
-            string str = "/app/HEAAN-ResNet/image/image_" + to_string(i) + string(".txt");
+        for (int i = (num-1) * 16; i < num*16; ++i) { // 313
+            int ind = i+1;
+            string str = "/app/HEAAN-ResNet/image/image_" + to_string(ind) + string(".txt");
             vector<double> temp;
             txtreader(temp, str);
             imageCompiler(context, pack, enc, 5, temp, imageVec[(i%16)]);
