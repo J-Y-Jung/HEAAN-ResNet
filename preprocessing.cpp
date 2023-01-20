@@ -119,6 +119,10 @@ int main() {
     }
     temp0a.clear();
     temp0a.shrink_to_fit();
+    
+    timer.end();
+    cout << "saving for block0conv0 ...\n\n";
+    timer.start(" * ");
 
 
     #pragma omp parallel for collapse(3)
@@ -170,6 +174,13 @@ int main() {
     temp1a.clear();
     temp1a.shrink_to_fit();
     
+    
+    
+    timer.end();
+    cout << "saving for block1conv0 ...\n\n";
+    timer.start(" * ");
+
+    
     #pragma omp parallel for collapse(3)
     for(int i=0; i<16; ++i){
         for(int j=0; j<16; ++j){
@@ -220,6 +231,13 @@ int main() {
 
     temp2a.clear();
     temp2a.shrink_to_fit();
+    
+    
+    timer.end();
+    cout << "saving for block1conv1 ...\n\n";
+    timer.start(" * ");
+
+    
 
     #pragma omp parallel for collapse(3)
     for(int i=0; i<16; ++i){
@@ -271,6 +289,13 @@ int main() {
     }
     temp3a.clear();
     temp3a.shrink_to_fit();
+    
+    
+    timer.end();
+    cout << "saving for block2conv0 ...\n\n";
+    timer.start(" * ");
+
+    
 
 
     #pragma omp parallel for collapse(3)
@@ -324,6 +349,13 @@ int main() {
     }
     temp4a.clear();
     temp4a.shrink_to_fit();
+    
+    
+    timer.end();
+    cout << "saving for block2conv1 ...\n\n";
+    timer.start(" * ");
+
+    
 
     #pragma omp parallel for collapse(3)
     for(int i=0; i<16; ++i){
@@ -376,6 +408,13 @@ int main() {
     }
     temp5a.clear();
     temp5a.shrink_to_fit();
+    
+    
+    timer.end();
+    cout << "saving for block3conv0 ...\n\n";
+    timer.start(" * ");
+
+    
 
     #pragma omp parallel for collapse(3)
     for(int i=0; i<16; ++i){
@@ -427,6 +466,13 @@ int main() {
     }
     temp6a.clear();
     temp6a.shrink_to_fit();
+    
+    
+    timer.end();
+    cout << "saving for block3conv1 ...\n\n";
+    timer.start(" * ");
+
+    
     #pragma omp parallel for collapse(3)
     for(int i=0; i<16; ++i){
         for(int j=0; j<16; ++j){
@@ -474,6 +520,13 @@ int main() {
     }
     temp7a.clear();
     temp7a.shrink_to_fit();
+    
+    
+    timer.end();
+    cout << "saving for block4conv_onebyone ...\n\n";
+    timer.start(" * ");
+
+    
     #pragma omp parallel for collapse(3)
     for(int i=0; i<32; ++i){
         for(int j=0; j<16; ++j){
@@ -522,6 +575,11 @@ int main() {
     }
     temp8a.clear();
     temp8a.shrink_to_fit();
+    
+    timer.end();
+    cout << "saving for block4conv0 ...\n\n";
+    timer.start(" * ");
+
 
     #pragma omp parallel for collapse(3)
     for(int i=0; i<32; ++i){
@@ -571,6 +629,11 @@ int main() {
     }
     temp9a.clear();
     temp9a.shrink_to_fit();
+    
+    timer.end();
+    cout << "saving for block4conv1 ...\n\n";
+    timer.start(" * ");
+
     #pragma omp parallel for collapse(3)
     for(int i=0; i<32; ++i){
         for(int j=0; j<32; ++j){
@@ -622,6 +685,11 @@ int main() {
     temp10a.clear();
     temp10a.shrink_to_fit();
     
+    timer.end();
+    cout << "saving for block5conv0 ...\n\n";
+    timer.start(" * ");
+
+    
 
     #pragma omp parallel for collapse(3)
     for(int i=0; i<32; ++i){
@@ -671,6 +739,12 @@ int main() {
     }
     temp11a.clear();
     temp11a.shrink_to_fit();
+    
+    timer.end();
+    cout << "saving for block5conv1 ...\n\n";
+    timer.start(" * ");
+
+    
 
 
     #pragma omp parallel for collapse(3)
@@ -718,6 +792,12 @@ int main() {
     }
     temp12a.clear();
     temp12a.shrink_to_fit();
+    
+    timer.end();
+    cout << "saving for block6conv0 ...\n\n";
+    timer.start(" * ");
+
+    
 
     #pragma omp parallel for collapse(3)
     for(int i=0; i<32; ++i){
@@ -766,6 +846,12 @@ int main() {
     }
     temp13a.clear();
     temp13a.shrink_to_fit();
+    
+    timer.end();
+    cout << "saving for block6conv1 ...\n\n";
+    timer.start(" * ");
+
+    
 
     #pragma omp parallel for collapse(3)
     for(int i=0; i<32; ++i){
@@ -825,6 +911,12 @@ int main() {
     }
     temp14a.clear();
     temp14a.shrink_to_fit();
+    
+    timer.end();
+    cout << "saving for block7conv_1by1 ...\n\n";
+    timer.start(" * ");
+
+    
 
 
     #pragma omp parallel for collapse(3)
@@ -873,6 +965,12 @@ int main() {
     }
     temp15a.clear();
     temp15a.shrink_to_fit();
+    
+    timer.end();
+    cout << "saving for block7conv0 ...\n\n";
+    timer.start(" * ");
+
+    
 
     #pragma omp parallel for collapse(3)
     for(int i=0; i<64; ++i){
@@ -920,6 +1018,12 @@ int main() {
 
     temp16a.clear();
     temp16a.shrink_to_fit();
+    
+    timer.end();
+    cout << "saving for block7conv1 ...\n\n";
+    timer.start(" * ");
+
+    
 
     #pragma omp parallel for collapse(3)
     for(int i=0; i<64; ++i){
@@ -971,6 +1075,12 @@ int main() {
     }
     temp17a.clear();
     temp17a.shrink_to_fit();
+    
+    timer.end();
+    cout << "saving for block8conv0 ...\n\n";
+    timer.start(" * ");
+
+    
 
     #pragma omp parallel for collapse(3)
     for(int i=0; i<64; ++i){
@@ -1020,6 +1130,12 @@ int main() {
 
     temp18a.clear();
     temp18a.shrink_to_fit();
+    
+    timer.end();
+    cout << "saving for block8conv1 ...\n\n";
+    timer.start(" * ");
+
+    
 
 
     #pragma omp parallel for collapse(3)
@@ -1078,6 +1194,12 @@ int main() {
 
     temp19a.clear();
     temp19a.shrink_to_fit();
+    
+    timer.end();
+    cout << "saving for block9conv0 ...\n\n";
+    timer.start(" * ");
+
+    
 
 
     #pragma omp parallel for collapse(3)
@@ -1128,6 +1250,12 @@ int main() {
 
     temp20a.clear();
     temp20a.shrink_to_fit();
+    
+    timer.end();
+    cout << "saving for block9conv1 ...\n\n";
+    timer.start(" * ");
+
+    
 
     #pragma omp parallel for collapse(3)
     for(int i=0; i<64; ++i){
@@ -1187,6 +1315,9 @@ int main() {
     temp21a.clear();
     temp21a.shrink_to_fit();
     
+    timer.end();
+    cout << "saving for fc64 ...\n\n";
+    timer.start(" * ");
 
     #pragma omp parallel for collapse(2)
     for(int i=0; i<10; ++i){
