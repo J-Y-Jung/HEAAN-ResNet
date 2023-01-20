@@ -84,12 +84,9 @@ void imageCompiler(Context context, KeyPack pack, Encryptor enc, u64 level, vect
 
     Plaintext ptxt1(context), ptxt2(context), ptxt3(context);
 
-    enc.encrypt(msg1, pack, ctxt1, level, 0);
-    enc.encrypt(msg2, pack, ctxt2, level, 0);
-    enc.encrypt(msg3, pack, ctxt3, level, 0);
+    enc.encrypt(msg1, pack, output[0], level, 0);
+    enc.encrypt(msg2, pack, output[1], level, 0);
+    enc.encrypt(msg3, pack, output[2], level, 0);
 
-    output.push_back(ctxt1);
-    output.push_back(ctxt2);
-    output.push_back(ctxt3);
     
 }
