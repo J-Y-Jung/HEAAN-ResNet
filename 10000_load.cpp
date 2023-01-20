@@ -25,7 +25,7 @@ namespace {
 
 int main() {
     // SetUp
-    HEaaN//timer //timer(false);
+    HEaaNTimer timer(false);
     ParameterPreset preset = ParameterPreset::FGb;
     Context context = makeContext(preset);
     if (!isBootstrappableParameter(context)) {
