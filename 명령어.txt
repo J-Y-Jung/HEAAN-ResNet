@@ -1,0 +1,38 @@
+
+########## DOCKER 명령어 정리 #######################
+
+id : altaria
+pw : 1234
+
+2서버 공통
+
+########## 컨테이너 생성 ###############
+
+sudo docker load -i heaan-native-docker.tar.gz
+sudo docker run -it heaan-ubuntu-20.04-native:latest
+
+
+##########재입장 ############
+31서버
+sudo docker exec -it 298a4c47ee99 /bin/bash
+
+102서버
+sudo docker exec -it f5e77762d5c0 /bin/bash
+
+
+########## 설치 ################
+git clone https://github.com/J-Y-Jung/HEAAN-ResNet.git
+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
+
+########## 도커초기화 ############
+sudo docker stop 298a4c47ee99
+sudo docker start 298a4c47ee99
+
+sudo docker stop f5e77762d5c0
+sudo docker start f5e77762d5c0
+
+###############################
+
+
+
+
