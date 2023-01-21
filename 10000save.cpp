@@ -1,3 +1,4 @@
+//inference
 #pragma once
 #include <iostream>
 #include <fstream>
@@ -439,30 +440,34 @@ int main() {
 
     cout <<"\n";
 
-
     // RB 1 - 2
     cout<< "Uploading for block1conv1 ...\n\n";
-    timer.start("block1conv1 load");
+    timer.start(" * ");
+    vector<double> temp2;
     vector<vector<vector<Plaintext>>> block1conv1multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
-    #pragma omp parallel for collapse(3)
-    for(int i=0; i<16; ++i){
-        for(int j=0; j<16; ++j){
-            for(int k=0; k<9; ++k){
-                string temp = string("/app/parameters/multiplicands/block1conv1multiplicands16_16_3_3/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
-                block1conv1multiplicands16_16_3_3[i][j][k].load(temp);
-            }
-        }
-    }
+    string path2 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block1conv1multiplicands16_16_3_3");
+    txtreader(temp2, path2);
+    kernel_ptxt(context, temp2, block1conv1multiplicands16_16_3_3, 5, 1, 1, 16, 16, 3, ecd);
+    temp2.clear();
+    temp2.shrink_to_fit();
 
 
     vector<Plaintext> block1conv1summands16(16, ptxt_init);
-    #pragma omp parallel for
-    for(int i=0; i<16; ++i){
-        string temp = string("/app/parameters/summands/block1conv1summands16/")+to_string(i)+string(".bin");
-        block1conv1summands16[i].load(temp);
+    vector<double> temp2a;
+    string path2a = "/app/HEAAN-ResNet/kernel/summands/" + string("block1conv1summands16");
+    Scaletxtreader(temp2a, path2a, cnst);
+    
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 16; ++i) {
+        #pragma omp parallel num_threads(5)
+        {
+        Message msg(log_slots, temp2a[i]);
+        block1conv1summands16[i] = ecd.encode(msg, 4, 0);
+        }
     }
 
-    timer.end();
+    temp2a.clear();
+    temp2a.shrink_to_fit();
 
     // Second convolution
     cout << "block1conv1 ..." << endl;
@@ -1470,6 +1475,7 @@ int main() {
     }
     temp9a.clear();
     temp9a.shrink_to_fit();
+    timer.end();
 
     cout << "block4conv1 ..." << endl;
     timer.start(" block4conv1 ");
