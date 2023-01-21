@@ -2783,7 +2783,7 @@ int main() {
     ////////////////save//////////////
     
     
-    string pathtemp11 = string("/app/avgp/");
+    string pathtemp11 = string("/app/fc64/");
     string pathtemp11ctxt = pathtemp9 + string("ctxt/");
 
     cout<< "saving fc64 info... \n\n";
