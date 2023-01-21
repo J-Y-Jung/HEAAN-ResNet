@@ -1740,7 +1740,7 @@ int main() {
     ////// RB 5 ////////////
     ///////////////////////
     string pathtemp6 = string("/app/block6/");
-    string pathtemp6ctxt = pathtemp6 + string("ctxt/")
+    string pathtemp6ctxt = pathtemp6 + string("ctxt/");
 
 
 
