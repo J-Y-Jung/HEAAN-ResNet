@@ -2982,10 +2982,14 @@ int main() {
     for (int i = 0; i < 512; ++i) {
         int max_index = max_element(orderVec[i].begin(), orderVec[i].end()) - orderVec[i].begin();
         
-        if (i%16 == 15) filesave << max_index << ",\n";
-        else filesave << max_index <<", ";
-            
-        cout << max_index << ", ";
+        if (i%32 == 31) {
+            filesave << max_index << ",\n";
+            cout << max_index << ",\n";
+        }
+        else{
+            filesave << max_index <<", ";
+            cout << max_index << ", ";
+        }
     }
     
     filesave.close();
