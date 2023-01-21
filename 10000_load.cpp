@@ -162,7 +162,6 @@ int main() {
     vector<double> temp;
     txtreader(temp, str);
     for (int i = 0; i < 49152; ++i) temp.push_back(0);
-
     vector<Ciphertext> out;
     imageCompiler(context, pack, enc, temp, out);
     imageVec.push_back(out);
@@ -267,6 +266,10 @@ int main() {
 
     
     timer.end();
+
+    
+    ctxt_block0conv0_out.clear();
+    ctxt_block0conv0_out.shrink_to_fit();
     cout << "DONE!, decrypted message is ... " << "\n";
 
     dec.decrypt(ctxt_block0relu0_out[0][0], sk, dmsg);
@@ -346,7 +349,6 @@ int main() {
 
     // dec.decrypt(ctxt_block1conv0_out[0][0], sk, dmsg);
     // printMessage(dmsg);
-
 
     block1conv0multiplicands16_16_3_3.clear();
     block1conv0multiplicands16_16_3_3.shrink_to_fit();
@@ -464,6 +466,9 @@ int main() {
     // printMessage(dmsg);
     cout <<"\n";
 
+    
+    ctxt_block1relu0_out.clear();
+    ctxt_block1relu0_out.shrink_to_fit();
     block1conv1multiplicands16_16_3_3.clear();
     block1conv1multiplicands16_16_3_3.shrink_to_fit();
     block1conv1summands16.clear();
@@ -617,7 +622,7 @@ int main() {
     // dec.decrypt(ctxt_block2conv0_out[0][0], sk, dmsg);
     // printMessage(dmsg);
 
-
+    
     block2conv0multiplicands16_16_3_3.clear();
     block2conv0multiplicands16_16_3_3.shrink_to_fit();
     block2conv0summands16.clear();
@@ -730,6 +735,8 @@ int main() {
     ////////////////////////////////////
 
 
+    ctxt_block2relu0_out.clear();
+    ctxt_block2relu0_out.shrink_to_fit();
     block2conv1multiplicands16_16_3_3.clear();
     block2conv1multiplicands16_16_3_3.shrink_to_fit();
     block2conv1summands16.clear();
@@ -973,6 +980,8 @@ int main() {
     timer.end();
 
 
+    ctxt_block3relu0_out.clear();
+    ctxt_block3relu0_out.shrink_to_fit();
     block3conv1multiplicands16_16_3_3.clear();
     block3conv1multiplicands16_16_3_3.shrink_to_fit();
     block3conv1summands16.clear();
@@ -1643,6 +1652,8 @@ int main() {
     // printMessage(dmsg);
 
 
+    ctxt_block5relu0_out.clear();
+    ctxt_block5relu0_out.shrink_to_fit();
     block5conv1multiplicands32_32_3_3.clear();
     block5conv1multiplicands32_32_3_3.shrink_to_fit();
     block5conv1summands32.clear();
@@ -1872,6 +1883,8 @@ int main() {
     // printMessage(dmsg);
 
 
+    ctxt_block6relu0_out.clear();
+    ctxt_block6relu0_out.shrink_to_fit();
     block6conv1multiplicands32_32_3_3.clear();
     block6conv1multiplicands32_32_3_3.shrink_to_fit();
     block6conv1summands32.clear();
@@ -2435,6 +2448,8 @@ int main() {
     // printMessage(dmsg);
 
 
+    ctxt_block8relu0_out.clear();
+    ctxt_block8relu0_out.shrink_to_fit();
     block8conv1multiplicands64_64_3_3.clear();
     block8conv1multiplicands64_64_3_3.shrink_to_fit();
     block8conv1summands64.clear();
@@ -2627,6 +2642,8 @@ int main() {
     // printMessage(dmsg);
 
 
+    ctxt_block9relu0_out.clear();
+    ctxt_block9relu0_out.shrink_to_fit();
     block9conv1multiplicands64_64_3_3.clear();
     block9conv1multiplicands64_64_3_3.shrink_to_fit();
     block9conv1summands64.clear();
