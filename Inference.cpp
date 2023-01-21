@@ -468,7 +468,6 @@ int main() {
 
     // Second convolution
     cout << "block1conv1 ..." << endl;
-    cout << "level of ctxt is " << ctxt_block1relu0_out[0][0].getLevel() << "\n";
     timer.start(" block1conv1 ");
     vector<vector<Ciphertext>> ctxt_block1conv1_out(16, vector<Ciphertext>(16, ctxt_init));
     
