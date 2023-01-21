@@ -973,7 +973,7 @@ int main() {
     
     #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 16; ++i) {
-        #pragma omp parallel num_threads(80)
+        #pragma omp parallel num_threads(5)
         {
         ctxt_conv_out2_allch_bundle = Conv(context, pack, eval, 32, 1, 1, 16, 16, ctxt_block3relu0_out[i], block3conv1multiplicands16_16_3_3);
         }
