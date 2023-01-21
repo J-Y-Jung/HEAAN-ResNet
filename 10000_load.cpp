@@ -1506,9 +1506,6 @@ int main() {
     printMessage(dmsg);
     cout << "block5 DONE! " << "\n";
 
-    dec.decrypt(ctxt_block5relu1_out[0][0], sk, dmsg);
-    printMessage(dmsg);
-
 
 
 
@@ -2411,7 +2408,7 @@ int main() {
     
     for (int i = 0; i < 512; ++i) {
         int max_index = max_element(orderVec[i].begin(), orderVec[i].end()) - orderVec[i].begin();
-        filesave << max_index << "\n";
+        filesave << max_index << ", ";
         cout << max_index << ", ";
     }
     
