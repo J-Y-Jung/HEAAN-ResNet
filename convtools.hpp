@@ -69,7 +69,7 @@ void weightToPtxt(Plaintext& ptxt, u64 level, double weight,
         //#pragma omp parallel for collapse(2)
         for (size_t j = 0; j < 32; ++j) {
             for (size_t i = 0; i < 32 * gap_in; ++i) {
-                msg[j * 1024 + (1024 - 32 * gap_in * stride) + i].real(0.0);
+                msg[j * 1024 + (1024 - 32 * gap_in) + i].real(0.0);
             }
         }
     }
@@ -88,7 +88,7 @@ void weightToPtxt(Plaintext& ptxt, u64 level, double weight,
         for (size_t j = 0; j < 32; ++j) {
             for (size_t i = 0; i < 32; ++i) {
                 for (size_t k = 0; k < gap_in; ++k) {
-                    msg[j * 1024 + i * 32 + (32 - gap_in*stride) + k].real(0.0);
+                    msg[j * 1024 + i * 32 + 31 - k].real(0.0);
                 }
             }
         }
