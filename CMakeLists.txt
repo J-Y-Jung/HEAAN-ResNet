@@ -27,14 +27,14 @@ find_package(HEaaN REQUIRED)
 ## add_executable(test Inference_test.cpp) 
 ## target_link_libraries(test PUBLIC HEaaN::HEaaN)
 
-add_executable(save 10000save.cpp)
-target_link_libraries(save PUBLIC HEaaN::HEaaN)
+## add_executable(save 10000save.cpp)
+## target_link_libraries(save PUBLIC HEaaN::HEaaN)
 
-add_executable(pre preprocessing.cpp) 
-target_link_libraries(pre PUBLIC HEaaN::HEaaN)
+## add_executable(pre preprocessing.cpp) 
+## target_link_libraries(pre PUBLIC HEaaN::HEaaN)
 
-add_executable(relutest ReLUbundletest.cpp) 
-target_link_libraries(relutest PUBLIC HEaaN::HEaaN)
+## add_executable(relutest ReLUbundletest.cpp) 
+## target_link_libraries(relutest PUBLIC HEaaN::HEaaN)
 
 ## add_executable(apprelu AppReLUtest.cpp) 
 ## target_link_libraries(apprelu PUBLIC HEaaN::HEaaN)
@@ -42,11 +42,11 @@ target_link_libraries(relutest PUBLIC HEaaN::HEaaN)
 ## add_executable(conv Conv.cpp) 
 ## target_link_libraries(conv PUBLIC HEaaN::HEaaN)
 
-add_executable(nosave 10000.cpp) 
-target_link_libraries(nosave PUBLIC HEaaN::HEaaN)
+## add_executable(nosave 10000.cpp) 
+## target_link_libraries(nosave PUBLIC HEaaN::HEaaN)
 
-add_executable(oddLazyBSGS oddLazyBSGStest.cpp) 
-target_link_libraries(oddLazyBSGS PUBLIC HEaaN::HEaaN)
+## add_executable(oddLazyBSGS oddLazyBSGStest.cpp) 
+## target_link_libraries(oddLazyBSGS PUBLIC HEaaN::HEaaN)
 
 add_executable(inference Inference.cpp) 
 target_link_libraries(inference PUBLIC HEaaN::HEaaN)
