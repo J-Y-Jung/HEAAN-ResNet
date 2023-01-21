@@ -1,3 +1,4 @@
+//inference
 #pragma once
 #include <iostream>
 #include <fstream>
@@ -6,7 +7,8 @@
 #include <optional>
 #include <algorithm>
 
-#include "HEaaN/heaan.hpp"
+#include "HEaaN/heaan.hpp" 
+#include "examples.hpp" 
 #include "Conv.hpp"
 #include "Conv_parallel.hpp"
 #include "ReLUbundle.hpp"
@@ -88,8 +90,86 @@ int main() {
     /////////////////////
     /////////////////////
 
+
+    timer.start("inference");
+
+    ////////////////////////////////////////////////////////////
+     ///////////// 10000 test image Encoding ///////////////////
+     ////////////////////////////////////////////////////////////
+
+    cout << "10000 test images encoding ... \n";
+
+    int num;
+
+    cout << "Choose one of bundle from 1 to 20 \n";
+    cin >> num;
+
+    cout << "\n Image Loading ..." << "\n";
     
-    // 1st conv
+
+    
+    vector<vector<Ciphertext>> imageVec(16, vector<Ciphertext>(3, ctxt_zero));
+
+    vector<Ciphertext> ctxtVec_zero(3, ctxt_zero);
+    
+
+    if (num==20){
+        
+        #pragma omp parallel for
+        for(int i=304; i<312; ++i){
+            int ind = i+1;
+            string str = "/app/HEAAN-ResNet/image/image_" + to_string(ind) + string(".txt");
+            vector<double> temp;
+            txtreader(temp, str);
+            imageCompiler(context, pack, enc, 5, temp, imageVec[(i%16)]);
+        }
+
+
+        string str313 = "/app/HEAAN-ResNet/image/image_" + to_string(313) + string(".txt");
+        vector<double> temp313;
+        txtreader(temp313, str313);
+        
+        for (int i=0; i<49152; ++i) temp313.push_back(0);
+
+        imageCompiler(context, pack, enc, 5, temp313, imageVec[8]);
+
+    }
+
+    else {
+        
+        #pragma omp parallel for
+        for (int i = (num-1) * 16; i < num*16; ++i) { // 313
+            int ind = i+1;
+            string str = "/app/HEAAN-ResNet/image/image_" + to_string(ind) + string(".txt");
+            vector<double> temp;
+            txtreader(temp, str);
+            imageCompiler(context, pack, enc, 5, temp, imageVec[(i%16)]);
+
+        }
+
+    }
+
+
+    cout << "DONE, test for image encode ..." << "\n";
+
+    Message dmsg;
+    dec.decrypt(imageVec[0][0], sk, dmsg);
+    printMessage(dmsg);
+
+    cout << "DONE\n" << "\n";
+
+    /*
+    string str = "./image/image_" + to_string(313) + ".txt";
+    vector<double> temp;
+    txtreader(temp, str);
+    for (int i = 0; i < 49152; ++i) temp.push_back(0);
+    vector<Ciphertext> out;
+    imageCompiler(context, pack, enc, temp, out);
+    imageVec.push_back(out);
+    */
+
+
+     // 0st conv
     cout << "uploading for block0conv0 ...\n\n";
     timer.start(" * ");
     vector<double> temp0;
@@ -121,33 +201,117 @@ int main() {
     temp0a.shrink_to_fit();
     
     timer.end();
-    cout << "saving for block0conv0 ...\n\n";
-    timer.start(" * ");
+    cout << "\n\n";
 
 
-    #pragma omp parallel for collapse(3)
-    for(int i=0; i<16; ++i){
-        for(int j=0; j<3; ++j){
-            for(int k=0; k<9; ++k){
-                string temp = string("/app/parameters/multiplicands/")+string("/block0conv0multiplicands16_3_3_3/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
-                block0conv0multiplicands16_3_3_3[i][j][k].save(temp);
-            }
+    // cout << "test for conv0 multiplicands..." << "\n";
+    // printMessage(ecd.decode(block0conv0multiplicands16_3_3_3[0][0][0]));
+
+    // cout << "test for conv0 summands..." << "\n";
+    // printMessage(ecd.decode(block0conv0summands16[0]));
+
+
+    // Convolution 0
+    cout << "block0conv0 ..." << endl;
+    timer.start(" block0conv0 ");
+    vector<vector<Ciphertext>> ctxt_block0conv0_out(16, vector<Ciphertext>(16, ctxt_init));
+    
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 16; ++i) { 
+        #pragma omp parallel num_threads(5)
+        {
+            ctxt_block0conv0_out[i] = Conv(context, pack, eval, 32, 1, 1, 3, 16, imageVec[i], block0conv0multiplicands16_3_3_3);
+        }
+    }
+    
+    addBNsummands(context, eval, ctxt_block0conv0_out, block0conv0summands16, 16, 16);
+    timer.end();
+
+    imageVec.clear();
+    imageVec.shrink_to_fit();
+
+    // cout << "DONE!, decrypted message is ... " << "\n";
+
+    // dec.decrypt(ctxt_block0conv0_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+    cout <<"\n";
+
+    //memory delete
+    block0conv0multiplicands16_3_3_3.clear();
+    block0conv0multiplicands16_3_3_3.shrink_to_fit();
+    block0conv0summands16.clear();
+    block0conv0summands16.shrink_to_fit();
+
+
+    // // AppReLU
+    cout << "block0relu0 ...\n\n";
+    timer.start(" block0relu0 ");
+    vector<vector<Ciphertext>> ctxt_block0relu0_out(16, vector<Ciphertext>(16, ctxt_init)); //초기화부분 추가
+    // for (int i = 0; i < 16; ++i) {
+    //     cout << "block0relu0 for (" << i << " , ;)" << "\n";
+    //     for (int ch = 0; ch < 16; ++ch) {
+    //         ApproxReLU(context, eval, ctxt_block0conv0_out[i][ch], ctxt_block0relu0_out[i][ch]);
+    //     }
+    // }
+
+
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block0conv0_out[i / 16][i % 16], ctxt_block0relu0_out[i / 16][i % 16]);
+    }
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block0conv0_out[5 + (i / 16)][i % 16], ctxt_block0relu0_out[5 + (i / 16)][i % 16]);
+    }
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block0conv0_out[10 + (i / 16)][i % 16], ctxt_block0relu0_out[10 + (i / 16)][i % 16]);
+    }
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 16; ++i) {
+        #pragma omp parallel num_threads(5)
+        {
+            ApproxReLU(context, eval, ctxt_block0conv0_out[15][i % 16], ctxt_block0relu0_out[15][i % 16]);
         }
     }
 
-    //#pragma omp parallel for 
-    for(int i=0; i<16; ++i){
-        string temp = string("/app/parameters/summands/block0conv0summands16/")+to_string(i)+string(".bin");
-        block0conv0summands16[i].save(temp);
-    }
     
     timer.end();
+
     
+    ctxt_block0conv0_out.clear();
+    ctxt_block0conv0_out.shrink_to_fit();
+    cout << "DONE!, decrypted message is ... " << "\n";
+
+    dec.decrypt(ctxt_block0relu0_out[0][0], sk, dmsg);
+    printMessage(dmsg);
+
+    cout << "block0 DONE!\n" << "\n";
+    
+    ////////////////save//////////////
+    cout<< "saving block0 info... \n\n";
+    string pathtemp0 = string("/app/block0/");
+    string pathtemp0msg = pathtemp0 + string("msg/");
+    string pathtemp0ctxt = pathtemp0 + string("ctxt/");
+    saveMsgBundle(dec, sk, ctxt_block0relu0_out, pathtemp0msg);
+    saveCtxtBundle(ctxt_block0relu0_out, pathtemp0ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
 
 
-   
 
-    // RB 1 - 1
+
+    ////////////////////
+    /////// RB1 ////////
+    ////////////////////
+    
+    
+    string pathtemp1 = string("/app/block1/");
+    string pathtemp1ctxt = pathtemp1 + string("ctxt/")
+    
+   // RB 1 - 1
     cout << "uploading for block1conv0 ...\n\n";
     timer.start(" * ");
     vector<double> temp1;
@@ -177,31 +341,104 @@ int main() {
     
     
     timer.end();
-    cout << "saving for block1conv0 ...\n\n";
-    timer.start(" * ");
+    cout << "\n\n";
 
+
+    // cout << "test for block1conv0 multiplicands..." << "\n";
+    // printMessage(ecd.decode(block1conv0multiplicands16_16_3_3[0][0][0]));
+
+    // cout << "test for block1conv0 summands..." << "\n";
+    // printMessage(ecd.decode(block1conv0summands16[0]));
+
+    ///////////////////////// Main flow /////////////////////////////////////////
+    cout << "block1conv0 ..." << endl;
+    //cout << "level of ctxt is " << ctxt_block0relu0_out[0][0].getLevel() << "\n";
+    timer.start(" block1conv0 ");
+    vector<vector<Ciphertext>> ctxt_block1conv0_out(16, vector<Ciphertext>(16, ctxt_init));
     
-    #pragma omp parallel for collapse(3)
-    for(int i=0; i<16; ++i){
-        for(int j=0; j<16; ++j){
-            for(int k=0; k<9; ++k){
-                string temp = string("/app/parameters/multiplicands/block1conv0multiplicands16_16_3_3/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
-                block1conv0multiplicands16_16_3_3[i][j][k].save(temp);
-            }
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 16; ++i) {
+        #pragma omp parallel num_threads(5)
+        {
+            ctxt_block1conv0_out[i] = Conv(context, pack, eval, 32, 1, 1, 16, 16, ctxt_block0relu0_out[i], block1conv0multiplicands16_16_3_3);
         }
     }
 
-    #pragma omp parallel for 
-    for(int i=0; i<16; ++i){
-        string temp = string("/app/parameters/summands/block1conv0summands16/")+to_string(i)+string(".bin");
-        block1conv0summands16[i].save(temp);
-    }
-    
-    
+    addBNsummands(context, eval, ctxt_block1conv0_out, block1conv0summands16, 16, 16);
     timer.end();
+    cout << "DONE!\n" << "\n";
+
+    // dec.decrypt(ctxt_block1conv0_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+    block1conv0multiplicands16_16_3_3.clear();
+    block1conv0multiplicands16_16_3_3.shrink_to_fit();
+    block1conv0summands16.clear();
+    block1conv0summands16.shrink_to_fit();
 
 
+    // AppReLU
+    cout << "block1relu0 ..." << endl;
+    timer.start(" block1relu0 ");
+    
+    vector<vector<Ciphertext>> ctxt_block1relu0_out(16, vector<Ciphertext>(16, ctxt_init));
 
+    // for (int i = 0; i < 16; ++i) {
+    //     cout << "block1relu0 for (" << i << " , ;)" << "\n";
+    //     for (int ch = 0; ch < 16; ++ch) {
+    //         ApproxReLU(context, eval, ctxt_block1conv0_out[i][ch], ctxt_block1relu0_out[i][ch]);
+    //         eval.levelDown(ctxt_block1relu0_out[i][ch], 5, ctxt_block1relu0_out[i][ch]);
+    //         if (i == 0 && ch == 0) {
+    //             dec.decrypt(ctxt_block1relu0_out[i][ch], sk, dmsg);
+    //             printMessage(dmsg);
+    //         }
+    //     }
+    // }
+
+
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block1conv0_out[i / 16][i % 16], ctxt_block1relu0_out[i / 16][i % 16]);
+    }
+
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block1conv0_out[5 + (i / 16)][i % 16], ctxt_block1relu0_out[5 + (i / 16)][i % 16]);
+    }
+
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block1conv0_out[10 + (i / 16)][i % 16], ctxt_block1relu0_out[10 + (i / 16)][i % 16]);
+    }
+
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 16; ++i) {
+        #pragma omp parallel num_threads(5)
+        {
+            ApproxReLU(context, eval, ctxt_block1conv0_out[15][i % 16], ctxt_block1relu0_out[15][i % 16]);
+        }
+    }
+
+    timer.end();
+    
+    ctxt_block1conv0_out.clear();
+    ctxt_block1conv0_out.shrink_to_fit();
+    cout << "DONE!\n" << "\n";
+    
+    ////////////////save//////////////
+    cout<< "saving block1main1 info... \n\n";
+    string pathtemp1msg1 = pathtemp1 + string("msg/main1/");
+    saveMsgBundle(dec, sk, ctxt_block1relu0_out, pathtemp1msg1);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+    
+
+    // dec.decrypt(ctxt_block1relu0_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+    cout <<"\n";
 
     // RB 1 - 2
     cout<< "Uploading for block1conv1 ...\n\n";
@@ -231,39 +468,141 @@ int main() {
 
     temp2a.clear();
     temp2a.shrink_to_fit();
-    
-    
-    timer.end();
-    cout << "saving for block1conv1 ...\n\n";
-    timer.start(" * ");
 
+    // Second convolution
+    cout << "block1conv1 ..." << endl;
+    cout << "level of ctxt is " << ctxt_block1relu0_out[0][0].getLevel() << "\n";
+    timer.start(" block1conv1 ");
+    vector<vector<Ciphertext>> ctxt_block1conv1_out(16, vector<Ciphertext>(16, ctxt_init));
     
-
-    #pragma omp parallel for collapse(3)
-    for(int i=0; i<16; ++i){
-        for(int j=0; j<16; ++j){
-            for(int k=0; k<9; ++k){
-                string temp = string("/app/parameters/multiplicands/block1conv1multiplicands16_16_3_3/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
-                block1conv1multiplicands16_16_3_3[i][j][k].save(temp);
-            }
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 16; ++i) {
+        #pragma omp parallel num_threads(5)
+        {
+        ctxt_block1conv1_out[i] = Conv(context, pack, eval, 32, 1, 1, 16, 16, ctxt_block1relu0_out[i], block1conv1multiplicands16_16_3_3);
         }
     }
 
+    addBNsummands(context, eval, ctxt_block1conv1_out, block1conv1summands16, 16, 16);
+    timer.end();
+    cout << "DONE!" << "\n";
 
+    // dec.decrypt(ctxt_block1conv1_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+    cout <<"\n";
 
+    
+    ctxt_block1relu0_out.clear();
+    ctxt_block1relu0_out.shrink_to_fit();
+    block1conv1multiplicands16_16_3_3.clear();
+    block1conv1multiplicands16_16_3_3.shrink_to_fit();
+    block1conv1summands16.clear();
+    block1conv1summands16.shrink_to_fit();
 
-    #pragma omp parallel for
-    for(int i=0; i<16; ++i){
-        string temp = string("/app/parameters/summands/block1conv1summands16/")+to_string(i)+string(".bin");
-        block1conv1summands16[i].save(temp);
+    
+    ////////////////save//////////////
+    cout<< "saving block1main2 info... \n\n";
+    string pathtemp1msg2 = pathtemp1 + string("msg/main2/");
+    saveMsgBundle(dec, sk, ctxt_block1conv1_out, pathtemp1msg2);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+    
+    
+    
+    
+
+    //////////////////////////// Main flow + Residual flow //////////////////////////////////
+    cout << "block1add ..." << endl;
+    vector<vector<Ciphertext>> ctxt_block1add_out(16, vector<Ciphertext>(16, ctxt_init));
+    #pragma omp parallel for collapse(2)
+    for (int i = 0; i < 16; ++i) {
+        for (int ch = 0; ch < 16; ++ch) {
+            eval.add(ctxt_block1conv1_out[i][ch], ctxt_block0relu0_out[i][ch], ctxt_block1add_out[i][ch]);
+        }
     }
     
-    
+    cout << "DONE!\n" << "\n";
+    ctxt_block0relu0_out.clear();
+    ctxt_block0relu0_out.shrink_to_fit();
+    ctxt_block1conv1_out.clear();
+    ctxt_block1conv1_out.shrink_to_fit();
+
+
+    // Last AppReLU
+    cout << "block1relu1 ..." << endl;
+    timer.start(" block1relu1 ");
+    vector<vector<Ciphertext>> ctxt_block1relu1_out(16, vector<Ciphertext>(16, ctxt_init));
+    // for (int i = 0; i < 16; ++i) {
+    //     cout << "block1relu1 for (" << i << " , ;)" << "\n";
+    //     for (int ch = 0; ch < 16; ++ch) {
+    //         ApproxReLU(context, eval, ctxt_block1add_out[i][ch], ctxt_block1relu1_out[i][ch]);
+    //         eval.levelDown(ctxt_block1relu1_out[i][ch], 5, ctxt_block1relu1_out[i][ch]);
+    //         if (i == 0 && ch == 0) {
+    //             dec.decrypt(ctxt_block1relu1_out[i][ch], sk, dmsg);
+    //             printMessage(dmsg);
+    //         }
+    //     }
+    // }
+
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block1add_out[i / 16][i % 16], ctxt_block1relu1_out[i / 16][i % 16]);
+    }
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block1add_out[5 + (i / 16)][i % 16], ctxt_block1relu1_out[5 + (i / 16)][i % 16]);
+    }
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block1add_out[10 + (i / 16)][i % 16], ctxt_block1relu1_out[10 + (i / 16)][i % 16]);
+    }
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 16; ++i) {
+        #pragma omp parallel num_threads(5)
+        {
+            ApproxReLU(context, eval, ctxt_block1add_out[15][i % 16], ctxt_block1relu1_out[15][i % 16]);
+        }
+    }
+
     timer.end();
+    
+    
 
-  
+    ctxt_block1add_out.clear();
+    ctxt_block1add_out.shrink_to_fit();
 
-    // RB 2 - 1
+    cout << "DONE!, decrypted message is ... " << "\n";
+
+    dec.decrypt(ctxt_block1relu1_out[0][0], sk, dmsg);
+    printMessage(dmsg);
+    cout <<"\n";
+    
+    cout << "block1 DONE! " << "\n\n";
+    
+    
+    ////////////////save//////////////
+    cout<< "saving block1add info... \n\n";
+    string pathtemp1msg4 = pathtemp1 + string("msg/add/");
+    
+    saveMsgBundle(dec, sk, ctxt_block1relu1_out, pathtemp1msg4);
+    saveCtxtBundle(ctxt_block1relu1_out, pathtemp1ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+
+
+
+
+    ////////////////////
+    /////// RB2 ////////
+    ////////////////////
+    string pathtemp2 = string("/app/block2/");
+    string pathtemp2ctxt = pathtemp2 + string("ctxt/")
+
+    
+     // RB 2 - 1
     cout << "Uploading for block2conv0...\n\n";
     timer.start(" * ");
     vector<double> temp3;
@@ -292,32 +631,89 @@ int main() {
     
     
     timer.end();
-    cout << "saving for block2conv0 ...\n\n";
-    timer.start(" * ");
+
+    ///////////////////////// Main flow /////////////////////////////////////////
+    cout << "block2conv0 ..." << endl;
+    //cout << "level of ctxt is " << ctxt_block1relu1_out[0][0].getLevel() << "\n";
+    timer.start(" block2conv0 ");
+    vector<vector<Ciphertext>> ctxt_block2conv0_out(16, vector<Ciphertext>(16, ctxt_init));
+    
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 16; ++i) {
+        #pragma omp parallel num_threads(5)
+        {
+        ctxt_block2conv0_out[i] = Conv(context, pack, eval, 32, 1, 1, 16, 16, ctxt_block1relu1_out[i], block2conv0multiplicands16_16_3_3);
+        }
+    }
+
+    addBNsummands(context, eval, ctxt_block2conv0_out, block2conv0summands16, 16, 16);
+    timer.end();
+    cout << "DONE!" << "\n";
+
+    // dec.decrypt(ctxt_block2conv0_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
 
     
+    block2conv0multiplicands16_16_3_3.clear();
+    block2conv0multiplicands16_16_3_3.shrink_to_fit();
+    block2conv0summands16.clear();
+    block2conv0summands16.shrink_to_fit();
 
 
-    #pragma omp parallel for collapse(3)
-    for(int i=0; i<16; ++i){
-        for(int j=0; j<16; ++j){
-            for(int k=0; k<9; ++k){
-                string temp = string("/app/parameters/multiplicands/block2conv0multiplicands16_16_3_3/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
-                block2conv0multiplicands16_16_3_3[i][j][k].save(temp);
-            }
+    // AppReLU
+    cout << "block2relu0 ..." << endl;
+    timer.start(" block2relu0 ");
+    vector<vector<Ciphertext>> ctxt_block2relu0_out(16, vector<Ciphertext>(16, ctxt_init));
+    // for (int i = 0; i < 16; ++i) {
+    //     cout << "block2relu0 for (" << i << " , ;)" << "\n";
+    //     for (int ch = 0; ch < 16; ++ch) {
+    //         ApproxReLU(context, eval, ctxt_block2conv0_out[i][ch], ctxt_block2relu0_out[i][ch]);
+    //         eval.levelDown(ctxt_block2relu0_out[i][ch], 5, ctxt_block2relu0_out[i][ch]);
+    //         if (i == 0 && ch == 0) {
+    //             dec.decrypt(ctxt_block2relu0_out[i][ch], sk, dmsg);
+    //             printMessage(dmsg);
+    //         }
+    //     }
+    // }
+    
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block2conv0_out[i / 16][i % 16], ctxt_block2relu0_out[i / 16][i % 16]);
+    }
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block2conv0_out[5 + (i / 16)][i % 16], ctxt_block2relu0_out[5 + (i / 16)][i % 16]);
+    }
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block2conv0_out[10 + (i / 16)][i % 16], ctxt_block2relu0_out[10 + (i / 16)][i % 16]);
+    }
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 16; ++i) {
+        #pragma omp parallel num_threads(5)
+        {
+            ApproxReLU(context, eval, ctxt_block2conv0_out[15][i % 16], ctxt_block2relu0_out[15][i % 16]);
         }
     }
 
 
 
-    #pragma omp parallel for
-    for(int i=0; i<16; ++i){
-        string temp = string("/app/parameters/summands/block2conv0summands16/")+to_string(i)+string(".bin");
-        block2conv0summands16[i].save(temp);
-    }
-    
-    
     timer.end();
+    ctxt_block2conv0_out.clear();
+    ctxt_block2conv0_out.shrink_to_fit();
+    cout << "DONE!\n" << "\n";
+    
+    
+    ////////////////save//////////////
+    cout<< "saving block2main1 info... \n\n";
+    string pathtemp2msg1 = pathtemp2 + string("msg/main1/");
+    saveMsgBundle(dec, sk, ctxt_block2relu0_out, pathtemp2msg1);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+
+    // dec.decrypt(ctxt_block2relu0_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
 
 
 
@@ -352,35 +748,131 @@ int main() {
     
     
     timer.end();
-    cout << "saving for block2conv1 ...\n\n";
-    timer.start(" * ");
 
-    
-
-    #pragma omp parallel for collapse(3)
-    for(int i=0; i<16; ++i){
-        for(int j=0; j<16; ++j){
-            for(int k=0; k<9; ++k){
-                string temp = string("/app/parameters/multiplicands/block2conv1multiplicands16_16_3_3/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
-                block2conv1multiplicands16_16_3_3[i][j][k].save(temp);
-            }
+    // Second convolution
+    cout << "block2conv1 ..." << endl;
+    timer.start(" block2conv1 ");
+    vector<vector<Ciphertext>> ctxt_block2conv1_out(16, vector<Ciphertext>(16, ctxt_init));
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 16; ++i) {
+        #pragma omp parallel num_threads(5)
+        {
+        ctxt_block2conv1_out[i] = Conv(context, pack, eval, 32, 1, 1, 16, 16, ctxt_block2relu0_out[i], block2conv1multiplicands16_16_3_3);
         }
     }
 
+    addBNsummands(context, eval, ctxt_block2conv1_out, block2conv1summands16, 16, 16);
+    timer.end();
+    cout << "DONE!\n" << "\n";    
+   
+    
+    ////////////////save//////////////
+    cout<< "saving block2main2 info... \n\n";
+    string pathtemp2msg2 = pathtemp2 + string("msg/main2/");
+    saveMsgBundle(dec, sk, ctxt_block2conv1_out, pathtemp2msg2);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+
+
+    ctxt_block2relu0_out.clear();
+    ctxt_block2relu0_out.shrink_to_fit();
+    block2conv1multiplicands16_16_3_3.clear();
+    block2conv1multiplicands16_16_3_3.shrink_to_fit();
+    block2conv1summands16.clear();
+    block2conv1summands16.shrink_to_fit();
 
 
 
-    #pragma omp parallel for
-    for(int i=0; i<16; ++i){
-        string temp = string("/app/parameters/summands/block2conv1summands16/")+to_string(i)+string(".bin");
-        block2conv1summands16[i].save(temp);
+    //////////////////////////// Main flow + Residual flow //////////////////////////////////
+    cout << "block2add ..." << endl;
+    vector<vector<Ciphertext>> ctxt_block2add_out(16, vector<Ciphertext>(16, ctxt_init));
+    #pragma omp parallel for collapse(2)
+    for (int i = 0; i < 16; ++i) {
+        for (int ch = 0; ch < 16; ++ch) {
+            eval.add(ctxt_block2conv1_out[i][ch], ctxt_block1relu1_out[i][ch], ctxt_block2add_out[i][ch]);
+        }
     }
-    
-    
+    cout << "DONE!" << "\n";
+    ctxt_block1relu1_out.clear();
+    ctxt_block1relu1_out.shrink_to_fit();
+    ctxt_block2conv1_out.clear();
+    ctxt_block2conv1_out.shrink_to_fit();
+
+
+    // Last AppReLU
+    cout << "block2relu1 ..." << endl;
+    timer.start(" block2relu1 ");
+    vector<vector<Ciphertext>> ctxt_block2relu1_out(16, vector<Ciphertext>(16, ctxt_init));
+    // for (int i = 0; i < 16; ++i) {
+    //     cout << "block2relu1 for (" << i << " , ;)" << "\n";
+    //     for (int ch = 0; ch < 16; ++ch) {
+    //         ApproxReLU(context, eval, ctxt_block2add_out[i][ch], ctxt_block2relu1_out[i][ch]);
+    //         eval.levelDown(ctxt_block2relu1_out[i][ch], 5, ctxt_block2relu1_out[i][ch]);
+    //         if (i == 0 && ch == 0) {
+    //             dec.decrypt(ctxt_block2relu1_out[i][ch], sk, dmsg);
+    //             printMessage(dmsg);
+    //         }
+    //     }
+    // }
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block2add_out[i / 16][i % 16], ctxt_block2relu1_out[i / 16][i % 16]);
+    }
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block2add_out[5 + (i / 16)][i % 16], ctxt_block2relu1_out[5 + (i / 16)][i % 16]);
+    }
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block2add_out[10 + (i / 16)][i % 16], ctxt_block2relu1_out[10 + (i / 16)][i % 16]);
+    }
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 16; ++i) {
+        #pragma omp parallel num_threads(5)
+        {
+            ApproxReLU(context, eval, ctxt_block2add_out[15][i % 16], ctxt_block2relu1_out[15][i % 16]);
+        }
+    }
+
     timer.end();
 
+    ctxt_block2add_out.clear();
+    ctxt_block2add_out.shrink_to_fit();
 
-    // RB 3 - 1
+    cout << "DONE!, decrypted message is ... " << "\n";
+
+    dec.decrypt(ctxt_block2relu1_out[0][0], sk, dmsg);
+    printMessage(dmsg);
+    cout <<"\n";
+
+
+    cout << "block2 DONE!\n " << "\n";
+    
+        
+    
+    ////////////////save//////////////
+    cout<< "saving block2add info... \n\n";
+    string pathtemp2msg4 = pathtemp2 + string("msg/add/");
+    
+    saveMsgBundle(dec, sk, ctxt_block2relu1_out, pathtemp2msg4);
+    saveCtxtBundle(ctxt_block2relu1_out, pathtemp2ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+
+
+
+
+
+    ////////////////////
+    /////// RB3 ////////
+    ////////////////////
+
+    string pathtemp3 = string("/app/block3/");
+    string pathtemp3ctxt = pathtemp3 + string("ctxt/")
+
+// RB 3 - 1
     
     cout << "uploading for block3conv0 ...\n\n";
     timer.start(" * ");
@@ -411,35 +903,87 @@ int main() {
     
     
     timer.end();
-    cout << "saving for block3conv0 ...\n\n";
-    timer.start(" * ");
 
-    
-
-    #pragma omp parallel for collapse(3)
-    for(int i=0; i<16; ++i){
-        for(int j=0; j<16; ++j){
-            for(int k=0; k<9; ++k){
-                string temp = string("/app/parameters/multiplicands/block3conv0multiplicands16_16_3_3/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
-                block3conv0multiplicands16_16_3_3[i][j][k].save(temp);
-            }
+    ///////////////////////// Main flow /////////////////////////////////////////
+    cout << "block3conv0 ..." << endl;
+    timer.start(" block3conv0 ");
+    vector<vector<Ciphertext>> ctxt_block3conv0_out(16, vector<Ciphertext>(16, ctxt_init));
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 16; ++i) { // 서로 다른 img
+        #pragma omp parallel num_threads(5)
+        {
+        ctxt_block3conv0_out[i] = Conv(context, pack, eval, 32, 1, 1, 16, 16, ctxt_block2relu1_out[i], block3conv0multiplicands16_16_3_3);
         }
     }
 
-    #pragma omp parallel for
-    for(int i=0; i<16; ++i){
-        string temp = string("/app/parameters/summands/block3conv0summands16/")+to_string(i)+string(".bin");
-        block3conv0summands16[i].save(temp);
-    }
-    
-    
-    
+    addBNsummands(context, eval, ctxt_block3conv0_out, block3conv0summands16, 16, 16);
     timer.end();
 
 
 
+    block3conv0multiplicands16_16_3_3.clear();
+    block3conv0multiplicands16_16_3_3.shrink_to_fit();
+    block3conv0summands16.clear();
+    block3conv0summands16.shrink_to_fit();
 
-    // RB 3 - 2
+
+    // AppReLU
+    cout << "block3relu0 ..." << endl;
+    timer.start(" block3relu0 ");
+    vector<vector<Ciphertext>> ctxt_block3relu0_out(16, vector<Ciphertext>(16, ctxt_init));
+    // for (int i = 0; i < 16; ++i) {
+    //     cout << "block3relu0 for (" << i << " , ;)" << "\n";
+    //     for (int ch = 0; ch < 16; ++ch) {
+    //         ApproxReLU(context, eval, ctxt_block3conv0_out[i][ch], ctxt_block3relu0_out[i][ch]);
+    //         eval.levelDown(ctxt_block3relu0_out[i][ch], 5, ctxt_block3relu0_out[i][ch]);
+    //         if (i == 0 && ch == 0) {
+    //             dec.decrypt(ctxt_block3relu0_out[i][ch], sk, dmsg);
+    //             printMessage(dmsg);
+    //         }
+    //     }
+    // }
+
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block3conv0_out[i / 16][i % 16], ctxt_block3relu0_out[i / 16][i % 16]);
+    }
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block3conv0_out[5 + (i / 16)][i % 16], ctxt_block3relu0_out[5 + (i / 16)][i % 16]);
+    }
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block3conv0_out[10 + (i / 16)][i % 16], ctxt_block3relu0_out[10 + (i / 16)][i % 16]);
+    }
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 16; ++i) {
+        #pragma omp parallel num_threads(5)
+        {
+            ApproxReLU(context, eval, ctxt_block3conv0_out[15][i % 16], ctxt_block3relu0_out[15][i % 16]);
+        }
+    }
+
+    timer.end();
+    
+
+    ctxt_block3conv0_out.clear();
+    ctxt_block3conv0_out.shrink_to_fit();
+    
+
+    
+    ////////////////save//////////////
+    cout<< "saving block3main1 info... \n\n";
+    string pathtemp3msg1 = pathtemp3 + string("msg/main1/");
+    saveMsgBundle(dec, sk, ctxt_block3relu0_out, pathtemp3msg1);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+    
+    
+    
+    
+       // RB 3 - 2
     
     cout << "uploading for block3conv1 ...\n\n";
     timer.start(" * ");
@@ -469,31 +1013,178 @@ int main() {
     
     
     timer.end();
-    cout << "saving for block3conv1 ...\n\n";
-    timer.start(" * ");
 
-    
-    #pragma omp parallel for collapse(3)
-    for(int i=0; i<16; ++i){
-        for(int j=0; j<16; ++j){
-            for(int k=0; k<9; ++k){
-                string temp = string("/app/parameters/multiplicands/block3conv1multiplicands16_16_3_3/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
-                block3conv1multiplicands16_16_3_3[i][j][k].save(temp);
-            }
-        }
+
+    // Second convolution
+    cout << "block3conv1 ..." << endl;
+    timer.start(" block3conv1 ");
+    vector<vector<Ciphertext>> ctxt_block3conv1_out;
+    for (int i = 0; i < 16; ++i) {
+        vector<Ciphertext> ctxt_conv_out2_allch_bundle;
+        ctxt_conv_out2_allch_bundle = Conv(context, pack, eval, 32, 1, 1, 16, 16, ctxt_block3relu0_out[i], block3conv1multiplicands16_16_3_3);
+        ctxt_block3conv1_out.push_back(ctxt_conv_out2_allch_bundle);
     }
 
-    #pragma omp parallel for 
-    for(int i=0; i<16; ++i){
-        string temp = string("/app/parameters/summands/block3conv1summands16/")+to_string(i)+string(".bin");
-        block3conv1summands16[i].save(temp);
-    }
-    
-    
+    addBNsummands(context, eval, ctxt_block3conv1_out, block3conv1summands16, 16, 16);
     timer.end();
 
 
+    ctxt_block3relu0_out.clear();
+    ctxt_block3relu0_out.shrink_to_fit();
+    block3conv1multiplicands16_16_3_3.clear();
+    block3conv1multiplicands16_16_3_3.shrink_to_fit();
+    block3conv1summands16.clear();
+    block3conv1summands16.shrink_to_fit();
+    
+    
+    
 
+    
+    ////////////////save//////////////
+    cout<< "saving block3main2 info... \n\n";
+    string pathtemp3msg2 = pathtemp3 + string("msg/main2/");
+    saveMsgBundle(dec, sk, ctxt_block3conv1_out, pathtemp3msg2);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+
+
+
+
+
+    //////////////////////////// Main flow + Residual flow //////////////////////////////////
+    cout << "block3add ..." << endl;
+    vector<vector<Ciphertext>> ctxt_block3add_out(16, vector<Ciphertext>(16, ctxt_init));
+    #pragma omp parallel for collapse(2)
+    for (int i = 0; i < 16; ++i) {
+        for (int ch = 0; ch < 16; ++ch) {
+            eval.add(ctxt_block3conv1_out[i][ch], ctxt_block2relu1_out[i][ch], ctxt_block3add_out[i][ch]);
+        }
+    }
+    cout << "DONE!" << "\n";
+    ctxt_block2relu1_out.clear();
+    ctxt_block2relu1_out.shrink_to_fit();
+    ctxt_block3conv1_out.clear();
+    ctxt_block3conv1_out.shrink_to_fit();
+
+
+    // Last AppReLU
+    cout << "block3relu1 ..." << endl;
+    timer.start(" block3relu1 ");
+    vector<vector<Ciphertext>> ctxt_block3relu1_out(16, vector<Ciphertext>(16, ctxt_init));
+    // for (int i = 0; i < 16; ++i) {
+    //     cout << "block3relu1 for (" << i << " , ;)" << "\n";
+    //     for (int ch = 0; ch < 16; ++ch) {
+    //         ApproxReLU(context, eval, ctxt_block3add_out[i][ch], ctxt_block3relu1_out[i][ch]);
+    //         eval.levelDown(ctxt_block3relu1_out[i][ch], 5, ctxt_block3relu1_out[i][ch]);
+    //         if (i == 0 && ch == 0) {
+    //             dec.decrypt(ctxt_block3relu1_out[i][ch], sk, dmsg);
+    //             printMessage(dmsg);
+    //         }
+    //     }
+    // }
+
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block3add_out[i / 16][i % 16], ctxt_block3relu1_out[i / 16][i % 16]);
+    }
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block3add_out[5 + (i / 16)][i % 16], ctxt_block3relu1_out[5 + (i / 16)][i % 16]);
+    }
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block3add_out[10 + (i / 16)][i % 16], ctxt_block3relu1_out[10 + (i / 16)][i % 16]);
+    }
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 16; ++i) {
+        #pragma omp parallel num_threads(5)
+        {
+            ApproxReLU(context, eval, ctxt_block3add_out[15][i % 16], ctxt_block3relu1_out[15][i % 16]);
+        }
+    }
+    
+
+
+    timer.end();
+
+    ctxt_block3add_out.clear();
+    ctxt_block3add_out.shrink_to_fit(); 
+    
+    cout << "DONE!, decrypted message is ... " << "\n";
+
+    dec.decrypt(ctxt_block3relu1_out[0][0], sk, dmsg);
+    printMessage(dmsg);
+
+    cout << "block3 DONE!\n\n";
+    
+    ////////////////save//////////////
+    cout<< "saving block3add info... \n\n";
+    string pathtemp3msg4 = pathtemp3 + string("msg/add/");
+    
+    saveMsgBundle(dec, sk, ctxt_block3relu1_out, pathtemp3msg4);
+    saveCtxtBundle(ctxt_block3relu1_out, pathtemp3ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+
+
+
+
+
+
+    
+
+
+    // ///////////////////////////////////////////
+    // ///////////// read RB3 file ///////////
+    // /////////////////////////////////////
+
+    // vector<vector<Ciphertext>> ctxt_block3relu1_out(16, vector<Ciphertext>(16, ctxt_init));
+
+    // for (int i = 0; i < 16; ++i) {
+
+    //     string path = "/app/afterRB3/msgRB3_" + to_string(i)+"_";
+    //     for (int j = 0; j < 16; ++j) {
+    //         vector<double> tempReal;
+    //         vector<double> tempImg;
+
+    //         string pathReal = path + to_string(j) + string("_real.txt");
+    //         string pathImg = path + to_string(j) + string("_img.txt");
+    //         txtreader(tempReal, pathReal);
+    //         txtreader(tempImg, pathImg);
+
+    //         Message msg(15);
+
+    //         for (size_t k = 0; k < 32768; ++k) {
+    //             msg[k].real(tempReal[k]);
+    //             msg[k].imag(tempImg[k]);
+    //         }
+
+    //         enc.encrypt(msg, sk, ctxt_block3relu1_out[i][j], 5, 0);
+            
+    //     }
+    // }
+
+    // Message dmsg;
+    // dec.decrypt(ctxt_block3relu1_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+
+    // Down Sampling (Residual) Block 1
+
+
+    //////////////////////////////
+    ///////// DSB 1//////////////
+    /////////////////////////////
+
+    string pathtemp4 = string("/app/block4/");
+    string pathtemp4ctxt = pathtemp4 + string("ctxt/")
+
+    
+    
+    
     // DSB 1 - res
     cout << "uploading for block4conv_onebyone ...\n\n";
     timer.start(" * ");
@@ -523,31 +1214,94 @@ int main() {
     
     
     timer.end();
-    cout << "saving for block4conv_onebyone ...\n\n";
-    timer.start(" * ");
 
-    
-    #pragma omp parallel for collapse(3)
-    for(int i=0; i<32; ++i){
-        for(int j=0; j<16; ++j){
-            for(int k=0; k<1; ++k){
-                string temp = string("/app/parameters/multiplicands/block4conv_onebyone_multiplicands32_16_1_1/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
-                block4conv_onebyone_multiplicands32_16_1_1[i][j][k].save(temp);
-            }
+    cout << "block4conv_onebyone ..." << endl;
+    timer.start(" block4conv_onebyone .. ");
+    cout << "convolution ...\n\n";
+    vector<vector<Ciphertext>> ctxt_block4conv_onebyone_out(16, vector<Ciphertext>(32, ctxt_init));
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 16; ++i) { // 서로 다른 img
+        #pragma omp parallel num_threads(5)
+        {
+            ctxt_block4conv_onebyone_out[i] = Conv(context, pack, eval, 32, 1, 2, 16, 32, ctxt_block3relu1_out[i], block4conv_onebyone_multiplicands32_16_1_1);
         }
     }
 
-    #pragma omp parallel for 
-    for(int i=0; i<32; ++i){
-        string temp = string("/app/parameters/summands/block4conv_onebyone_summands32/")+to_string(i)+string(".bin");
-        block4conv_onebyone_summands32[i].save(temp);
+
+    block4conv_onebyone_multiplicands32_16_1_1.clear();
+    block4conv_onebyone_multiplicands32_16_1_1.shrink_to_fit();
+
+
+    // MPP input bundle making
+    //cout << "block4MPP1 and BN summand ..." << endl;
+    cout << "MPpacking ... \n\n";
+    vector<vector<vector<Ciphertext>>> ctxt_block4MPP1_in(4, vector<vector<Ciphertext>>(32, vector<Ciphertext>(4, ctxt_init)));
+
+    #pragma omp parallel for collapse(3)
+    for (int i = 0; i < 4; ++i) {
+        for (int ch = 0; ch < 32; ++ch) {
+            for (int k = 0; k < 4; ++k) {
+                ctxt_block4MPP1_in[i][ch][k] = ctxt_block4conv_onebyone_out[4 * i + k][ch];
+            }
+        }
     }
     
+    ctxt_block4conv_onebyone_out.clear();
+    ctxt_block4conv_onebyone_out.shrink_to_fit();
     
+    
+    // dec.decrypt(ctxt_block4MPP1_in[0][0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+
+    // MPP
+    vector<vector<Ciphertext>> ctxt_block4MPP1_out(4, vector<Ciphertext>(32, ctxt_init));
+
+    #pragma omp parallel for collapse(2)
+    for (int i = 0; i < 4; ++i) {
+        for (int ch = 0; ch < 32; ++ch) {
+            ctxt_block4MPP1_out[i][ch] = MPPacking1(context, pack, eval, 32, ctxt_block4MPP1_in[i][ch]);
+        }
+    }
+
+    ctxt_block4MPP1_in.clear();
+    ctxt_block4MPP1_in.shrink_to_fit();
+    
+    // dec.decrypt(ctxt_block4MPP1_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+    addBNsummands(context, eval, ctxt_block4MPP1_out, block4conv_onebyone_summands32, 4, 32);
     timer.end();
 
+    cout << "DONE!\n\n";
+
+    block4conv_onebyone_summands32.clear();
+    block4conv_onebyone_summands32.shrink_to_fit();
+    
+    
+    ////////////////save//////////////
+    cout<< "saving block4res info... \n\n";
+    string pathtemp4msg3 = pathtemp4 + string("msg/res/");
+    
+    saveMsgBundle(dec, sk, ctxt_block4MPP1_out, pathtemp4msg3);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+    
+    
+    
+
+    // cout << "Done!! level of ctxt is " << ctxt_block4MPP1_out[0][0].getLevel() << "\n";
+    // cout << "and decrypted messagee is ... " << "\n";
+    // dec.decrypt(ctxt_block4MPP1_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
 
 
+    ///////////////////////// Main flow /////////////////////////////////////////
+
+
+    
     // DSB 1 - 1
     
     cout << "uploading for block4conv0 ...\n\n";
@@ -577,32 +1331,124 @@ int main() {
     temp8a.shrink_to_fit();
     
     timer.end();
-    cout << "saving for block4conv0 ...\n\n";
-    timer.start(" * ");
 
-
-    #pragma omp parallel for collapse(3)
-    for(int i=0; i<32; ++i){
-        for(int j=0; j<16; ++j){
-            for(int k=0; k<9; ++k){
-                string temp = string("/app/parameters/multiplicands/block4conv0multiplicands32_16_3_3/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
-                block4conv0multiplicands32_16_3_3[i][j][k].save(temp);
-            }
+    cout << "block4conv0 ..." << endl;
+    timer.start(" block4conv0 ");
+    cout <<"convolution ...\n\n";
+    vector<vector<Ciphertext>> ctxt_block4conv0_out(16, vector<Ciphertext>(32, ctxt_init));
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 16; ++i) { // 서로 다른 img
+        #pragma omp parallel num_threads(5)
+        {
+            ctxt_block4conv0_out[i] = Conv(context, pack, eval, 32, 1, 2, 16, 32, ctxt_block3relu1_out[i], block4conv0multiplicands32_16_3_3);
         }
     }
 
-    #pragma omp parallel for 
-    for(int i=0; i<32; ++i){
-        string temp = string("/app/parameters/summands/block4conv0summands32/")+to_string(i)+string(".bin");
-        block4conv0summands32[i].save(temp);
+    ctxt_block3relu1_out.clear();
+    ctxt_block3relu1_out.shrink_to_fit();
+
+    block4conv0multiplicands32_16_3_3.clear();
+    block4conv0multiplicands32_16_3_3.shrink_to_fit();
+
+    // cout << "Done!! level of ctxt is " << ctxt_block4conv0_out[0][0].getLevel() << "\n";
+    // cout << "and decrypted messagee is ... " << "\n";
+    // dec.decrypt(ctxt_block4conv0_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+
+    // MPP input bundle making
+    cout << "MPpacking ...\n" << endl;
+    vector<vector<vector<Ciphertext>>> ctxt_block4MPP0_in(4, vector<vector<Ciphertext>>(32, vector<Ciphertext>(4, ctxt_init)));
+    #pragma omp parallel for collapse(3)
+    for (int i = 0; i < 4; ++i) {
+        for (int ch = 0; ch < 32; ++ch) {
+            for (int k = 0; k < 4; ++k) {
+                ctxt_block4MPP0_in[i][ch][k] = ctxt_block4conv0_out[4 * i + k][ch];
+            }
+        }
     }
     
+    // dec.decrypt(ctxt_block4MPP0_in[0][0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+    ctxt_block4conv0_out.clear();
+    ctxt_block4conv0_out.shrink_to_fit();
+
+    // MPP
+    vector<vector<Ciphertext>> ctxt_block4MPP0_out(4, vector<Ciphertext>(32, ctxt_init));
+
+    #pragma omp parallel for collapse(2)
+    for (int i = 0; i < 4; ++i) {
+        for (int ch = 0; ch < 32; ++ch) {
+            ctxt_block4MPP0_out[i][ch] = MPPacking1(context, pack, eval, 32, ctxt_block4MPP0_in[i][ch]);
+        }
+    }
+
+    ctxt_block4MPP0_in.clear();
+    ctxt_block4MPP0_in.shrink_to_fit();
     
+    // dec.decrypt(ctxt_block4MPP0_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+    addBNsummands(context, eval, ctxt_block4MPP0_out, block4conv0summands32, 4, 32);
     timer.end();
 
+    block4conv0summands32.clear();
+    block4conv0summands32.shrink_to_fit();
 
+    cout << "Done!! \n\n" ;
+    // cout << "and decrypted messagee is ... " << "\n";
+    // dec.decrypt(ctxt_block4MPP0_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+    // ctxt_block4MPP0_out 첫번째 : 서로 다른 img, 두번째 : ch.
+
+    // AppReLU
+    cout << "block4relu0 ..." << endl;
+    timer.start(" block4relu0 ");
+    vector<vector<Ciphertext>> ctxt_block4relu0_out(4, vector<Ciphertext>(32, ctxt_init));
+
+
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block4MPP0_out[i / 20][i % 20], ctxt_block4relu0_out[i / 20][i % 20]);
+    }
+
+    #pragma omp parallel for num_threads(48)
+    for (int i = 0; i < 48; ++i) {
+        //#pragma omp parallel num_threads(5)
+        {
+            ApproxReLU(context, eval, ctxt_block4MPP0_out[i / 12][20 + (i % 12)], ctxt_block4relu0_out[i / 12][20 + (i % 12)]);
+        }
+    }
+
+
+    timer.end();
+
+    ctxt_block4MPP0_out.clear();
+    ctxt_block4MPP0_out.shrink_to_fit();
+
+    cout << "DONE!\n" << "\n";
     
-    // DSB 1 - 2
+    
+    ////////////////save//////////////
+    cout<< "saving block4main1 info... \n\n";
+    string pathtemp4msg1 = pathtemp4 + string("msg/main1/");
+    saveMsgBundle(dec, sk, ctxt_block4relu0_out, pathtemp4msg1);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+    
+    
+
+    //dec.decrypt(ctxt_block4relu0_out[0][0], sk, dmsg);
+    //printMessage(dmsg);
+
+    // Second convolution
+    
+    
+   // DSB 1 - 2
     
     cout << "uploading for block4conv1 ...\n\n";
     timer.start(" * ");
@@ -629,32 +1475,120 @@ int main() {
     }
     temp9a.clear();
     temp9a.shrink_to_fit();
-    
     timer.end();
-    cout << "saving for block4conv1 ...\n\n";
-    timer.start(" * ");
 
-    #pragma omp parallel for collapse(3)
-    for(int i=0; i<32; ++i){
-        for(int j=0; j<32; ++j){
-            for(int k=0; k<9; ++k){
-                string temp = string("/app/parameters/multiplicands/block4conv1multiplicands32_32_3_3/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
-                block4conv1multiplicands32_32_3_3[i][j][k].save(temp);
-            }
+    cout << "block4conv1 ..." << endl;
+    timer.start(" block4conv1 ");
+    vector<vector<Ciphertext>> ctxt_block4conv1_out(4, vector<Ciphertext>(32, ctxt_init));
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 4; ++i) {
+        #pragma omp parallel num_threads(20)
+        {
+            ctxt_block4conv1_out[i] = Conv(context, pack, eval, 32, 2, 1, 32, 32, ctxt_block4relu0_out[i], block4conv1multiplicands32_32_3_3);
         }
     }
 
-    #pragma omp parallel for 
-    for(int i=0; i<32; ++i){
-        string temp = string("/app/parameters/summands/block4conv1summands32/")+to_string(i)+string(".bin");
-        block4conv1summands32[i].save(temp);
-    }
-    
-    
+    addBNsummands(context, eval, ctxt_block4conv1_out, block4conv1summands32, 4, 32);
     timer.end();
 
+    ctxt_block4relu0_out.clear();
+    ctxt_block4relu0_out.shrink_to_fit();
 
-        // RB 4 - 1
+    block4conv1multiplicands32_32_3_3.clear();
+    block4conv1multiplicands32_32_3_3.shrink_to_fit();
+    block4conv1summands32.clear();
+    block4conv1summands32.shrink_to_fit();
+
+    cout << "Done!!\n" << "\n";
+    // cout << "and decrypted messagee is ... " << "\n";
+    // dec.decrypt(ctxt_block4conv1_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+    
+    
+    ////////////////save//////////////
+    cout<< "saving block4main2 info... \n\n";
+    string pathtemp4msg2 = pathtemp4 + string("msg/main2/");
+    saveMsgBundle(dec, sk, ctxt_block4conv1_out, pathtemp4msg2);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+
+
+
+    //////////////////////////// Main flow + Residual flow //////////////////////////////////
+    cout << "block4add..." << endl;
+    vector<vector<Ciphertext>> ctxt_block4add_out(4, vector<Ciphertext>(32, ctxt_init));
+
+    #pragma omp parallel for collapse(2)
+    for (int i = 0; i < 4; ++i) {
+        for (int ch = 0; ch < 32; ++ch) {
+            eval.add(ctxt_block4conv1_out[i][ch], ctxt_block4MPP1_out[i][ch], ctxt_block4add_out[i][ch]);
+        }
+    }
+
+    ctxt_block4conv1_out.clear();
+    ctxt_block4conv1_out.shrink_to_fit();
+    ctxt_block4MPP1_out.clear();
+    ctxt_block4MPP1_out.shrink_to_fit();
+
+
+    // Last AppReLU
+    cout << "block4relu1 ..." << endl;
+    timer.start(" block4relu1 ");
+    vector<vector<Ciphertext>> ctxt_block4relu1_out(4, vector<Ciphertext>(32, ctxt_init));
+
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block4add_out[i / 20][i % 20], ctxt_block4relu1_out[i / 20][i % 20]);
+    }
+
+    #pragma omp parallel for num_threads(48)
+    for (int i = 0; i < 48; ++i) {
+        //#pragma omp parallel num_threads(5)
+        {
+            ApproxReLU(context, eval, ctxt_block4add_out[i / 12][20 + (i % 12)], ctxt_block4relu1_out[i / 12][20 + (i % 12)]);
+        }
+    }
+
+
+    timer.end();
+
+    ctxt_block4add_out.clear();
+    ctxt_block4add_out.shrink_to_fit();
+    
+    cout << "DONE!, decrypted message is ... " << "\n";
+
+    dec.decrypt(ctxt_block4relu1_out[0][0], sk, dmsg);
+    printMessage(dmsg);
+    cout << "Downsampling block4 DONE!" << "\n";
+
+
+    
+    ////////////////save//////////////
+    cout<< "saving block4add info... \n\n";
+    string pathtemp4msg4 = pathtemp4 + string("msg/add/");
+    
+    saveMsgBundle(dec, sk, ctxt_block4relu1_out, pathtemp4msg4);
+    saveCtxtBundle(ctxt_block4relu1_out, pathtemp4ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+
+
+
+
+    ///////////////////////////////////
+    ////////// RB 4 ////////////////
+    ///////////////////////////////
+
+    string pathtemp5 = string("/app/block5/");
+    string pathtemp5ctxt = pathtemp5 + string("ctxt/")
+
+    
+    
+       // RB 4 - 1
     
     
     cout << "uploading for block5conv0 ...\n\n";
@@ -686,31 +1620,74 @@ int main() {
     temp10a.shrink_to_fit();
     
     timer.end();
-    cout << "saving for block5conv0 ...\n\n";
-    timer.start(" * ");
 
-    
-
-    #pragma omp parallel for collapse(3)
-    for(int i=0; i<32; ++i){
-        for(int j=0; j<32; ++j){
-            for(int k=0; k<9; ++k){
-                string temp = string("/app/parameters/multiplicands/block5conv0multiplicands32_32_3_3/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
-                block5conv0multiplicands32_32_3_3[i][j][k].save(temp);
-            }
+    cout << "block5conv0 ..." << endl;
+    timer.start(" block5conv0 ");
+    vector<vector<Ciphertext>> ctxt_block5conv0_out(4, vector<Ciphertext>(32, ctxt_init));
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 4; ++i) { // 서로 다른 img
+        //cout << "i = " << i << endl;
+        #pragma omp parallel num_threads(20)
+        {
+            ctxt_block5conv0_out[i] = Conv(context, pack, eval, 32, 2, 1, 32, 32, ctxt_block4relu1_out[i], block5conv0multiplicands32_32_3_3);
         }
     }
 
-    #pragma omp parallel for 
-    for(int i=0; i<32; ++i){
-        string temp = string("/app/parameters/summands/block5conv0summands32/")+to_string(i)+string(".bin");
-        block5conv0summands32[i].save(temp);
-    }
-    
-    
+    addBNsummands(context, eval, ctxt_block5conv0_out, block5conv0summands32, 4, 32);
     timer.end();
 
+    block5conv0multiplicands32_32_3_3.clear();
+    block5conv0multiplicands32_32_3_3.shrink_to_fit();
+    block5conv0summands32.clear();
+    block5conv0summands32.shrink_to_fit();
 
+    cout << "DONE!\n" << "\n";
+
+    // dec.decrypt(ctxt_block5conv0_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+
+
+
+    // AppReLU
+    cout << "block5relu0 ..." << endl;
+    timer.start(" block5relu0 ");
+    vector<vector<Ciphertext>> ctxt_block5relu0_out(4, vector<Ciphertext>(32, ctxt_init));
+
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block5conv0_out[i / 20][i % 20], ctxt_block5relu0_out[i / 20][i % 20]);
+    }
+
+    #pragma omp parallel for num_threads(48)
+    for (int i = 0; i < 48; ++i) {
+        //#pragma omp parallel num_threads(5)
+        {
+            ApproxReLU(context, eval, ctxt_block5conv0_out[i / 12][20 + (i % 12)], ctxt_block5relu0_out[i / 12][20 + (i % 12)]);
+        }
+    }
+
+
+    timer.end();
+    cout << "DONE!" << "\n";
+
+    ctxt_block5conv0_out.clear();
+    ctxt_block5conv0_out.shrink_to_fit();
+
+    //dec.decrypt(ctxt_block5relu0_out[0][0], sk, dmsg);
+    //printMessage(dmsg);
+
+    
+    ////////////////save//////////////
+    cout<< "saving block5main1 info... \n\n";
+    string pathtemp5msg1 = pathtemp5 + string("msg/main1/");
+    saveMsgBundle(dec, sk, ctxt_block5relu0_out, pathtemp5msg1);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+    
+    // Second convolution
 
     // RB 4 - 2
     
@@ -741,32 +1718,119 @@ int main() {
     temp11a.shrink_to_fit();
     
     timer.end();
-    cout << "saving for block5conv1 ...\n\n";
-    timer.start(" * ");
-
-    
 
 
-    #pragma omp parallel for collapse(3)
-    for(int i=0; i<32; ++i){
-        for(int j=0; j<32; ++j){
-            for(int k=0; k<9; ++k){
-                string temp = string("/app/parameters/multiplicands/block5conv1multiplicands32_32_3_3/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
-                block5conv1multiplicands32_32_3_3[i][j][k].save(temp);
-            }
+    cout << "block5conv1 ..." << endl;
+    timer.start(" block5conv1 ");
+    vector<vector<Ciphertext>> ctxt_block5conv1_out(4, vector<Ciphertext>(32, ctxt_init));
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 4; ++i) {
+    #pragma omp parallel num_threads(20)
+        {
+            ctxt_block5conv1_out[i] = Conv(context, pack, eval, 32, 2, 1, 32, 32, ctxt_block5relu0_out[i], block5conv1multiplicands32_32_3_3);
         }
     }
 
-    #pragma omp parallel for 
-    for(int i=0; i<32; ++i){
-        string temp = string("/app/parameters/summands/block5conv1summands32/")+to_string(i)+string(".bin");
-        block5conv1summands32[i].save(temp);
+    addBNsummands(context, eval, ctxt_block5conv1_out, block5conv1summands32, 4, 32);
+    timer.end();
+    cout << "DONE!\n" << "\n";
+
+    // dec.decrypt(ctxt_block5conv1_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+
+    ctxt_block5relu0_out.clear();
+    ctxt_block5relu0_out.shrink_to_fit();
+    block5conv1multiplicands32_32_3_3.clear();
+    block5conv1multiplicands32_32_3_3.shrink_to_fit();
+    block5conv1summands32.clear();
+    block5conv1summands32.shrink_to_fit();
+    
+    ////////////////save//////////////
+    cout<< "saving block5main2 info... \n\n";
+    string pathtemp5msg2 = pathtemp5 + string("msg/main2/");
+    saveMsgBundle(dec, sk, ctxt_block5conv1_out, pathtemp5msg2);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+
+
+
+
+    //////////////////////////// Main flow + Residual flow //////////////////////////////////
+    cout << "block5add ..." << endl;
+    vector<vector<Ciphertext>> ctxt_block5add_out(4, vector<Ciphertext>(32, ctxt_init));
+    #pragma omp parallel for collapse(2)
+    for (int i = 0; i < 4; ++i) {
+        for (int ch = 0; ch < 32; ++ch) {
+            eval.add(ctxt_block5conv1_out[i][ch], ctxt_block4relu1_out[i][ch], ctxt_block5add_out[i][ch]);
+        }
     }
-    
-    
+    cout << "DONE!" << "\n";
+    ctxt_block4relu1_out.clear();
+    ctxt_block4relu1_out.shrink_to_fit();
+    ctxt_block5conv1_out.clear();
+    ctxt_block5conv1_out.shrink_to_fit();
+
+
+    // Last AppReLU
+    cout << "block5relu1 ..." << endl;
+    timer.start(" block5relu1 ");
+    vector<vector<Ciphertext>> ctxt_block5relu1_out(4, vector<Ciphertext>(32, ctxt_init));
+
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block5add_out[i / 20][i % 20], ctxt_block5relu1_out[i / 20][i % 20]);
+    }
+
+    #pragma omp parallel for num_threads(48)
+    for (int i = 0; i < 48; ++i) {
+        //#pragma omp parallel num_threads(5)
+        {
+            ApproxReLU(context, eval, ctxt_block5add_out[i / 12][20 + (i % 12)], ctxt_block5relu1_out[i / 12][20 + (i % 12)]);
+        }
+    }
+
+
     timer.end();
 
+    ctxt_block5add_out.clear();
+    ctxt_block5add_out.shrink_to_fit();
+    
+    cout << "DONE!, decrypted message is ... " << "\n";
 
+    dec.decrypt(ctxt_block5relu1_out[0][0], sk, dmsg);
+    printMessage(dmsg);
+    cout << "block5 DONE! " << "\n";
+    
+    
+
+    
+    ////////////////save//////////////
+    cout<< "saving block5add info... \n\n";
+    string pathtemp5msg4 = pathtemp5 + string("msg/add/");
+    
+    saveMsgBundle(dec, sk, ctxt_block5relu1_out, pathtemp5msg4);
+    saveCtxtBundle(ctxt_block5relu1_out, pathtemp5ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+
+
+
+
+
+
+
+
+    ////////////////////////////
+    ////// RB 5 ////////////
+    ///////////////////////
+
+    string pathtemp6 = string("/app/block6/");
+    string pathtemp6ctxt = pathtemp6 + string("ctxt/")
+
+   
     // RB 5 - 1
     cout << "uploading for block6conv0 ...\n\n";
     timer.start(" * ");
@@ -794,31 +1858,75 @@ int main() {
     temp12a.shrink_to_fit();
     
     timer.end();
-    cout << "saving for block6conv0 ...\n\n";
-    timer.start(" * ");
 
-    
 
-    #pragma omp parallel for collapse(3)
-    for(int i=0; i<32; ++i){
-        for(int j=0; j<32; ++j){
-            for(int k=0; k<9; ++k){
-                string temp = string("/app/parameters/multiplicands/block6conv0multiplicands32_32_3_3/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
-                block6conv0multiplicands32_32_3_3[i][j][k].save(temp);
-            }
+    cout << "block6conv0 ..." << endl;
+    cout << "level of ctxt is " << ctxt_block5relu1_out[0][0].getLevel() << "\n";
+    timer.start(" block6conv0 ");
+    vector<vector<Ciphertext>> ctxt_block6conv0_out(4, vector<Ciphertext>(32, ctxt_init));
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 4; ++i) { // 서로 다른 img
+        //cout << "i = " << i << endl;
+        #pragma omp parallel num_threads(20)
+        {
+            ctxt_block6conv0_out[i] = Conv(context, pack, eval, 32, 2, 1, 32, 32, ctxt_block5relu1_out[i], block6conv0multiplicands32_32_3_3);
         }
     }
-
-    #pragma omp parallel for 
-    for(int i=0; i<32; ++i){
-        string temp = string("/app/parameters/summands/block6conv0summands32/")+to_string(i)+string(".bin");
-        block6conv0summands32[i].save(temp);
-    }
     
+    
+
+    addBNsummands(context, eval, ctxt_block6conv0_out, block6conv0summands32, 4, 32);
     timer.end();
+    cout << "DONE!\n" << "\n";
+
+    // dec.decrypt(ctxt_block6conv0_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
 
 
+    block6conv0multiplicands32_32_3_3.clear();
+    block6conv0multiplicands32_32_3_3.shrink_to_fit();
+    block6conv0summands32.clear();
+    block6conv0summands32.shrink_to_fit();
 
+
+    // AppReLU
+    cout << "block6relu0 ..." << endl;
+    timer.start(" block6relu0 ");
+    vector<vector<Ciphertext>> ctxt_block6relu0_out(4, vector<Ciphertext>(32, ctxt_init));
+
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block6conv0_out[i / 20][i % 20], ctxt_block6relu0_out[i / 20][i % 20]);
+    }
+
+    #pragma omp parallel for num_threads(48)
+    for (int i = 0; i < 48; ++i) {
+        //#pragma omp parallel num_threads(5)
+        {
+            ApproxReLU(context, eval, ctxt_block6conv0_out[i / 12][20 + (i % 12)], ctxt_block6relu0_out[i / 12][20 + (i % 12)]);
+        }
+    }
+    timer.end();
+    cout << "DONE!" << "\n";
+
+    ctxt_block6conv0_out.clear();
+    ctxt_block6conv0_out.shrink_to_fit();
+
+    // dec.decrypt(ctxt_block6relu0_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+    
+    
+    
+    
+    ////////////////save//////////////
+    cout<< "saving block6main1 info... \n\n";
+    string pathtemp6msg1 = pathtemp6 + string("msg/main1/");
+    saveMsgBundle(dec, sk, ctxt_block6relu0_out, pathtemp6msg1);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+// Second convolution
     // RB 5 - 2
     
     cout << "uploading for block6conv1 ...\n\n";
@@ -848,30 +1956,105 @@ int main() {
     temp13a.shrink_to_fit();
     
     timer.end();
-    cout << "saving for block6conv1 ...\n\n";
-    timer.start(" * ");
 
-    
 
-    #pragma omp parallel for collapse(3)
-    for(int i=0; i<32; ++i){
-        for(int j=0; j<32; ++j){
-            for(int k=0; k<9; ++k){
-                string temp = string("/app/parameters/multiplicands/block6conv1multiplicands32_32_3_3/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
-                block6conv1multiplicands32_32_3_3[i][j][k].save(temp);
-            }
+    cout << "block6conv1 ..." << endl;
+    timer.start(" block6conv1 ");
+    vector<vector<Ciphertext>> ctxt_block6conv1_out(4, vector<Ciphertext>(32, ctxt_init));
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 4; ++i) {
+        #pragma omp parallel num_threads(20)
+        {
+            ctxt_block6conv1_out[i] = Conv(context, pack, eval, 32, 2, 1, 32, 32, ctxt_block6relu0_out[i], block6conv1multiplicands32_32_3_3);
         }
     }
 
-    #pragma omp parallel for 
-    for(int i=0; i<32; ++i){
-        string temp = string("/app/parameters/summands/block6conv1summands32/")+to_string(i)+string(".bin");
-        block6conv1summands32[i].save(temp);
+    addBNsummands(context, eval, ctxt_block6conv1_out, block6conv1summands32, 4, 32);
+    timer.end();
+    cout << "DONE!\n" << "\n";
+
+    // dec.decrypt(ctxt_block6conv1_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+
+    ctxt_block6relu0_out.clear();
+    ctxt_block6relu0_out.shrink_to_fit();
+    block6conv1multiplicands32_32_3_3.clear();
+    block6conv1multiplicands32_32_3_3.shrink_to_fit();
+    block6conv1summands32.clear();
+    block6conv1summands32.shrink_to_fit();
+
+
+
+    
+    ////////////////save//////////////
+    cout<< "saving block6main2 info... \n\n";
+    string pathtemp6msg2 = pathtemp6 + string("msg/main2/");
+    saveMsgBundle(dec, sk, ctxt_block6conv1_out, pathtemp6msg2);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+
+
+
+
+
+    //////////////////////////// Main flow + Residual flow //////////////////////////////////
+    cout << "block6add ..." << endl;
+    vector<vector<Ciphertext>> ctxt_block6add_out(4, vector<Ciphertext>(32, ctxt_init));
+    #pragma omp parallel for collapse(2)
+    for (int i = 0; i < 4; ++i) {
+        for (int ch = 0; ch < 32; ++ch) {
+            eval.add(ctxt_block6conv1_out[i][ch], ctxt_block5relu1_out[i][ch], ctxt_block6add_out[i][ch]);
+        }
     }
-    
-    
+    cout << "DONE!" << "\n";
+    ctxt_block5relu1_out.clear();
+    ctxt_block5relu1_out.shrink_to_fit();
+    ctxt_block6conv1_out.clear();
+    ctxt_block6conv1_out.shrink_to_fit();
+
+
+    // Last AppReLU
+    cout << "block6relu1 ..." << endl;
+    timer.start(" block6relu1 ");
+    vector<vector<Ciphertext>> ctxt_block6relu1_out(4, vector<Ciphertext>(32, ctxt_init));
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_block6add_out[i / 20][i % 20], ctxt_block6relu1_out[i / 20][i % 20]);
+    }
+
+    #pragma omp parallel for num_threads(48)
+    for (int i = 0; i < 48; ++i) {
+        //#pragma omp parallel num_threads(5)
+        {
+            ApproxReLU(context, eval, ctxt_block6add_out[i / 12][20 + (i % 12)], ctxt_block6relu1_out[i / 12][20 + (i % 12)]);
+        }
+    }
+
+
     timer.end();
 
+    ctxt_block6add_out.clear();
+    ctxt_block6add_out.shrink_to_fit();
+    cout << "block6 DONE! " << "\n";
+
+    dec.decrypt(ctxt_block6relu1_out[0][0], sk, dmsg);
+    printMessage(dmsg);
+
+
+
+    
+    ////////////////save//////////////
+    cout<< "saving block6add info... \n\n";
+    string pathtemp6msg4 = pathtemp6 + string("msg/add/");
+    
+    saveMsgBundle(dec, sk, ctxt_block6relu1_out, pathtemp6msg4);
+    saveCtxtBundle(ctxt_block6relu1_out, pathtemp6ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
 
 
 
@@ -884,9 +2067,12 @@ int main() {
     /////// DSB 2 //////////
     /////////////////////////
 
+    string pathtemp7 = string("/app/block7/");
+    string pathtemp7ctxt = pathtemp7 + string("ctxt/")
 
-    ///////////////////// Residual flow ////////////////////////////
-    // Convolution
+    
+    
+     // Convolution
 
     
     cout << "uploading for block7conv_onebyone ...\n\n";
@@ -913,34 +2099,91 @@ int main() {
     temp14a.shrink_to_fit();
     
     timer.end();
-    cout << "saving for block7conv_1by1 ...\n\n";
-    timer.start(" * ");
 
-    
-
-
-    #pragma omp parallel for collapse(3)
-    for(int i=0; i<64; ++i){
-        for(int j=0; j<32; ++j){
-            for(int k=0; k<1; ++k){
-                string temp = string("/app/parameters/multiplicands/block7conv_onebyone_multiplicands64_32_1_1/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
-                block7conv_onebyone_multiplicands64_32_1_1[i][j][k].save(temp);
-            }
+    cout << "block7conv_onebyone ..." << endl;
+    timer.start(" block7conv_onebyone .. ");
+    cout << "convolution ...\n\n";
+    vector<vector<Ciphertext>> ctxt_block7conv_onebyone_out(4, vector<Ciphertext>(64, ctxt_init));
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 4; ++i) { // 서로 다른 img
+        #pragma omp parallel num_threads(20)
+        {
+            ctxt_block7conv_onebyone_out[i] = Conv(context, pack, eval, 32, 2, 2, 32, 64, ctxt_block6relu1_out[i], block7conv_onebyone_multiplicands64_32_1_1);
         }
     }
 
-    #pragma omp parallel for 
-    for(int i=0; i<64; ++i){
-        string temp = string("/app/parameters/summands/block7conv_onebyone_summands64/")+to_string(i)+string(".bin");
-        block7conv_onebyone_summands64[i].save(temp);
+
+    block7conv_onebyone_multiplicands64_32_1_1.clear();
+    block7conv_onebyone_multiplicands64_32_1_1.shrink_to_fit();
+
+    cout << "Done!! \n" << "\n";
+    // cout << "and decrypted message is ... " << "\n";
+    // dec.decrypt(ctxt_block7conv_onebyone_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+    // MPP input bundle making
+    cout << "MPpacking ..." << endl;
+    vector<vector<vector<Ciphertext>>> ctxt_block7MPP1_in(1, vector<vector<Ciphertext>>(64, vector<Ciphertext>(4, ctxt_init)));
+
+    #pragma omp parallel for collapse(3)
+    for (int i = 0; i < 1; ++i) {
+        for (int ch = 0; ch < 64; ++ch) {
+            for (int k = 0; k < 4; ++k) {
+                ctxt_block7MPP1_in[i][ch][k] = ctxt_block7conv_onebyone_out[4 * i + k][ch];
+            }
+        }
     }
+    ctxt_block7conv_onebyone_out.clear();
+    ctxt_block7conv_onebyone_out.shrink_to_fit();
     
     
+    // dec.decrypt(ctxt_block7MPP1_in[0][0][0], sk, dmsg);
+    // printMessage(dmsg);
+    
+    // MPP
+    vector<vector<Ciphertext>> ctxt_block7MPP1_out(1, vector<Ciphertext>(64, ctxt_init));
+
+    #pragma omp parallel for collapse(2)
+    for (int i = 0; i < 1; ++i) {
+        for (int ch = 0; ch < 64; ++ch) {
+            ctxt_block7MPP1_out[i][ch] = MPPacking2(context, pack, eval, 32, ctxt_block7MPP1_in[i][ch]);
+        }
+    }
+
+    ctxt_block7MPP1_in.clear();
+    ctxt_block7MPP1_in.shrink_to_fit();
+    
+    
+    // dec.decrypt(ctxt_block7MPP1_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+    addBNsummands(context, eval, ctxt_block7MPP1_out, block7conv_onebyone_summands64, 1, 64);
     timer.end();
 
+    block7conv_onebyone_summands64.clear();
+    block7conv_onebyone_summands64.shrink_to_fit();
 
-//////////
+    cout << "Done!! \n" << "\n";
+    // cout << "and decrypted messagee is ... " << "\n";
+    // dec.decrypt(ctxt_block7MPP1_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
     
+    
+    
+    
+    ////////////////save//////////////
+    cout<< "saving block7res info... \n\n";
+    string pathtemp7msg3 = pathtemp7 + string("msg/res/");
+    
+    saveMsgBundle(dec, sk, ctxt_block7MPP1_out, pathtemp7msg3);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+    
+
+    ///////////////////////// Main flow /////////////////////////////////////////
+   
     
     cout << "uploading for block7conv0 ...\n\n";
     timer.start(" * ");
@@ -967,32 +2210,112 @@ int main() {
     temp15a.shrink_to_fit();
     
     timer.end();
-    cout << "saving for block7conv0 ...\n\n";
-    timer.start(" * ");
 
-    
 
+    cout << "block7conv0 ..." << endl;
+    timer.start(" block7conv0 ");
+    cout << "convolution ... \n\n";
+    vector<vector<Ciphertext>> ctxt_block7conv0_out(4, vector<Ciphertext>(64, ctxt_init));
+    for (int i = 0; i < 4; ++i) { // 서로 다른 img
+        ctxt_block7conv0_out[i] = Conv_parallel(context, pack, eval, 32, 2, 2, 32, 64, ctxt_block6relu1_out[i], block7conv0multiplicands64_32_3_3);
+    }
+
+    ctxt_block6relu1_out.clear();
+    ctxt_block6relu1_out.shrink_to_fit();
+
+    block7conv0multiplicands64_32_3_3.clear();
+    block7conv0multiplicands64_32_3_3.shrink_to_fit();
+
+    // cout << "Done!! level of ctxt is " << ctxt_block7conv0_out[0][0].getLevel() << "\n";
+    // cout << "and decrypted messagee is ... " << "\n";
+    // dec.decrypt(ctxt_block7conv0_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+
+    // MPP input bundle making
+    cout << "MPpacking ..." << endl;
+    vector<vector<vector<Ciphertext>>> ctxt_block7MPP0_in(1, vector<vector<Ciphertext>>(64, vector<Ciphertext>(4, ctxt_init)));
     #pragma omp parallel for collapse(3)
-    for(int i=0; i<64; ++i){
-        for(int j=0; j<32; ++j){
-            for(int k=0; k<9; ++k){
-                string temp = string("/app/parameters/multiplicands/block7conv0multiplicands64_32_3_3/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
-                block7conv0multiplicands64_32_3_3[i][j][k].save(temp);
+    for (int i = 0; i < 1; ++i) {
+        for (int ch = 0; ch < 64; ++ch) {
+            for (int k = 0; k < 4; ++k) {
+                ctxt_block7MPP0_in[i][ch][k] = ctxt_block7conv0_out[4 * i + k][ch];
             }
         }
     }
+    
+    
+    // dec.decrypt(ctxt_block7MPP0_in[0][0][0], sk, dmsg);
+    // printMessage(dmsg);
+    
 
-    #pragma omp parallel for 
-    for(int i=0; i<64; ++i){
-        string temp = string("/app/parameters/summands/block7conv0summands64/")+to_string(i)+string(".bin");
-        block7conv0summands64[i].save(temp);
+    ctxt_block7conv0_out.clear();
+    ctxt_block7conv0_out.shrink_to_fit();
+
+    // MPP
+    vector<vector<Ciphertext>> ctxt_block7MPP0_out(1, vector<Ciphertext>(64, ctxt_init));
+
+    #pragma omp parallel for collapse(2)
+    for (int i = 0; i < 1; ++i) {
+        for (int ch = 0; ch < 64; ++ch) {
+            ctxt_block7MPP0_out[i][ch] = MPPacking2(context, pack, eval, 32, ctxt_block7MPP0_in[i][ch]);
+        }
     }
+
+    ctxt_block7MPP0_in.clear();
+    ctxt_block7MPP0_in.shrink_to_fit();
     
+    // dec.decrypt(ctxt_block7MPP0_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
     
+    addBNsummands(context, eval, ctxt_block7MPP0_out, block7conv0summands64, 1, 64);
     timer.end();
 
+    block7conv0summands64.clear();
+    block7conv0summands64.shrink_to_fit();
 
-    // Second convolution
+    cout << "Done!! \n\n";
+    // cout << "and decrypted messagee is ... " << "\n";
+    // dec.decrypt(ctxt_block7MPP0_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+    // ctxt_block7MPP0_out 첫번째 : 서로 다른 img, 두번째 : ch.
+
+    // AppReLU
+    cout << "block7relu0 ..." << endl;
+    timer.start(" block7relu0 ");
+    vector<vector<Ciphertext>> ctxt_block7relu0_out(1, vector<Ciphertext>(64, ctxt_init));
+
+    #pragma omp parallel for num_threads(64)
+    for (int i = 0; i < 64; ++i) {
+        ApproxReLU(context, eval, ctxt_block7MPP0_out[0][i], ctxt_block7relu0_out[0][i]);
+    }
+
+    timer.end();
+
+    ctxt_block7MPP0_out.clear();
+    ctxt_block7MPP0_out.shrink_to_fit();
+
+    cout << "DONE!" << "\n";
+
+    // dec.decrypt(ctxt_block7relu0_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+    
+    
+    ////////////////save//////////////
+    cout<< "saving block7main1 info... \n\n";
+    string pathtemp7msg1 = pathtemp7 + string("msg/main1/");
+    saveMsgBundle(dec, sk, ctxt_block7relu0_out, pathtemp7msg1);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+    
+    
+    
+    
+ // Second convolution
     
     
     cout << "uploading for block7conv1 ...\n\n";
@@ -1020,38 +2343,101 @@ int main() {
     temp16a.shrink_to_fit();
     
     timer.end();
-    cout << "saving for block7conv1 ...\n\n";
-    timer.start(" * ");
+
+    cout << "block7conv1 ..." << endl;
+    timer.start(" block7conv1 ");
+    vector<vector<Ciphertext>> ctxt_block7conv1_out(1, vector<Ciphertext>(64, ctxt_init));
+    for (int i = 0; i < 1; ++i) {
+        ctxt_block7conv1_out[i] = Conv_parallel(context, pack, eval, 32, 4, 1, 64, 64, ctxt_block7relu0_out[i], block7conv1multiplicands64_64_3_3);
+    }
+
+    addBNsummands(context, eval, ctxt_block7conv1_out, block7conv1summands64, 1, 64);
+    timer.end();
+
+    ctxt_block7relu0_out.clear();
+    ctxt_block7relu0_out.shrink_to_fit();
+
+    block7conv1multiplicands64_64_3_3.clear();
+    block7conv1multiplicands64_64_3_3.shrink_to_fit();
+    block7conv1summands64.clear();
+    block7conv1summands64.shrink_to_fit();
+
+    cout << "Done!! \n\n";
+    // cout << "and decrypted message is ... " << "\n";
+    // dec.decrypt(ctxt_block7conv1_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+
 
     
+    ////////////////save//////////////
+    cout<< "saving block7main2 info... \n\n";
+    string pathtemp7msg2 = pathtemp7 + string("msg/main2/");
+    saveMsgBundle(dec, sk, ctxt_block7conv1_out, pathtemp7msg2);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
 
-    #pragma omp parallel for collapse(3)
-    for(int i=0; i<64; ++i){
-        for(int j=0; j<64; ++j){
-            for(int k=0; k<9; ++k){
-                string temp = string("/app/parameters/multiplicands/block7conv1multiplicands64_64_3_3/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
-                block7conv1multiplicands64_64_3_3[i][j][k].save(temp);
-            }
+
+    //////////////////////////// Main flow + Residual flow //////////////////////////////////
+    cout << "block7add ..." << endl;
+    vector<vector<Ciphertext>> ctxt_block7add_out(1, vector<Ciphertext>(64, ctxt_init));
+
+    #pragma omp parallel for collapse(2)
+    for (int i = 0; i < 1; ++i) {
+        for (int ch = 0; ch < 64; ++ch) {
+            eval.add(ctxt_block7conv1_out[i][ch], ctxt_block7MPP1_out[i][ch], ctxt_block7add_out[i][ch]);
         }
     }
 
-    #pragma omp parallel for 
-    for(int i=0; i<64; ++i){
-        string temp = string("/app/parameters/summands/block7conv1summands64/")+to_string(i)+string(".bin");
-        block7conv1summands64[i].save(temp);
+    ctxt_block7conv1_out.clear();
+    ctxt_block7conv1_out.shrink_to_fit();
+    ctxt_block7MPP1_out.clear();
+    ctxt_block7MPP1_out.shrink_to_fit();
+
+    cout << "DONE!" << "\n";
+
+    // Last AppReLU
+    cout << "block7relu1 ..." << endl;
+    timer.start(" block7relu1 ");
+    vector<vector<Ciphertext>> ctxt_block7relu1_out(1, vector<Ciphertext>(64, ctxt_init));
+
+    #pragma omp parallel for num_threads(64)
+    for (int i = 0; i < 64; ++i) {
+        ApproxReLU(context, eval, ctxt_block7add_out[0][i], ctxt_block7relu1_out[0][i]);
     }
-    
-    
+
     timer.end();
+
+    ctxt_block7add_out.clear();
+    ctxt_block7add_out.shrink_to_fit();
+    cout << "DONE!, decrypted message is ...\n\n";
+    dec.decrypt(ctxt_block7relu1_out[0][0], sk, dmsg);
+    printMessage(dmsg);
+    cout << "downsampling block7 DONE!" << "\n";
+
+    
+    ////////////////save//////////////
+    cout<< "saving block7add info... \n\n";
+    string pathtemp7msg4 = pathtemp7 + string("msg/add/");
+    
+    saveMsgBundle(dec, sk, ctxt_block7relu1_out, pathtemp7msg4);
+    saveCtxtBundle(ctxt_block7relu1_out, pathtemp7ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
 
 
 
     /////////////////////////////////////
     ////////////// RB 6 //////////////////
     /////////////////////////////////////
+///////////////////////// Main flow /////////////////////////////////////////
 
+    string pathtemp8 = string("/app/block8/");
+    string pathtemp8ctxt = pathtemp8 + string("ctxt/")
 
-    ///////////////////////// Main flow /////////////////////////////////////////
     
     
     cout << "uploading for block8conv0 ...\n\n";
@@ -1077,34 +2463,59 @@ int main() {
     temp17a.shrink_to_fit();
     
     timer.end();
-    cout << "saving for block8conv0 ...\n\n";
-    timer.start(" * ");
 
-    
 
-    #pragma omp parallel for collapse(3)
-    for(int i=0; i<64; ++i){
-        for(int j=0; j<64; ++j){
-            for(int k=0; k<9; ++k){
-                string temp = string("/app/parameters/multiplicands/block8conv0multiplicands64_64_3_3/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
-                block8conv0multiplicands64_64_3_3[i][j][k].save(temp);
-            }
-        }
+    cout << "block8conv0 ..." << endl;
+    timer.start(" block8conv0 ");
+    vector<vector<Ciphertext>> ctxt_block8conv0_out(1, vector<Ciphertext>(64, ctxt_init));
+    for (int i = 0; i < 1; ++i) { // 서로 다른 img
+        //cout << "i = " << i << endl;
+        ctxt_block8conv0_out[i] = Conv_parallel(context, pack, eval, 32, 4, 1, 64, 64, ctxt_block7relu1_out[i], block8conv0multiplicands64_64_3_3);
     }
 
-    #pragma omp parallel for 
-    for(int i=0; i<64; ++i){
-        string temp = string("/app/parameters/summands/block8conv0summands64/")+to_string(i)+string(".bin");
-        block8conv0summands64[i].save(temp);
-    }
-    
-    
-    
+    addBNsummands(context, eval, ctxt_block8conv0_out, block8conv0summands64, 1, 64);
     timer.end();
+    cout << "DONE!\n\n";
+
+    // dec.decrypt(ctxt_block8conv0_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
 
 
+    block8conv0multiplicands64_64_3_3.clear();
+    block8conv0multiplicands64_64_3_3.shrink_to_fit();
+    block8conv0summands64.clear();
+    block8conv0summands64.shrink_to_fit();
 
-    // Second convolution
+
+    // AppReLU
+    cout << "block8relu0 ..." << endl;
+    timer.start(" block8relu0 ");
+    vector<vector<Ciphertext>> ctxt_block8relu0_out(1, vector<Ciphertext>(64, ctxt_init));
+
+    #pragma omp parallel for num_threads(64)
+    for (int i = 0; i < 64; ++i) {
+        ApproxReLU(context, eval, ctxt_block8conv0_out[0][i], ctxt_block8relu0_out[0][i]);
+    }
+    timer.end();
+    cout << "DONE!" << "\n";
+
+    ctxt_block8conv0_out.clear();
+    ctxt_block8conv0_out.shrink_to_fit();
+
+    // dec.decrypt(ctxt_block8relu0_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+    
+    ////////////////save//////////////
+    cout<< "saving block8main1 info... \n\n";
+    string pathtemp8msg1 = pathtemp8 + string("msg/main1/");
+    saveMsgBundle(dec, sk, ctxt_block8relu0_out, pathtemp8msg1);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+
+ // Second convolution
 
 
     
@@ -1132,32 +2543,93 @@ int main() {
     temp18a.shrink_to_fit();
     
     timer.end();
-    cout << "saving for block8conv1 ...\n\n";
-    timer.start(" * ");
 
+
+
+    cout << "block8conv1 ..." << endl;
+    timer.start(" block8conv1 ");
+    vector<vector<Ciphertext>> ctxt_block8conv1_out(1, vector<Ciphertext>(64, ctxt_init));
+    for (int i = 0; i < 1; ++i) {
+        ctxt_block8conv1_out[i] = Conv_parallel(context, pack, eval, 32, 4, 1, 64, 64, ctxt_block8relu0_out[i], block8conv1multiplicands64_64_3_3);
+    }
+
+    addBNsummands(context, eval, ctxt_block8conv1_out, block8conv1summands64, 1, 64);
+    timer.end();
+    cout << "DONE!\n\n";
+
+    // dec.decrypt(ctxt_block8conv1_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+
+    ctxt_block8relu0_out.clear();
+    ctxt_block8relu0_out.shrink_to_fit();
+    block8conv1multiplicands64_64_3_3.clear();
+    block8conv1multiplicands64_64_3_3.shrink_to_fit();
+    block8conv1summands64.clear();
+    block8conv1summands64.shrink_to_fit();
+    
+    ////////////////save//////////////
+    cout<< "saving block8main2 info... \n\n";
+    string pathtemp8msg2 = pathtemp8 + string("msg/main2/");
+    saveMsgBundle(dec, sk, ctxt_block8conv1_out, pathtemp8msg2);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
     
 
 
-    #pragma omp parallel for collapse(3)
-    for(int i=0; i<64; ++i){
-        for(int j=0; j<64; ++j){
-            for(int k=0; k<9; ++k){
-                string temp = string("/app/parameters/multiplicands/block8conv1multiplicands64_64_3_3/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
-                block8conv1multiplicands64_64_3_3[i][j][k].save(temp);
-            }
+
+
+
+
+    //////////////////////////// Main flow + Residual flow //////////////////////////////////
+    cout << "block8add ..." << endl;
+    vector<vector<Ciphertext>> ctxt_block8add_out(1, vector<Ciphertext>(64, ctxt_init));
+    #pragma omp parallel for collapse(2)
+    for (int i = 0; i < 1; ++i) {
+        for (int ch = 0; ch < 64; ++ch) {
+            eval.add(ctxt_block8conv1_out[i][ch], ctxt_block7relu1_out[i][ch], ctxt_block8add_out[i][ch]);
         }
     }
+    cout << "DONE!" << "\n";
+    ctxt_block7relu1_out.clear();
+    ctxt_block7relu1_out.shrink_to_fit();
+    ctxt_block8conv1_out.clear();
+    ctxt_block8conv1_out.shrink_to_fit();
 
-    #pragma omp parallel for 
-    for(int i=0; i<64; ++i){
-        string temp = string("/app/parameters/summands/block8conv1summands64/")+to_string(i)+string(".bin");
-        block8conv1summands64[i].save(temp);
+
+    cout << "block8relu1 ..." << endl;
+    timer.start(" block8relu1 ");
+    vector<vector<Ciphertext>> ctxt_block8relu1_out(1, vector<Ciphertext>(64, ctxt_init));
+    #pragma omp parallel for num_threads(64)
+    for (int i = 0; i < 64; ++i) {
+        ApproxReLU(context, eval, ctxt_block8add_out[0][i], ctxt_block8relu1_out[0][i]);
     }
-    
-    
     timer.end();
 
+    ctxt_block8add_out.clear();
+    ctxt_block8add_out.shrink_to_fit();
 
+    cout<<"DONE!, decrypted message is ...\n\n";
+
+    dec.decrypt(ctxt_block8relu1_out[0][0], sk, dmsg);
+    printMessage(dmsg);
+
+    cout << "block8 DONE! " << "\n";
+    
+    
+    ////////////////save//////////////
+    cout<< "saving block8add info... \n\n";
+    string pathtemp8msg4 = pathtemp8 + string("msg/add/");
+    
+    saveMsgBundle(dec, sk, ctxt_block8relu1_out, pathtemp8msg4);
+    saveCtxtBundle(ctxt_block8relu1_out, pathtemp8ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+
+
+    
 
 
 
@@ -1165,12 +2637,9 @@ int main() {
     //////////// RB 7//////////////
     ////////////////////////////
 
+    string pathtemp9 = string("/app/block9/");
+    string pathtemp9ctxt = pathtemp9 + string("ctxt/")
 
-
-
-    ///////////////////////// Main flow /////////////////////////////////////////
-    
-    
     cout << "uploading for block9conv0 ...\n\n";
     timer.start(" * ");
 
@@ -1196,34 +2665,59 @@ int main() {
     temp19a.shrink_to_fit();
     
     timer.end();
-    cout << "saving for block9conv0 ...\n\n";
-    timer.start(" * ");
-
-    
 
 
-    #pragma omp parallel for collapse(3)
-    for(int i=0; i<64; ++i){
-        for(int j=0; j<64; ++j){
-            for(int k=0; k<9; ++k){
-                string temp = string("/app/parameters/multiplicands/block9conv0multiplicands64_64_3_3/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
-                block9conv0multiplicands64_64_3_3[i][j][k].save(temp);
-            }
-        }
+    cout << "block9conv0 ..." << endl;
+    timer.start(" block9conv0 ");
+    vector<vector<Ciphertext>> ctxt_block9conv0_out(1, vector<Ciphertext>(64, ctxt_init));
+    for (int i = 0; i < 1; ++i) { // 서로 다른 img
+        //cout << "i = " << i << endl;
+        ctxt_block9conv0_out[i] = Conv_parallel(context, pack, eval, 32, 4, 1, 64, 64, ctxt_block8relu1_out[i], block9conv0multiplicands64_64_3_3);
     }
 
-    #pragma omp parallel for 
-    for(int i=0; i<64; ++i){
-        string temp = string("/app/parameters/summands/block9conv0summands64/")+to_string(i)+string(".bin");
-        block9conv0summands64[i].save(temp);
-    }
-    
-    
+    addBNsummands(context, eval, ctxt_block9conv0_out, block9conv0summands64, 1, 64);
     timer.end();
+    cout << "DONE!\n\n";
+
+    // dec.decrypt(ctxt_block9conv0_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
 
 
+    block9conv0multiplicands64_64_3_3.clear();
+    block9conv0multiplicands64_64_3_3.shrink_to_fit();
+    block9conv0summands64.clear();
+    block9conv0summands64.shrink_to_fit();
 
-    // Second convolution
+
+    // AppReLU
+    cout << "block9relu0 ..." << endl;
+    timer.start(" block9relu0 ");
+    vector<vector<Ciphertext>> ctxt_block9relu0_out(1, vector<Ciphertext>(64, ctxt_init));
+
+    #pragma omp parallel for num_threads(64)
+    for (int i = 0; i < 64; ++i) {
+        ApproxReLU(context, eval, ctxt_block9conv0_out[0][i], ctxt_block9relu0_out[0][i]);
+    }
+    timer.end();
+    cout << "DONE!" << "\n";
+
+    ctxt_block9conv0_out.clear();
+    ctxt_block9conv0_out.shrink_to_fit();
+
+    // dec.decrypt(ctxt_block9relu0_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+    
+    ////////////////save//////////////
+    cout<< "saving block9main1 info... \n\n";
+    string pathtemp9msg1 = pathtemp9 + string("msg/main1/");
+    saveMsgBundle(dec, sk, ctxt_block9relu0_out, pathtemp9msg1);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+
+// Second convolution
     
     
     cout << "uploading for block9conv1 ...\n\n";
@@ -1252,29 +2746,123 @@ int main() {
     temp20a.shrink_to_fit();
     
     timer.end();
-    cout << "saving for block9conv1 ...\n\n";
-    timer.start(" * ");
+
+    cout << "block9conv1 ..." << endl;
+    timer.start(" block9conv1 ");
+    vector<vector<Ciphertext>> ctxt_block9conv1_out(1, vector<Ciphertext>(64, ctxt_init));
+    for (int i = 0; i < 1; ++i) {
+        ctxt_block9conv1_out[i] = Conv_parallel(context, pack, eval, 32, 4, 1, 64, 64, ctxt_block9relu0_out[i], block9conv1multiplicands64_64_3_3);
+    }
+
+    addBNsummands(context, eval, ctxt_block9conv1_out, block9conv1summands64, 1, 64);
+    timer.end();
+    cout << "DONE!\n\n";
+
+    // dec.decrypt(ctxt_block9conv1_out[0][0], sk, dmsg);
+    // printMessage(dmsg);
+
+
+    ctxt_block9relu0_out.clear();
+    ctxt_block9relu0_out.shrink_to_fit();
+    block9conv1multiplicands64_64_3_3.clear();
+    block9conv1multiplicands64_64_3_3.shrink_to_fit();
+    block9conv1summands64.clear();
+    block9conv1summands64.shrink_to_fit();
+
+
 
     
+    ////////////////save//////////////
+    cout<< "saving block9main2 info... \n\n";
+    string pathtemp9msg2 = pathtemp9 + string("msg/main2/");
+    saveMsgBundle(dec, sk, ctxt_block9conv1_out, pathtemp9msg2);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
 
-    #pragma omp parallel for collapse(3)
-    for(int i=0; i<64; ++i){
-        for(int j=0; j<64; ++j){
-            for(int k=0; k<9; ++k){
-                string temp = string("/app/parameters/multiplicands/block9conv1multiplicands64_64_3_3/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
-                block9conv1multiplicands64_64_3_3[i][j][k].save(temp);
-            }
+
+
+
+    //////////////////////////// Main flow + Residual flow //////////////////////////////////
+    cout << "block9add ..." << endl;
+    vector<vector<Ciphertext>> ctxt_block9add_out(1, vector<Ciphertext>(64, ctxt_init));
+    #pragma omp parallel for collapse(2)
+    for (int i = 0; i < 1; ++i) {
+        for (int ch = 0; ch < 64; ++ch) {
+            eval.add(ctxt_block9conv1_out[i][ch], ctxt_block8relu1_out[i][ch], ctxt_block9add_out[i][ch]);
         }
     }
+    cout << "DONE!" << "\n";
+    ctxt_block8relu1_out.clear();
+    ctxt_block8relu1_out.shrink_to_fit();
+    ctxt_block9conv1_out.clear();
+    ctxt_block9conv1_out.shrink_to_fit();
 
-    #pragma omp parallel for 
-    for(int i=0; i<64; ++i){
-        string temp = string("/app/parameters/summands/block9conv1summands64/")+to_string(i)+string(".bin");
-        block9conv1summands64[i].save(temp);
+
+    cout << "block9relu1 ..." << endl;
+    timer.start(" block9relu1 ");
+    vector<vector<Ciphertext>> ctxt_block9relu1_out(1, vector<Ciphertext>(64, ctxt_init));
+
+    #pragma omp parallel for num_threads(64)
+    for (int i = 0; i < 64; ++i) {
+        ApproxReLU(context, eval, ctxt_block9add_out[0][i], ctxt_block9relu1_out[0][i]);
     }
-    
-    
     timer.end();
+
+    ctxt_block9add_out.clear();
+    ctxt_block9add_out.shrink_to_fit();
+
+    cout << "DONE!, decrypted message is ...\n\n";
+
+    dec.decrypt(ctxt_block9relu1_out[0][0], sk, dmsg);
+    printMessage(dmsg);
+    cout << "block9 DONE! " << "\n";
+    
+    
+    ////////////////save//////////////
+    cout<< "saving block9add info... \n\n";
+    string pathtemp9msg4 = pathtemp9 + string("msg/add/");
+    
+    saveMsgBundle(dec, sk, ctxt_block9relu1_out, pathtemp9msg4);
+    saveCtxtBundle(ctxt_block9relu1_out, pathtemp9ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+
+
+
+
+    // Avg Pool
+    cout << "evaluating Avgpool" << "\n";
+    vector<Ciphertext> ctxt_avgp_out;
+    timer.start(" avgpool * ");
+    ctxt_avgp_out = Avgpool(context, pack, eval, ctxt_block9relu1_out[0]);
+    timer.end();
+    
+    // std::cout << "AvgPool result" << std::endl;
+    // dec.decrypt(ctxt_avgp_out[0], sk, dmsg);
+    // printMessage(dmsg);
+
+    ctxt_block9relu1_out.clear();
+    ctxt_block9relu1_out.shrink_to_fit();
+    
+    
+    
+    ////////////////save//////////////
+    
+    
+    string pathtemp10 = string("/app/avgp/");
+    string pathtemp10ctxt = pathtemp9 + string("ctxt/");
+
+    cout<< "saving avgp info... \n\n";
+    string pathtemp10msg = pathtemp9 + string("msg/");
+    
+    saveMsgVector(dec, sk, ctxt_avgp_out, pathtemp10msg);
+    saveCtxtVector(ctxt_avgp_out, pathtemp10ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
 
     //FC64 setup...
     
@@ -1316,28 +2904,102 @@ int main() {
     temp21a.shrink_to_fit();
     
     timer.end();
-    cout << "saving for fc64 ...\n\n";
-    timer.start(" * ");
 
-    #pragma omp parallel for collapse(2)
-    for(int i=0; i<10; ++i){
-        for(int j=0; j<64; ++j){
-            string temp = string("/app/parameters/multiplicands/fclayermultiplicands10_64/") +to_string(i)+string("_")+to_string(j)+string(".bin");
-            fclayermultiplicands10_64[i][j].save(temp);
-        }
-    }
 
-    #pragma omp parallel for 
-    for(int i=0; i<10; ++i){
-        string temp = string("/app/parameters/summands/fclayersummands10/")+to_string(i)+string(".bin");
-        fclayersummands10[i].save(temp);
-    }
-    
-    
+    // FC64
+    cout << "evaluating FC64 layer\n" << endl;
+
+    vector<Ciphertext> ctxt_result;
+    timer.start(" FC64 layer * ");
+    ctxt_result = FC64(context, pack, eval, ctxt_avgp_out, fclayermultiplicands10_64, fclayersummands10);
     timer.end();
 
+    std::cout << "FC64 result..." << std::endl;
+    dec.decrypt(ctxt_result[0], sk, dmsg);
+    printMessage(dmsg);
+    
+    
+    
+    ////////////////save//////////////
+    
+    
+    string pathtemp11 = string("/app/fc64/");
+    string pathtemp11ctxt = pathtemp9 + string("ctxt/");
+
+    cout<< "saving fc64 info... \n\n";
+    string pathtemp11msg = pathtemp9 + string("msg/");
+    
+    saveMsgVector(dec, sk, ctxt_result, pathtemp11msg);
+    saveCtxtVector(ctxt_result, pathtemp11ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+
+    fclayermultiplicands10_64.clear();
+    fclayermultiplicands10_64.shrink_to_fit();
+    fclayersummands10.clear();
+    fclayersummands10.shrink_to_fit();
 
 
+    
+    // Last Step; enumerating
+    vector<vector<double>> orderVec(512, vector<double>(10, 0));
+    vector<int> idx_table = {0, 1, 4, 5, 2, 3, 6, 7, 8, 9, 12, 13, 10, 11, 14, 15};
+    
+    for (int t = 0; t < 10; ++t) {
+        dec.decrypt(ctxt_result[t], sk, dmsg);
+
+        #pragma omp parallel for collapse(3)
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                for (int k = 0; k < 32; ++k) {
+                    orderVec[32* idx_table[4*i+j]+k][t] = dmsg[1024 * k + 32 * i + j].real();
+                }
+            }
+        }
+    }
+    
+    
+    cout << "Finaly, DONE!!!" << "\n\n";
+    
+    
+    ///////////////////////////////////////
+    ///////////// save file //////////////
+    //////////////////////////////////////
+    
+    
+    string filepath_last = string("/app/final/bundle")+to_string(num);
+    
+    for (int i=1; i<=512; ++i){
+        string filepath = filepath_last + string("/result")+to_string(i)+string(".txt");
+        ofstream file(filepath);
+        for (int j=0; j< 10; ++j){
+            file << orderVec[i-1][j] << "\n";
+        }
+        
+        file.close();
+    }
+
+    
+    cout << "[ ";
+    
+    string savelabel = string("/app/output/bundle")+to_string(num)+".txt";
+    ofstream filesave(savelabel);
+    
+    for (int i = 0; i < 512; ++i) {
+        int max_index = max_element(orderVec[i].begin(), orderVec[i].end()) - orderVec[i].begin();
+        
+        if (i%16 == 15) filesave << max_index << ",\n";
+        else filesave << max_index <<", ";
+            
+        cout << max_index << ", ";
+    }
+    
+    filesave.close();
+    cout << "]\n";
+
+    cout <<"Time to bye....\n\n";
     
     return 0;
 }
