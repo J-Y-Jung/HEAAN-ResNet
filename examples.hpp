@@ -87,7 +87,6 @@ void saveMessage(const HEaaN::Message &msg, const string filepath) {
     ofstream fileReal(filepathReal);
     fileReal.precision(7);
 
-    #pragma omp parallel for
     for (size_t j=0; j< msg_size; ++j){
 
         if (j%32 ==31) fileReal << msg[j].real() << ",\n";
@@ -99,7 +98,6 @@ void saveMessage(const HEaaN::Message &msg, const string filepath) {
     ofstream fileImg(filepathImag);
     fileImag.precision(7);
 
-    #pragma omp parallel for
     for (size_t j=0; j< msg_size; ++j){
 
         if (j%32 ==31) fileImag << msg[j].imag() << ",\n";
@@ -114,7 +112,7 @@ void saveMessage(const HEaaN::Message &msg, const string filepath) {
 }
 
 
-void savePtxtBundle(SecretKey sk, vector<vector<Ciphertext>>& ctxt_bundle, const string filepath){
+void saveMsgBundle(SecretKey sk, vector<vector<Ciphertext>>& ctxt_bundle, const string filepath){
     
     int n1= ctxt_bundle.size();
     int n2= ctxt_bundle[0].size();
@@ -134,6 +132,24 @@ void savePtxtBundle(SecretKey sk, vector<vector<Ciphertext>>& ctxt_bundle, const
 
     return;
 
+
+}
+
+
+void saveCtxtBundle(vector<vector<Ciphertext>>& ctxt_bundle, const string filepath){
+    
+    int n1= ctxt_bundle.size();
+    int n2= ctxt_bundle[0].size();
+
+    #pragma omp parallel for collapse(2)
+    for (int i=0; i<n1; ++i){
+        for (int j=0; j<n2; ++j){
+            string path = string path = filepath + to_string(i)+string("_")+to_string(j)+string(".bin");
+            ctxt_bundle[i][j].save(path);
+        }
+    }
+
+    return;
 
 }
 
