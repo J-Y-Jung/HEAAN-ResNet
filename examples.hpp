@@ -112,6 +112,25 @@ void saveMessage(const HEaaN::Message &msg, const string filepath) {
 }
 
 
+void saveMsgVector(SecretKey sk, vector<Ciphertext>& ctxt_vector, const string filepath){
+    
+    int n= ctxt_vector.size();
+    Message msg_init(15);
+    vector<Message> msg_vector(n, msg_init));
+    
+    #pragma omp parallel for
+    for (int i=0; i<n; ++i){
+        string path = filepath + to_string(i);
+        dec.decrypt(ctxt_vector[i], sk, msg_vector[i]);
+        saveMessage(msg_vector[i], path);
+    }
+
+    return;
+
+}
+
+
+
 void saveMsgBundle(SecretKey sk, vector<vector<Ciphertext>>& ctxt_bundle, const string filepath){
     
     int n1= ctxt_bundle.size();
@@ -132,6 +151,21 @@ void saveMsgBundle(SecretKey sk, vector<vector<Ciphertext>>& ctxt_bundle, const 
 
     return;
 
+
+}
+
+
+void saveCtxtVector(vector<Ciphertext>& ctxt_vector, const string filepath){
+    
+    int n= ctxt_vector.size();
+
+    #pragma omp parallel for
+    for (int i=0; i<n; ++i){
+        string path = filepath + to_string(i)+string(".bin");
+        ctxt_vector[i].save(path);
+    }
+
+    return;
 
 }
 
