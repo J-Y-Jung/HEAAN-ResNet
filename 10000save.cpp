@@ -309,7 +309,7 @@ int main() {
     
     
     string pathtemp1 = string("/app/block1/");
-    string pathtemp1ctxt = pathtemp1 + string("ctxt/")
+    string pathtemp1ctxt = pathtemp1 + string("ctxt/");
     
    // RB 1 - 1
     cout << "uploading for block1conv0 ...\n\n";
@@ -599,7 +599,7 @@ int main() {
     /////// RB2 ////////
     ////////////////////
     string pathtemp2 = string("/app/block2/");
-    string pathtemp2ctxt = pathtemp2 + string("ctxt/")
+    string pathtemp2ctxt = pathtemp2 + string("ctxt/");
 
     
      // RB 2 - 1
@@ -870,7 +870,7 @@ int main() {
     ////////////////////
 
     string pathtemp3 = string("/app/block3/");
-    string pathtemp3ctxt = pathtemp3 + string("ctxt/")
+    string pathtemp3ctxt = pathtemp3 + string("ctxt/");
 
 // RB 3 - 1
     
@@ -1180,7 +1180,7 @@ int main() {
     /////////////////////////////
 
     string pathtemp4 = string("/app/block4/");
-    string pathtemp4ctxt = pathtemp4 + string("ctxt/")
+    string pathtemp4ctxt = pathtemp4 + string("ctxt/");
 
     
     
@@ -1584,7 +1584,7 @@ int main() {
     ///////////////////////////////
 
     string pathtemp5 = string("/app/block5/");
-    string pathtemp5ctxt = pathtemp5 + string("ctxt/")
+    string pathtemp5ctxt = pathtemp5 + string("ctxt/");
 
     
     
@@ -1828,7 +1828,7 @@ int main() {
     ///////////////////////
 
     string pathtemp6 = string("/app/block6/");
-    string pathtemp6ctxt = pathtemp6 + string("ctxt/")
+    string pathtemp6ctxt = pathtemp6 + string("ctxt/");
 
    
     // RB 5 - 1
@@ -2068,7 +2068,7 @@ int main() {
     /////////////////////////
 
     string pathtemp7 = string("/app/block7/");
-    string pathtemp7ctxt = pathtemp7 + string("ctxt/")
+    string pathtemp7ctxt = pathtemp7 + string("ctxt/");
 
     
     
@@ -2436,7 +2436,7 @@ int main() {
 ///////////////////////// Main flow /////////////////////////////////////////
 
     string pathtemp8 = string("/app/block8/");
-    string pathtemp8ctxt = pathtemp8 + string("ctxt/")
+    string pathtemp8ctxt = pathtemp8 + string("ctxt/");
 
     
     
@@ -2638,7 +2638,7 @@ int main() {
     ////////////////////////////
 
     string pathtemp9 = string("/app/block9/");
-    string pathtemp9ctxt = pathtemp9 + string("ctxt/")
+    string pathtemp9ctxt = pathtemp9 + string("ctxt/");
 
     cout << "uploading for block9conv0 ...\n\n";
     timer.start(" * ");
