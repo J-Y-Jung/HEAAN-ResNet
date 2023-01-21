@@ -112,7 +112,7 @@ void saveMessage(const HEaaN::Message &msg, const string filepath) {
 }
 
 
-void saveMsgVector(SecretKey sk, vector<Ciphertext>& ctxt_vector, const string filepath){
+void saveMsgVector(Decryptor dec, SecretKey sk, vector<Ciphertext>& ctxt_vector, const string filepath){
     
     int n= ctxt_vector.size();
     Message msg_init(15);
@@ -131,7 +131,7 @@ void saveMsgVector(SecretKey sk, vector<Ciphertext>& ctxt_vector, const string f
 
 
 
-void saveMsgBundle(SecretKey sk, vector<vector<Ciphertext>>& ctxt_bundle, const string filepath){
+void saveMsgBundle(Decryptor dec, SecretKey sk, vector<vector<Ciphertext>>& ctxt_bundle, const string filepath){
     
     int n1= ctxt_bundle.size();
     int n2= ctxt_bundle[0].size();
