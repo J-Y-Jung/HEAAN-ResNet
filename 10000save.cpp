@@ -1018,11 +1018,9 @@ int main() {
     // Second convolution
     cout << "block3conv1 ..." << endl;
     timer.start(" block3conv1 ");
-    vector<vector<Ciphertext>> ctxt_block3conv1_out;
+    vector<vector<Ciphertext>> ctxt_block3conv1_out(16, vector<Ciphertext>(16, ctxt_init));
     for (int i = 0; i < 16; ++i) {
-        vector<Ciphertext> ctxt_conv_out2_allch_bundle;
-        ctxt_conv_out2_allch_bundle = Conv(context, pack, eval, 32, 1, 1, 16, 16, ctxt_block3relu0_out[i], block3conv1multiplicands16_16_3_3);
-        ctxt_block3conv1_out.push_back(ctxt_conv_out2_allch_bundle);
+        ctxt_block3conv1_out[i] = Conv(context, pack, eval, 32, 1, 1, 16, 16, ctxt_block3relu0_out[i], block3conv1multiplicands16_16_3_3);
     }
 
     addBNsummands(context, eval, ctxt_block3conv1_out, block3conv1summands16, 16, 16);
