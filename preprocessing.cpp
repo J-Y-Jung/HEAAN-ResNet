@@ -1289,7 +1289,7 @@ int main() {
     for (int i = 0; i < 10; ++i) {
         for (int j = 0; j < 64; ++j) {
             Message msg(log_slots, temp21[64 * i + j]);
-            fclayermultiplicands10_64[i][j] = ecd.encode(msg, 5, 0);
+            fclayermultiplicands10_64[i][j] = ecd.encode(msg, 1, 0);
         }
     }
 
@@ -1308,7 +1308,7 @@ int main() {
         #pragma omp parallel num_threads(8)
         {
         Message msg(log_slots, temp21a[i]);
-        fclayersummands10[i] = ecd.encode(msg, 4, 0);
+        fclayersummands10[i] = ecd.encode(msg, 0, 0);
         }
     }
 
