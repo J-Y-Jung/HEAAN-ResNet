@@ -20,7 +20,7 @@ void weightToPtxt(Plaintext& ptxt, u64 level, double weight,
     u64 gap_in, u64 stride,
     u64 weight_row_idx, u64 weight_col_idx, EnDecoder ecd) {
     Message msg(15);
-    auto num_slots = msg.getSize();
+    //auto num_slots = msg.getSize();
     size_t idx;
 
     if (gap_in == 1 && stride == 2) {
@@ -51,7 +51,7 @@ void weightToPtxt(Plaintext& ptxt, u64 level, double weight,
         }
     } else {
         //#pragma omp parallel for
-        for (size_t j = 0; j < num_slots; ++j) {
+        for (size_t j = 0; j < 32768; ++j) {
             msg[j].real(weight);
             msg[j].imag(0.0);
         }
