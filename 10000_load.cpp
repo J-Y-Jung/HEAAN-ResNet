@@ -169,7 +169,7 @@ int main() {
     */
 
 
-    // 1st conv
+    // 0st conv
     cout << "uploading for block0conv0 ...\n\n";
     timer.start("block0conv0 load ");
     vector<vector<vector<Plaintext>>> block0conv0multiplicands16_3_3_3(16, vector<vector<Plaintext>>(3, vector<Plaintext>(9, ptxt_init)));
@@ -273,6 +273,17 @@ int main() {
     printMessage(dmsg);
 
     cout << "block0 DONE!\n" << "\n";
+    
+    ////////////////save//////////////
+    cout<< "saving block0 info... \n\n";
+    string pathtemp0 = string("/app/block0/");
+    string pathtemp0msg = pathtemp0 + string("msg/");
+    string pathtemp0ctxt = pathtemp0 + string("ctxt/");
+    saveMsgBundle(sk, ctxt_block0relu0_out, pathtemp0msg);
+    saveCtxtBundle(ctxt_block0relu0_out, pathtemp0ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
 
 
 
@@ -280,6 +291,9 @@ int main() {
     ////////////////////
     /////// RB1 ////////
     ////////////////////
+    
+    string pathtemp1 = string("/app/block1/");
+    string pathtemp1ctxt = pathtemp1 + string("ctxt/")
 
     // RB 1 - 1
     cout << "uploading for block1conv0 ...\n\n";
@@ -387,6 +401,16 @@ int main() {
     ctxt_block1conv0_out.clear();
     ctxt_block1conv0_out.shrink_to_fit();
     cout << "DONE!\n" << "\n";
+    
+    ////////////////save//////////////
+    cout<< "saving block1main1 info... \n\n";
+    string pathtemp1msg1 = pathtemp1 + string("msg/main1/");
+    saveMsgBundle(sk, ctxt_block1relu0_out, pathtemp1msg1);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+    
 
     // dec.decrypt(ctxt_block1relu0_out[0][0], sk, dmsg);
     // printMessage(dmsg);
@@ -445,6 +469,19 @@ int main() {
     block1conv1summands16.clear();
     block1conv1summands16.shrink_to_fit();
 
+    
+    ////////////////save//////////////
+    cout<< "saving block1main2 info... \n\n";
+    string pathtemp1msg2 = pathtemp1 + string("msg/main2/");
+    saveMsgBundle(sk, ctxt_block1conv1_out, pathtemp1msg2);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+    
+    
+    
+    
 
     //////////////////////////// Main flow + Residual flow //////////////////////////////////
     cout << "block1add ..." << endl;
@@ -513,12 +550,26 @@ int main() {
     cout <<"\n";
     
     cout << "block1 DONE! " << "\n\n";
+    
+    
+    ////////////////save//////////////
+    cout<< "saving block1add info... \n\n";
+    string pathtemp1msg4 = pathtemp1 + string("msg/add/");
+    
+    saveMsgBundle(sk, ctxt_block1relu1_out, pathtemp1msg4);
+    saveCtxtBundle(ctxt_block1relu1_out, pathtemp1ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
 
 
 
     ////////////////////
     /////// RB2 ////////
     ////////////////////
+    
+    string pathtemp2 = string("/app/block2/");
+    string pathtemp2ctxt = pathtemp2 + string("ctxt/")
 
 
     // RB 2 - 1
@@ -615,6 +666,15 @@ int main() {
     ctxt_block2conv0_out.clear();
     ctxt_block2conv0_out.shrink_to_fit();
     cout << "DONE!\n" << "\n";
+    
+    
+    ////////////////save//////////////
+    cout<< "saving block2main1 info... \n\n";
+    string pathtemp2msg1 = pathtemp2 + string("msg/main1/");
+    saveMsgBundle(sk, ctxt_block2relu0_out, pathtemp2msg1);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
 
     // dec.decrypt(ctxt_block2relu0_out[0][0], sk, dmsg);
     // printMessage(dmsg);
@@ -658,7 +718,16 @@ int main() {
 
     addBNsummands(context, eval, ctxt_block2conv1_out, block2conv1summands16, 16, 16);
     timer.end();
-    cout << "DONE!\n" << "\n";
+    cout << "DONE!\n" << "\n";    
+   
+    
+    ////////////////save//////////////
+    cout<< "saving block2main2 info... \n\n";
+    string pathtemp2msg2 = pathtemp2 + string("msg/main2/");
+    saveMsgBundle(sk, ctxt_block2conv1_out, pathtemp2msg2);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
 
 
     block2conv1multiplicands16_16_3_3.clear();
@@ -732,6 +801,20 @@ int main() {
 
 
     cout << "block2 DONE!\n " << "\n";
+    
+        
+    
+    ////////////////save//////////////
+    cout<< "saving block2add info... \n\n";
+    string pathtemp2msg4 = pathtemp2 + string("msg/add/");
+    
+    saveMsgBundle(sk, ctxt_block2relu1_out, pathtemp2msg4);
+    saveCtxtBundle(ctxt_block2relu1_out, pathtemp2ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+
+
 
 
 
@@ -739,6 +822,9 @@ int main() {
     /////// RB3 ////////
     ////////////////////
 
+
+    string pathtemp3 = string("/app/block3/");
+    string pathtemp3ctxt = pathtemp3 + string("ctxt/")
 
 
     // RB 3 - 1
@@ -829,6 +915,23 @@ int main() {
 
     ctxt_block3conv0_out.clear();
     ctxt_block3conv0_out.shrink_to_fit();
+    
+
+    
+    ////////////////save//////////////
+    cout<< "saving block3main1 info... \n\n";
+    string pathtemp3msg1 = pathtemp3 + string("msg/main1/");
+    saveMsgBundle(sk, ctxt_block3relu0_out, pathtemp3msg1);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+    
+    
+    
+    
+    
+    
 
     // RB 3 - 2
     timer.start("block3conv load");
@@ -874,6 +977,20 @@ int main() {
     block3conv1multiplicands16_16_3_3.shrink_to_fit();
     block3conv1summands16.clear();
     block3conv1summands16.shrink_to_fit();
+    
+    
+    
+
+    
+    ////////////////save//////////////
+    cout<< "saving block3main2 info... \n\n";
+    string pathtemp3msg2 = pathtemp3 + string("msg/main2/");
+    saveMsgBundle(sk, ctxt_block3conv1_out, pathtemp3msg2);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+
 
 
 
@@ -943,6 +1060,16 @@ int main() {
     printMessage(dmsg);
 
     cout << "block3 DONE!\n\n";
+    
+    ////////////////save//////////////
+    cout<< "saving block3add info... \n\n";
+    string pathtemp3msg4 = pathtemp3 + string("msg/add/");
+    
+    saveMsgBundle(sk, ctxt_block3relu1_out, pathtemp3msg4);
+    saveCtxtBundle(ctxt_block3relu1_out, pathtemp3ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
 
 
 
@@ -993,10 +1120,15 @@ int main() {
     //////////////////////////////
     ///////// DSB 1//////////////
     /////////////////////////////
-    //cout << "DSB 1 ..." << endl;
+    
+    
+    
+    string pathtemp4 = string("/app/block4/");
+    string pathtemp4ctxt = pathtemp4 + string("ctxt/")
+
 
     ///////////////////// Residual flow ////////////////////////////
-    // Convolution
+
 
     // DSB 1 - res
     timer.start("block4conv_onebyone load");
@@ -1081,6 +1213,20 @@ int main() {
 
     block4conv_onebyone_summands32.clear();
     block4conv_onebyone_summands32.shrink_to_fit();
+    
+    
+    ////////////////save//////////////
+    cout<< "saving block4res info... \n\n";
+    string pathtemp4msg3 = pathtemp4 + string("msg/res/");
+    
+    saveMsgBundle(sk, ctxt_block4MPP1_out, pathtemp4msg3);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+    
+    
+    
 
     // cout << "Done!! level of ctxt is " << ctxt_block4MPP1_out[0][0].getLevel() << "\n";
     // cout << "and decrypted messagee is ... " << "\n";
@@ -1209,6 +1355,18 @@ int main() {
     ctxt_block4MPP0_out.shrink_to_fit();
 
     cout << "DONE!\n" << "\n";
+    
+    
+    ////////////////save//////////////
+    cout<< "saving block4main1 info... \n\n";
+    string pathtemp4msg1 = pathtemp4 + string("msg/main1/");
+    saveMsgBundle(sk, ctxt_block4relu0_out, pathtemp4msg1);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+    
+    
 
     //dec.decrypt(ctxt_block4relu0_out[0][0], sk, dmsg);
     //printMessage(dmsg);
@@ -1264,6 +1422,17 @@ int main() {
     // dec.decrypt(ctxt_block4conv1_out[0][0], sk, dmsg);
     // printMessage(dmsg);
 
+    
+    
+    ////////////////save//////////////
+    cout<< "saving block4main2 info... \n\n";
+    string pathtemp4msg2 = pathtemp4 + string("msg/main2/");
+    saveMsgBundle(sk, ctxt_block4conv1_out, pathtemp4msg2);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+
 
 
     //////////////////////////// Main flow + Residual flow //////////////////////////////////
@@ -1314,18 +1483,30 @@ int main() {
     cout << "Downsampling block4 DONE!" << "\n";
 
 
+    
+    ////////////////save//////////////
+    cout<< "saving block4add info... \n\n";
+    string pathtemp4msg4 = pathtemp4 + string("msg/add/");
+    
+    saveMsgBundle(sk, ctxt_block4relu1_out, pathtemp4msg4);
+    saveCtxtBundle(ctxt_block4relu1_out, pathtemp4ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
 
-    // Residual Block 4, 5
 
 
 
     ///////////////////////////////////
     ////////// RB 4 ////////////////
-    //////////////////////////////
+    ///////////////////////////////
+    
+    
+    string pathtemp5 = string("/app/block5/");
+    string pathtemp5ctxt = pathtemp5 + string("ctxt/")
 
 
 
-    levelDownBundle(context, pack, eval, ctxt_block4relu1_out, 5);
 
     ///////////////////////// Main flow /////////////////////////////////////////
 
@@ -1408,6 +1589,16 @@ int main() {
     //dec.decrypt(ctxt_block5relu0_out[0][0], sk, dmsg);
     //printMessage(dmsg);
 
+    
+    ////////////////save//////////////
+    cout<< "saving block5main1 info... \n\n";
+    string pathtemp5msg1 = pathtemp5 + string("msg/main1/");
+    saveMsgBundle(sk, ctxt_block5relu0_out, pathtemp5msg1);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+    
     // Second convolution
 
     // RB 4 - 2
@@ -1456,6 +1647,14 @@ int main() {
     block5conv1multiplicands32_32_3_3.shrink_to_fit();
     block5conv1summands32.clear();
     block5conv1summands32.shrink_to_fit();
+    
+    ////////////////save//////////////
+    cout<< "saving block5main2 info... \n\n";
+    string pathtemp5msg2 = pathtemp5 + string("msg/main2/");
+    saveMsgBundle(sk, ctxt_block5conv1_out, pathtemp5msg2);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
 
 
 
@@ -1505,6 +1704,20 @@ int main() {
     dec.decrypt(ctxt_block5relu1_out[0][0], sk, dmsg);
     printMessage(dmsg);
     cout << "block5 DONE! " << "\n";
+    
+    
+
+    
+    ////////////////save//////////////
+    cout<< "saving block5add info... \n\n";
+    string pathtemp5msg4 = pathtemp5 + string("msg/add/");
+    
+    saveMsgBundle(sk, ctxt_block5relu1_out, pathtemp5msg4);
+    saveCtxtBundle(ctxt_block5relu1_out, pathtemp5ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+
 
 
 
@@ -1515,6 +1728,10 @@ int main() {
     ////////////////////////////
     ////// RB 5 ////////////
     ///////////////////////
+    string pathtemp6 = string("/app/block6/");
+    string pathtemp6ctxt = pathtemp6 + string("ctxt/")
+
+
 
     ///////////////////////// Main flow /////////////////////////////////////////
 
@@ -1597,6 +1814,18 @@ int main() {
 
     // dec.decrypt(ctxt_block6relu0_out[0][0], sk, dmsg);
     // printMessage(dmsg);
+    
+    
+    
+    
+    ////////////////save//////////////
+    cout<< "saving block6main1 info... \n\n";
+    string pathtemp6msg1 = pathtemp6 + string("msg/main1/");
+    saveMsgBundle(sk, ctxt_block6relu0_out, pathtemp6msg1);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
 
     // Second convolution
 
@@ -1650,6 +1879,19 @@ int main() {
 
 
 
+    
+    ////////////////save//////////////
+    cout<< "saving block6main2 info... \n\n";
+    string pathtemp6msg2 = pathtemp6 + string("msg/main2/");
+    saveMsgBundle(sk, ctxt_block6conv1_out, pathtemp6msg2);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+
+
+
+
 
     //////////////////////////// Main flow + Residual flow //////////////////////////////////
     cout << "block6add ..." << endl;
@@ -1696,6 +1938,19 @@ int main() {
 
 
 
+    
+    ////////////////save//////////////
+    cout<< "saving block6add info... \n\n";
+    string pathtemp6msg4 = pathtemp6 + string("msg/add/");
+    
+    saveMsgBundle(sk, ctxt_block6relu1_out, pathtemp6msg4);
+    saveCtxtBundle(ctxt_block6relu1_out, pathtemp6ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+
+
+
     // Down Sampling (Residual) Block 2
     // DSB 2
 
@@ -1704,6 +1959,13 @@ int main() {
     ////////////////////////
     /////// DSB 2 //////////
     /////////////////////////
+    
+    
+    
+    string pathtemp7 = string("/app/block7/");
+    string pathtemp7ctxt = pathtemp7 + string("ctxt/")
+
+
 
 
     ///////////////////// Residual flow ////////////////////////////
@@ -1796,6 +2058,20 @@ int main() {
     // cout << "and decrypted messagee is ... " << "\n";
     // dec.decrypt(ctxt_block7MPP1_out[0][0], sk, dmsg);
     // printMessage(dmsg);
+    
+    
+    
+    
+    ////////////////save//////////////
+    cout<< "saving block7res info... \n\n";
+    string pathtemp7msg3 = pathtemp7 + string("msg/res/");
+    
+    saveMsgBundle(sk, ctxt_block7MPP1_out, pathtemp7msg3);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+    
 
 
     ///////////////////////// Main flow /////////////////////////////////////////
@@ -1909,6 +2185,18 @@ int main() {
     // dec.decrypt(ctxt_block7relu0_out[0][0], sk, dmsg);
     // printMessage(dmsg);
 
+    
+    
+    ////////////////save//////////////
+    cout<< "saving block7main1 info... \n\n";
+    string pathtemp7msg1 = pathtemp7 + string("msg/main1/");
+    saveMsgBundle(sk, ctxt_block7relu0_out, pathtemp7msg1);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+    
+    
     // Second convolution
     
     timer.start("block7conv1 load...");
@@ -1959,6 +2247,17 @@ int main() {
 
 
 
+    
+    ////////////////save//////////////
+    cout<< "saving block7main2 info... \n\n";
+    string pathtemp7msg2 = pathtemp7 + string("msg/main2/");
+    saveMsgBundle(sk, ctxt_block7conv1_out, pathtemp7msg2);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+
+
     //////////////////////////// Main flow + Residual flow //////////////////////////////////
     cout << "block7add ..." << endl;
     vector<vector<Ciphertext>> ctxt_block7add_out(1, vector<Ciphertext>(64, ctxt_init));
@@ -1996,11 +2295,27 @@ int main() {
     printMessage(dmsg);
     cout << "downsampling block7 DONE!" << "\n";
 
+    
+    ////////////////save//////////////
+    cout<< "saving block7add info... \n\n";
+    string pathtemp7msg4 = pathtemp7 + string("msg/add/");
+    
+    saveMsgBundle(sk, ctxt_block7relu1_out, pathtemp7msg4);
+    saveCtxtBundle(ctxt_block7relu1_out, pathtemp7ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+
 
 
     /////////////////////////////////////
     ////////////// RB 6 //////////////////
     /////////////////////////////////////
+
+
+    string pathtemp8 = string("/app/block8/");
+    string pathtemp8ctxt = pathtemp8 + string("ctxt/")
+
 
 
     ///////////////////////// Main flow /////////////////////////////////////////
@@ -2066,6 +2381,18 @@ int main() {
     // dec.decrypt(ctxt_block8relu0_out[0][0], sk, dmsg);
     // printMessage(dmsg);
 
+    
+    ////////////////save//////////////
+    cout<< "saving block8main1 info... \n\n";
+    string pathtemp8msg1 = pathtemp8 + string("msg/main1/");
+    saveMsgBundle(sk, ctxt_block8relu0_out, pathtemp8msg1);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+
+
+
     // Second convolution
 
 
@@ -2112,6 +2439,17 @@ int main() {
     block8conv1multiplicands64_64_3_3.shrink_to_fit();
     block8conv1summands64.clear();
     block8conv1summands64.shrink_to_fit();
+    
+    ////////////////save//////////////
+    cout<< "saving block8main2 info... \n\n";
+    string pathtemp8msg2 = pathtemp8 + string("msg/main2/");
+    saveMsgBundle(sk, ctxt_block8conv1_out, pathtemp8msg2);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+
+
 
 
 
@@ -2150,6 +2488,18 @@ int main() {
     printMessage(dmsg);
 
     cout << "block8 DONE! " << "\n";
+    
+    
+    ////////////////save//////////////
+    cout<< "saving block8add info... \n\n";
+    string pathtemp8msg4 = pathtemp8 + string("msg/add/");
+    
+    saveMsgBundle(sk, ctxt_block8relu1_out, pathtemp8msg4);
+    saveCtxtBundle(ctxt_block8relu1_out, pathtemp8ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+
 
     
 
@@ -2158,6 +2508,10 @@ int main() {
     /////////////////////////
     //////////// RB 7//////////////
     ////////////////////////////
+    string pathtemp9 = string("/app/block9/");
+    string pathtemp9ctxt = pathtemp9 + string("ctxt/")
+
+
 
 
 
@@ -2225,6 +2579,17 @@ int main() {
     // dec.decrypt(ctxt_block9relu0_out[0][0], sk, dmsg);
     // printMessage(dmsg);
 
+    
+    ////////////////save//////////////
+    cout<< "saving block9main1 info... \n\n";
+    string pathtemp9msg1 = pathtemp9 + string("msg/main1/");
+    saveMsgBundle(sk, ctxt_block9relu0_out, pathtemp9msg1);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+
+
     // Second convolution
     timer.start("block9conv1 load");
     vector<vector<vector<Plaintext>>> block9conv1multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
@@ -2269,6 +2634,18 @@ int main() {
 
 
 
+    
+    ////////////////save//////////////
+    cout<< "saving block9main2 info... \n\n";
+    string pathtemp9msg2 = pathtemp9 + string("msg/main2/");
+    saveMsgBundle(sk, ctxt_block9conv1_out, pathtemp9msg2);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
+
+
+
 
     //////////////////////////// Main flow + Residual flow //////////////////////////////////
     cout << "block9add ..." << endl;
@@ -2304,6 +2681,18 @@ int main() {
     dec.decrypt(ctxt_block9relu1_out[0][0], sk, dmsg);
     printMessage(dmsg);
     cout << "block9 DONE! " << "\n";
+    
+    
+    ////////////////save//////////////
+    cout<< "saving block9add info... \n\n";
+    string pathtemp9msg4 = pathtemp9 + string("msg/add/");
+    
+    saveMsgBundle(sk, ctxt_block9relu1_out, pathtemp9msg4);
+    saveCtxtBundle(ctxt_block9relu1_out, pathtemp9ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+
 
 
 
@@ -2320,6 +2709,24 @@ int main() {
 
     ctxt_block9relu1_out.clear();
     ctxt_block9relu1_out.shrink_to_fit();
+    
+    
+    
+    ////////////////save//////////////
+    
+    
+    string pathtemp10 = string("/app/avgp/");
+    string pathtemp10ctxt = pathtemp9 + string("ctxt/")
+
+    cout<< "saving avgp info... \n\n";
+    string pathtemp10msg = pathtemp9 + string("msg/");
+    
+    saveMsgVector(sk, ctxt_avgp_out, pathtemp10msg);
+    saveCtxtVector(ctxt_avgp_out, pathtemp10ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+
 
     //FC64 setup...
     timer.start("fc64 load...");
@@ -2353,7 +2760,24 @@ int main() {
     std::cout << "FC64 result..." << std::endl;
     dec.decrypt(ctxt_result[0], sk, dmsg);
     printMessage(dmsg);
+    
+    
+    
+    ////////////////save//////////////
+    
+    
+    string pathtemp11 = string("/app/avgp/");
+    string pathtemp11ctxt = pathtemp9 + string("ctxt/")
 
+    cout<< "saving fc64 info... \n\n";
+    string pathtemp11msg = pathtemp9 + string("msg/");
+    
+    saveMsgVector(sk, ctxt_result, pathtemp11msg);
+    saveCtxtVector(ctxt_result, pathtemp11ctxt);
+    cout << "DONE...\n\n";
+    
+    ////////////////////////////////////
+    
 
     fclayermultiplicands10_64.clear();
     fclayermultiplicands10_64.shrink_to_fit();
