@@ -201,30 +201,7 @@ int main() {
     temp0a.shrink_to_fit();
     
     timer.end();
-    cout << "saving for block0conv0 ...\n\n";
-    timer.start(" * ");
-
-
-    #pragma omp parallel for collapse(3)
-    for(int i=0; i<16; ++i){
-        for(int j=0; j<3; ++j){
-            for(int k=0; k<9; ++k){
-                string temp = string("/app/parameters/multiplicands/")+string("/block0conv0multiplicands16_3_3_3/") +to_string(i)+string("_")+to_string(j)+string("_")+to_string(k)+string(".bin");
-                block0conv0multiplicands16_3_3_3[i][j][k].save(temp);
-            }
-        }
-    }
-
-    //#pragma omp parallel for 
-    for(int i=0; i<16; ++i){
-        string temp = string("/app/parameters/summands/block0conv0summands16/")+to_string(i)+string(".bin");
-        block0conv0summands16[i].save(temp);
-    }
-    
-    timer.end();
-    cout << "\n\n";
-
-
+  
     // cout << "test for conv0 multiplicands..." << "\n";
     // printMessage(ecd.decode(block0conv0multiplicands16_3_3_3[0][0][0]));
 
