@@ -27,8 +27,8 @@ find_package(HEaaN REQUIRED)
 ## add_executable(test Inference_test.cpp) 
 ## target_link_libraries(test PUBLIC HEaaN::HEaaN)
 
-add_executable(load 10000_load.cpp)
-target_link_libraries(load PUBLIC HEaaN::HEaaN)
+add_executable(save 10000save.cpp)
+target_link_libraries(save PUBLIC HEaaN::HEaaN)
 
 add_executable(pre preprocessing.cpp) 
 target_link_libraries(pre PUBLIC HEaaN::HEaaN)
@@ -42,8 +42,8 @@ target_link_libraries(relutest PUBLIC HEaaN::HEaaN)
 ## add_executable(conv Conv.cpp) 
 ## target_link_libraries(conv PUBLIC HEaaN::HEaaN)
 
-add_executable(10000test 10000.cpp) 
-target_link_libraries(10000test PUBLIC HEaaN::HEaaN)
+add_executable(nosave 10000.cpp) 
+target_link_libraries(nosave PUBLIC HEaaN::HEaaN)
 
 add_executable(oddLazyBSGS oddLazyBSGStest.cpp) 
 target_link_libraries(oddLazyBSGS PUBLIC HEaaN::HEaaN)
