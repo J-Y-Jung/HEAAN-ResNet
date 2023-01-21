@@ -37,7 +37,7 @@ void txtreader(vector<double>& kernel, const string filename) {
 
 vector<double> slice(const std::vector<double>& input, int a, int b) {
     auto first = input.begin() + a;
-    auto last = input.begin() + b+1;
+    auto last = input.begin() + b;
     return std::vector<double>(first, last);
 }
 
