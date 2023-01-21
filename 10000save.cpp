@@ -282,7 +282,7 @@ int main() {
     string pathtemp0 = string("/app/block0/");
     string pathtemp0msg = pathtemp0 + string("msg/");
     string pathtemp0ctxt = pathtemp0 + string("ctxt/");
-    saveMsgBundle(sk, ctxt_block0relu0_out, pathtemp0msg);
+    saveMsgBundle(dec, sk, ctxt_block0relu0_out, pathtemp0msg);
     saveCtxtBundle(ctxt_block0relu0_out, pathtemp0ctxt);
     cout << "DONE...\n\n";
     
@@ -407,7 +407,7 @@ int main() {
     ////////////////save//////////////
     cout<< "saving block1main1 info... \n\n";
     string pathtemp1msg1 = pathtemp1 + string("msg/main1/");
-    saveMsgBundle(sk, ctxt_block1relu0_out, pathtemp1msg1);
+    saveMsgBundle(dec, sk, ctxt_block1relu0_out, pathtemp1msg1);
     cout << "DONE...\n\n";
     
     ////////////////////////////////////
@@ -478,7 +478,7 @@ int main() {
     ////////////////save//////////////
     cout<< "saving block1main2 info... \n\n";
     string pathtemp1msg2 = pathtemp1 + string("msg/main2/");
-    saveMsgBundle(sk, ctxt_block1conv1_out, pathtemp1msg2);
+    saveMsgBundle(dec, sk, ctxt_block1conv1_out, pathtemp1msg2);
     cout << "DONE...\n\n";
     
     ////////////////////////////////////
@@ -561,7 +561,7 @@ int main() {
     cout<< "saving block1add info... \n\n";
     string pathtemp1msg4 = pathtemp1 + string("msg/add/");
     
-    saveMsgBundle(sk, ctxt_block1relu1_out, pathtemp1msg4);
+    saveMsgBundle(dec, sk, ctxt_block1relu1_out, pathtemp1msg4);
     saveCtxtBundle(ctxt_block1relu1_out, pathtemp1ctxt);
     cout << "DONE...\n\n";
     
@@ -676,7 +676,7 @@ int main() {
     ////////////////save//////////////
     cout<< "saving block2main1 info... \n\n";
     string pathtemp2msg1 = pathtemp2 + string("msg/main1/");
-    saveMsgBundle(sk, ctxt_block2relu0_out, pathtemp2msg1);
+    saveMsgBundle(dec, sk, ctxt_block2relu0_out, pathtemp2msg1);
     cout << "DONE...\n\n";
     
     ////////////////////////////////////
@@ -729,7 +729,7 @@ int main() {
     ////////////////save//////////////
     cout<< "saving block2main2 info... \n\n";
     string pathtemp2msg2 = pathtemp2 + string("msg/main2/");
-    saveMsgBundle(sk, ctxt_block2conv1_out, pathtemp2msg2);
+    saveMsgBundle(dec, sk, ctxt_block2conv1_out, pathtemp2msg2);
     cout << "DONE...\n\n";
     
     ////////////////////////////////////
@@ -815,7 +815,7 @@ int main() {
     cout<< "saving block2add info... \n\n";
     string pathtemp2msg4 = pathtemp2 + string("msg/add/");
     
-    saveMsgBundle(sk, ctxt_block2relu1_out, pathtemp2msg4);
+    saveMsgBundle(dec, sk, ctxt_block2relu1_out, pathtemp2msg4);
     saveCtxtBundle(ctxt_block2relu1_out, pathtemp2ctxt);
     cout << "DONE...\n\n";
     
@@ -928,7 +928,7 @@ int main() {
     ////////////////save//////////////
     cout<< "saving block3main1 info... \n\n";
     string pathtemp3msg1 = pathtemp3 + string("msg/main1/");
-    saveMsgBundle(sk, ctxt_block3relu0_out, pathtemp3msg1);
+    saveMsgBundle(dec, sk, ctxt_block3relu0_out, pathtemp3msg1);
     cout << "DONE...\n\n";
     
     ////////////////////////////////////
@@ -994,7 +994,7 @@ int main() {
     ////////////////save//////////////
     cout<< "saving block3main2 info... \n\n";
     string pathtemp3msg2 = pathtemp3 + string("msg/main2/");
-    saveMsgBundle(sk, ctxt_block3conv1_out, pathtemp3msg2);
+    saveMsgBundle(dec, sk, ctxt_block3conv1_out, pathtemp3msg2);
     cout << "DONE...\n\n";
     
     ////////////////////////////////////
@@ -1074,7 +1074,7 @@ int main() {
     cout<< "saving block3add info... \n\n";
     string pathtemp3msg4 = pathtemp3 + string("msg/add/");
     
-    saveMsgBundle(sk, ctxt_block3relu1_out, pathtemp3msg4);
+    saveMsgBundle(dec, sk, ctxt_block3relu1_out, pathtemp3msg4);
     saveCtxtBundle(ctxt_block3relu1_out, pathtemp3ctxt);
     cout << "DONE...\n\n";
     
@@ -1228,7 +1228,7 @@ int main() {
     cout<< "saving block4res info... \n\n";
     string pathtemp4msg3 = pathtemp4 + string("msg/res/");
     
-    saveMsgBundle(sk, ctxt_block4MPP1_out, pathtemp4msg3);
+    saveMsgBundle(dec, sk, ctxt_block4MPP1_out, pathtemp4msg3);
     cout << "DONE...\n\n";
     
     ////////////////////////////////////
@@ -1369,7 +1369,7 @@ int main() {
     ////////////////save//////////////
     cout<< "saving block4main1 info... \n\n";
     string pathtemp4msg1 = pathtemp4 + string("msg/main1/");
-    saveMsgBundle(sk, ctxt_block4relu0_out, pathtemp4msg1);
+    saveMsgBundle(dec, sk, ctxt_block4relu0_out, pathtemp4msg1);
     cout << "DONE...\n\n";
     
     ////////////////////////////////////
@@ -1436,7 +1436,7 @@ int main() {
     ////////////////save//////////////
     cout<< "saving block4main2 info... \n\n";
     string pathtemp4msg2 = pathtemp4 + string("msg/main2/");
-    saveMsgBundle(sk, ctxt_block4conv1_out, pathtemp4msg2);
+    saveMsgBundle(dec, sk, ctxt_block4conv1_out, pathtemp4msg2);
     cout << "DONE...\n\n";
     
     ////////////////////////////////////
@@ -1497,7 +1497,7 @@ int main() {
     cout<< "saving block4add info... \n\n";
     string pathtemp4msg4 = pathtemp4 + string("msg/add/");
     
-    saveMsgBundle(sk, ctxt_block4relu1_out, pathtemp4msg4);
+    saveMsgBundle(dec, sk, ctxt_block4relu1_out, pathtemp4msg4);
     saveCtxtBundle(ctxt_block4relu1_out, pathtemp4ctxt);
     cout << "DONE...\n\n";
     
@@ -1602,7 +1602,7 @@ int main() {
     ////////////////save//////////////
     cout<< "saving block5main1 info... \n\n";
     string pathtemp5msg1 = pathtemp5 + string("msg/main1/");
-    saveMsgBundle(sk, ctxt_block5relu0_out, pathtemp5msg1);
+    saveMsgBundle(dec, sk, ctxt_block5relu0_out, pathtemp5msg1);
     cout << "DONE...\n\n";
     
     ////////////////////////////////////
@@ -1662,7 +1662,7 @@ int main() {
     ////////////////save//////////////
     cout<< "saving block5main2 info... \n\n";
     string pathtemp5msg2 = pathtemp5 + string("msg/main2/");
-    saveMsgBundle(sk, ctxt_block5conv1_out, pathtemp5msg2);
+    saveMsgBundle(dec, sk, ctxt_block5conv1_out, pathtemp5msg2);
     cout << "DONE...\n\n";
     
     ////////////////////////////////////
@@ -1723,7 +1723,7 @@ int main() {
     cout<< "saving block5add info... \n\n";
     string pathtemp5msg4 = pathtemp5 + string("msg/add/");
     
-    saveMsgBundle(sk, ctxt_block5relu1_out, pathtemp5msg4);
+    saveMsgBundle(dec, sk, ctxt_block5relu1_out, pathtemp5msg4);
     saveCtxtBundle(ctxt_block5relu1_out, pathtemp5ctxt);
     cout << "DONE...\n\n";
     
@@ -1832,7 +1832,7 @@ int main() {
     ////////////////save//////////////
     cout<< "saving block6main1 info... \n\n";
     string pathtemp6msg1 = pathtemp6 + string("msg/main1/");
-    saveMsgBundle(sk, ctxt_block6relu0_out, pathtemp6msg1);
+    saveMsgBundle(dec, sk, ctxt_block6relu0_out, pathtemp6msg1);
     cout << "DONE...\n\n";
     
     ////////////////////////////////////
@@ -1896,7 +1896,7 @@ int main() {
     ////////////////save//////////////
     cout<< "saving block6main2 info... \n\n";
     string pathtemp6msg2 = pathtemp6 + string("msg/main2/");
-    saveMsgBundle(sk, ctxt_block6conv1_out, pathtemp6msg2);
+    saveMsgBundle(dec, sk, ctxt_block6conv1_out, pathtemp6msg2);
     cout << "DONE...\n\n";
     
     ////////////////////////////////////
@@ -1956,7 +1956,7 @@ int main() {
     cout<< "saving block6add info... \n\n";
     string pathtemp6msg4 = pathtemp6 + string("msg/add/");
     
-    saveMsgBundle(sk, ctxt_block6relu1_out, pathtemp6msg4);
+    saveMsgBundle(dec, sk, ctxt_block6relu1_out, pathtemp6msg4);
     saveCtxtBundle(ctxt_block6relu1_out, pathtemp6ctxt);
     cout << "DONE...\n\n";
     
@@ -2079,7 +2079,7 @@ int main() {
     cout<< "saving block7res info... \n\n";
     string pathtemp7msg3 = pathtemp7 + string("msg/res/");
     
-    saveMsgBundle(sk, ctxt_block7MPP1_out, pathtemp7msg3);
+    saveMsgBundle(dec, sk, ctxt_block7MPP1_out, pathtemp7msg3);
     cout << "DONE...\n\n";
     
     ////////////////////////////////////
@@ -2203,7 +2203,7 @@ int main() {
     ////////////////save//////////////
     cout<< "saving block7main1 info... \n\n";
     string pathtemp7msg1 = pathtemp7 + string("msg/main1/");
-    saveMsgBundle(sk, ctxt_block7relu0_out, pathtemp7msg1);
+    saveMsgBundle(dec, sk, ctxt_block7relu0_out, pathtemp7msg1);
     cout << "DONE...\n\n";
     
     ////////////////////////////////////
@@ -2264,7 +2264,7 @@ int main() {
     ////////////////save//////////////
     cout<< "saving block7main2 info... \n\n";
     string pathtemp7msg2 = pathtemp7 + string("msg/main2/");
-    saveMsgBundle(sk, ctxt_block7conv1_out, pathtemp7msg2);
+    saveMsgBundle(dec, sk, ctxt_block7conv1_out, pathtemp7msg2);
     cout << "DONE...\n\n";
     
     ////////////////////////////////////
@@ -2313,7 +2313,7 @@ int main() {
     cout<< "saving block7add info... \n\n";
     string pathtemp7msg4 = pathtemp7 + string("msg/add/");
     
-    saveMsgBundle(sk, ctxt_block7relu1_out, pathtemp7msg4);
+    saveMsgBundle(dec, sk, ctxt_block7relu1_out, pathtemp7msg4);
     saveCtxtBundle(ctxt_block7relu1_out, pathtemp7ctxt);
     cout << "DONE...\n\n";
     
@@ -2398,7 +2398,7 @@ int main() {
     ////////////////save//////////////
     cout<< "saving block8main1 info... \n\n";
     string pathtemp8msg1 = pathtemp8 + string("msg/main1/");
-    saveMsgBundle(sk, ctxt_block8relu0_out, pathtemp8msg1);
+    saveMsgBundle(dec, sk, ctxt_block8relu0_out, pathtemp8msg1);
     cout << "DONE...\n\n";
     
     ////////////////////////////////////
@@ -2458,7 +2458,7 @@ int main() {
     ////////////////save//////////////
     cout<< "saving block8main2 info... \n\n";
     string pathtemp8msg2 = pathtemp8 + string("msg/main2/");
-    saveMsgBundle(sk, ctxt_block8conv1_out, pathtemp8msg2);
+    saveMsgBundle(dec, sk, ctxt_block8conv1_out, pathtemp8msg2);
     cout << "DONE...\n\n";
     
     ////////////////////////////////////
@@ -2509,7 +2509,7 @@ int main() {
     cout<< "saving block8add info... \n\n";
     string pathtemp8msg4 = pathtemp8 + string("msg/add/");
     
-    saveMsgBundle(sk, ctxt_block8relu1_out, pathtemp8msg4);
+    saveMsgBundle(dec, sk, ctxt_block8relu1_out, pathtemp8msg4);
     saveCtxtBundle(ctxt_block8relu1_out, pathtemp8ctxt);
     cout << "DONE...\n\n";
     
@@ -2598,7 +2598,7 @@ int main() {
     ////////////////save//////////////
     cout<< "saving block9main1 info... \n\n";
     string pathtemp9msg1 = pathtemp9 + string("msg/main1/");
-    saveMsgBundle(sk, ctxt_block9relu0_out, pathtemp9msg1);
+    saveMsgBundle(dec, sk, ctxt_block9relu0_out, pathtemp9msg1);
     cout << "DONE...\n\n";
     
     ////////////////////////////////////
@@ -2655,7 +2655,7 @@ int main() {
     ////////////////save//////////////
     cout<< "saving block9main2 info... \n\n";
     string pathtemp9msg2 = pathtemp9 + string("msg/main2/");
-    saveMsgBundle(sk, ctxt_block9conv1_out, pathtemp9msg2);
+    saveMsgBundle(dec, sk, ctxt_block9conv1_out, pathtemp9msg2);
     cout << "DONE...\n\n";
     
     ////////////////////////////////////
@@ -2704,7 +2704,7 @@ int main() {
     cout<< "saving block9add info... \n\n";
     string pathtemp9msg4 = pathtemp9 + string("msg/add/");
     
-    saveMsgBundle(sk, ctxt_block9relu1_out, pathtemp9msg4);
+    saveMsgBundle(dec, sk, ctxt_block9relu1_out, pathtemp9msg4);
     saveCtxtBundle(ctxt_block9relu1_out, pathtemp9ctxt);
     cout << "DONE...\n\n";
     
