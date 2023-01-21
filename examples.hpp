@@ -95,7 +95,7 @@ void saveMessage(const HEaaN::Message &msg, const string filepath) {
 
     fileReal.close();
     
-    ofstream fileImg(filepathImag);
+    ofstream fileImag(filepathImag);
     fileImag.precision(7);
 
     for (size_t j=0; j< msg_size; ++j){
@@ -116,7 +116,7 @@ void saveMsgVector(Decryptor dec, SecretKey sk, vector<Ciphertext>& ctxt_vector,
     
     int n= ctxt_vector.size();
     Message msg_init(15);
-    vector<Message> msg_vector(n, msg_init));
+    vector<Message> msg_vector(n, msg_init);
     
     #pragma omp parallel for
     for (int i=0; i<n; ++i){
