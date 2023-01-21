@@ -2860,6 +2860,7 @@ int main() {
     
     
     cout << "uploading for FC64 layer ...\n\n";
+    timer.start(" FC64 layer * ");
     vector<double> temp21;
     vector<vector<Plaintext>> fclayermultiplicands10_64(10, vector<Plaintext>(64, ptxt_init));
     string path21 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("fclayermultiplicands10_64");
