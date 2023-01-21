@@ -151,7 +151,7 @@ int main() {
     ofstream file("/app/HEAAN-ResNet/savetest.txt");
     for (int i = 0; i < 512; ++i) {
         int max_index = i;
-        file << max_index << "\n";
+        file << max_index << ", ";
     }
 
     file.close();
