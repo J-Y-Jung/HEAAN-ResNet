@@ -144,7 +144,7 @@ void saveCtxtBundle(vector<vector<Ciphertext>>& ctxt_bundle, const string filepa
     #pragma omp parallel for collapse(2)
     for (int i=0; i<n1; ++i){
         for (int j=0; j<n2; ++j){
-            string path = string path = filepath + to_string(i)+string("_")+to_string(j)+string(".bin");
+            string path = filepath + to_string(i)+string("_")+to_string(j)+string(".bin");
             ctxt_bundle[i][j].save(path);
         }
     }
