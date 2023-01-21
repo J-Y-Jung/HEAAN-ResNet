@@ -1,3 +1,4 @@
+//savefile 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 // Copyright (C) 2021-2022 Crypto Lab Inc.                                    //
@@ -12,7 +13,7 @@
 #include <fstream>
 #include <optional>
 #include <random>
-
+#include <omp.h>
 #include "HEaaN/heaan.hpp"
 
 namespace {
@@ -80,23 +81,59 @@ void saveMessage(const HEaaN::Message &msg, const string filepath) {
 
     const size_t msg_size = msg.getSize();
     
-    string filepathReal = filepath + "_real.txt";
-    string filepathImg = filepath + "_img.txt";
+    string filepathReal = filepath + string("_real.txt");
+    string filepathImag = filepath + string("_imag.txt");
     
     ofstream fileReal(filepathReal);
+    fileReal.precision(7);
+
+    #pragma omp parallel for
     for (size_t j=0; j< msg_size; ++j){
-        fileReal << msg[j].real() << "\n";
+
+        if (j%32 ==31) fileReal << msg[j].real() << ",\n";
+        else fileReal << msg[j].real() << ", ";
     }
+
     fileReal.close();
     
-    ofstream fileImg(filepathImg);
+    ofstream fileImg(filepathImag);
+    fileImag.precision(7);
+
+    #pragma omp parallel for
     for (size_t j=0; j< msg_size; ++j){
-        fileImg << msg[j].imag() << "\n";
+
+        if (j%32 ==31) fileImag << msg[j].imag() << ",\n";
+        else fileImag << msg[j].imag() << ", ";
+
     }
     
-    fileImg.close();
+    fileImag.close();
     
     return;
+
+}
+
+
+void savePtxtBundle(SecretKey sk, vector<vector<Ciphertext>>& ctxt_bundle, const string filepath){
+    
+    int n1= ctxt_bundle.size();
+    int n2= ctxt_bundle[0].size();
+
+    Message msg_init(15);
+
+    vector<vector<Message>> msg_bundle(n1, vector<Message>(n2, msg_init));
+
+    #pragma omp parallel for collapse(2)
+    for (int i=0; i<n1; ++i){
+        for (int j=0; j<n2; ++j){
+            string path = filepath + to_string(i)+string("_")+to_string(j);
+            dec.decrypt(ctxt_bundle[i][j], sk, msg_bundle[i][j]);
+            saveMessage(msg_bundle[i][j], path);
+        }
+    }
+
+    return;
+
 
 }
 
