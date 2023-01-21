@@ -16,16 +16,32 @@ HEaaN::Ciphertext singleAvgpool(HEaaN::Context context, HEaaN::KeyPack pack, HEa
     return ctxt;
 }
 
+HEaaN::Ciphertext singleAvgpool2(HEaaN::Context context, HEaaN::KeyPack pack, HEaaN::HomEvaluator eval, HEaaN::Ciphertext &ctxt) {
+    Ciphertext ctxt_temp(context);
+    eval.leftRotate(ctxt, 4*32*4, ctxt_temp);
+    eval.add(ctxt, ctxt_temp, ctxt);
+    eval.leftRotate(ctxt, 4*32*2, ctxt_temp);
+    eval.add(ctxt, ctxt_temp, ctxt);
+    eval.leftRotate(ctxt, 4*32*1, ctxt_temp);
+    eval.add(ctxt, ctxt_temp, ctxt);
+    eval.leftRotate(ctxt, 4*4, ctxt_temp);
+    eval.add(ctxt, ctxt_temp, ctxt);
+    eval.leftRotate(ctxt, 4*2, ctxt_temp);
+    eval.add(ctxt, ctxt_temp, ctxt);
+    eval.leftRotate(ctxt, 4*1, ctxt_temp);
+    eval.add(ctxt, ctxt_temp, ctxt);
+    return ctxt;
+}
+
 vector<HEaaN::Ciphertext> Avgpool(HEaaN::Context context, HEaaN::KeyPack pack, HEaaN::HomEvaluator eval, vector<HEaaN::Ciphertext> &ctxt) {
 	levelDownVector(context,pack,eval,ctxt, 1);
     u64 n = ctxt.size();
     #pragma omp parallel for
     for (u64 i=0; i<n;i++){
-        ctxt[i] = singleAvgpool(context, pack, eval, ctxt[i]);
+        ctxt[i] = singleAvgpool2(context, pack, eval, ctxt[i]);
     }
 	return ctxt;
 }
-
 
 //we delete scaling in Avgpool by 1/64 and add multiplying 64 to bias vectors in preprocessing 
 //old version assuming 16-channel multiplexed packing
