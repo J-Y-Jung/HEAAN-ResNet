@@ -1740,7 +1740,7 @@ int main() {
     ////// RB 5 ////////////
     ///////////////////////
     string pathtemp6 = string("/app/block6/");
-    string pathtemp6ctxt = pathtemp6 + string("ctxt/")
+    string pathtemp6ctxt = pathtemp6 + string("ctxt/");
 
 
 
@@ -2738,7 +2738,7 @@ int main() {
     cout<< "saving avgp info... \n\n";
     string pathtemp10msg = pathtemp9 + string("msg/");
     
-    saveMsgVector(sk, ctxt_avgp_out, pathtemp10msg);
+    saveMsgVector(dec, sk, ctxt_avgp_out, pathtemp10msg);
     saveCtxtVector(ctxt_avgp_out, pathtemp10ctxt);
     cout << "DONE...\n\n";
     
@@ -2789,7 +2789,7 @@ int main() {
     cout<< "saving fc64 info... \n\n";
     string pathtemp11msg = pathtemp9 + string("msg/");
     
-    saveMsgVector(sk, ctxt_result, pathtemp11msg);
+    saveMsgVector(dec, sk, ctxt_result, pathtemp11msg);
     saveCtxtVector(ctxt_result, pathtemp11ctxt);
     cout << "DONE...\n\n";
     
