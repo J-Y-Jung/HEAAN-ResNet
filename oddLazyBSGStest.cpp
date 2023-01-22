@@ -155,12 +155,15 @@ int main() {
     
     Ciphertext ctxt_relu(context);
     
+    cout << "evaluating ReLU ... \n";
     ApproxReLU(context, eval, ctxt, ctxt_relu, polytime, btstime, etctime);
     
     dec.decrypt(ctxt_relu, sk, dmsg1);
     printMessage(dmsg1, false);
     
-    cout << polytime << btstime << etctime <<endl;
+    cout << "time for eval poly = " << polytime <<"\n";
+    cout << "time for bts = " << btstime <<"\n";
+    cout << "time for etc = " << etctime <<"\n";
     
     return 0;
     
