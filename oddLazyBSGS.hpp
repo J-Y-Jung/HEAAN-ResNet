@@ -217,30 +217,18 @@ void evalOddPolynomial(HEaaN::Context context, HEaaN::HomEvaluator eval,
 }
 
 //Aproximated ReLU function.
-void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphertext& ctxt, HEaaN::Ciphertext& ctxt_relu, double polytime, double btstime, double etctime) {
+void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphertext& ctxt, HEaaN::Ciphertext& ctxt_relu) {
     
-    clock_t start1, start2, start3, start4, start5, start6, start7, end1, end2, end3, end4, end5, end6, end7;
     
-    double result1;
-    start1 = clock();
     HEaaN::Ciphertext ctxt_temp(context);
     eval.conjugate(ctxt, ctxt_temp);
     eval.add(ctxt_temp, ctxt, ctxt_temp);
     eval.mult(ctxt_temp, 0.5, ctxt_temp);
-    end1 = clock();
-    result1 = (double)(end1 - start1);
+
     
-    etctime += result1;
-    
-    
-    double result2;
-    start2 = clock();
     HEaaN::Ciphertext ctxt_real_BTS(context);
     eval.bootstrap(ctxt_temp, ctxt_real_BTS, true);
-    end2 = clock();
-    result2 = (double)(end2 - start2);
-    
-    btstime += result2;
+
 
     std::vector<double> polynomial_1 = {
     1.34595769293910e-33, 2.45589415425004e1, 4.85095667238242e-32, -6.69660449716894e2,
@@ -272,52 +260,21 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
         polynomial_3[i] = polynomial_3[i] * 0.5;
     }
 
-
-    double result3;
-    start3 = clock();
     evalOddPolynomial(context, eval, ctxt_real_BTS, ctxt_temp, polynomial_1, 4, 2);
-    end3 = clock();
-    result3 = (double)(end3 -start3);
-    
-    polytime += result3;
-    
-    double result4;
-    start4 = clock();
+
     HEaaN::Ciphertext ctxt_temp1(context);
     evalOddPolynomial(context, eval, ctxt_temp, ctxt_temp1, polynomial_2, 2, 3);
-    end4 = clock();
-    result4 = (double)(end4 - start4);
-    
-    polytime += result4;
-    
-    
-    double result5;
-    start5 = clock();
+ 
     eval.bootstrap(ctxt_temp1, ctxt_temp, true);
-    end5 = clock();
-    result5 = (double)(end5 - start5);
-   
-    btstime += result5;
-    
-    double result6;
-    start6 = clock();
+
     evalOddPolynomial(context, eval, ctxt_temp, ctxt_temp1, polynomial_3, 4, 3);
-    end6 = clock();
-    result6 = (double)(end6 - start6);
-    
-    polytime += result6;
-    
-    double result7;
-    start7 = clock();
+
     eval.mult(ctxt_real_BTS, 0.5, ctxt_temp);
     eval.mult(ctxt_real_BTS, ctxt_temp1, ctxt_relu);
     eval.add(ctxt_temp, ctxt_relu, ctxt_relu);
     
     eval.levelDown(ctxt_relu, 5, ctxt_relu);
-    end7 = clock();
-    result7 = (double)(end7-start7);
-    
-    etctime += result7;
+
     
     return;
     
