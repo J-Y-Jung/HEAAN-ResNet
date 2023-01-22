@@ -218,16 +218,19 @@ void evalOddPolynomial(HEaaN::Context context, HEaaN::HomEvaluator eval,
 
 //Aproximated ReLU function.
 void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphertext& ctxt, HEaaN::Ciphertext& ctxt_relu) {
-    
-    
+    cout << "input ctxt level = " << ctxt.getLevel() <<"\n";
     HEaaN::Ciphertext ctxt_temp(context);
     eval.conjugate(ctxt, ctxt_temp);
     eval.add(ctxt_temp, ctxt, ctxt_temp);
     eval.mult(ctxt_temp, 0.5, ctxt_temp);
+    
+    cout << "after imaginary removal = " << ctxt_temp.getLevel() << "\n";
 
     
     HEaaN::Ciphertext ctxt_real_BTS(context);
     eval.bootstrap(ctxt_temp, ctxt_real_BTS, true);
+    
+    cout << "after 1st BTS = " << ctxt_real_BTS.getLevel() << "\n";
 
 
     std::vector<double> polynomial_1 = {
@@ -261,20 +264,27 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     }
 
     evalOddPolynomial(context, eval, ctxt_real_BTS, ctxt_temp, polynomial_1, 4, 2);
+    
+    cout << "after 1st poly eval = " << ctxt_temp.getLevel() << "\n";
 
     HEaaN::Ciphertext ctxt_temp1(context);
     evalOddPolynomial(context, eval, ctxt_temp, ctxt_temp1, polynomial_2, 2, 3);
  
+    
+    cout << "after 2nd poly eval = " << ctxt_temp1.getLevel() << "\n";
     eval.bootstrap(ctxt_temp1, ctxt_temp, true);
-
+    
+    cout << "after 2nd BTS = " << ctxt_temp.getLevel() << "\n";
     evalOddPolynomial(context, eval, ctxt_temp, ctxt_temp1, polynomial_3, 4, 3);
-
+    
+    cout << "after 3rd poly eval = " << ctxt_temp1.getLevel() << "\n";
+    
     eval.mult(ctxt_real_BTS, 0.5, ctxt_temp);
     eval.mult(ctxt_real_BTS, ctxt_temp1, ctxt_relu);
     eval.add(ctxt_temp, ctxt_relu, ctxt_relu);
     
+    cout << "final level = " << ctxt_relu.getLevel() << "\n";
     eval.levelDown(ctxt_relu, 5, ctxt_relu);
-
     
     return;
     
