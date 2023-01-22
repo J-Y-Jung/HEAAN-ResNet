@@ -2865,7 +2865,9 @@ int main() {
     string path21 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("fclayermultiplicands10_64");
     double cnst2 = (double)(1.0 / 64.0);
     Scaletxtreader(temp21, path21,cnst2);
-
+    
+    
+    #pragma omp parallel for collapse(2)
     for (int i = 0; i < 10; ++i) {
         for (int j = 0; j < 64; ++j) {
             Message msg(log_slots, temp21[64 * i + j]);
