@@ -146,15 +146,20 @@ int main() {
 
     std::cout << std::endl << "Decrypted result vector : " << std::endl;
     printMessage(dmsg1, false);
-
     
-    ofstream file("/app/HEAAN-ResNet/savetest.txt");
-    for (int i = 0; i < 512; ++i) {
-        int max_index = i;
-        file << max_index << ", ";
-    }
-
-    file.close();
+    
+    double polytime=0.0;
+    double btstime = 0.0;
+    double etctime = 0.0;
+    
+    Ciphertext ctxt_relu(context);
+    
+    ApproxReLU(context, eval, ctxt, ctxt_relu, polytime, btstime, etctime);
+    
+    dec.decrypt(ctxt_relu, sk, dmsg1);
+    printMessage(dmsg1, false);
+    
+    cout << polytime << btstime << etctime <<endl;
     
     return 0;
     
