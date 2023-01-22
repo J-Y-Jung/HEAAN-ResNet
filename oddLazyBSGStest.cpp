@@ -112,22 +112,6 @@ int main() {
     EnDecoder ecd(context);
     Ciphertext ctxt_relu(context);
     
-    cout << "evaluating ReLU ... \n";
-    
-    cout << "imaginary removing ...\n";
-    timer.start(" * ");
-    HEaaN::Ciphertext ctxt_temp(context);
-    eval.conjugate(ctxt, ctxt_temp);
-    eval.add(ctxt_temp, ctxt, ctxt_temp);
-    eval.mult(ctxt_temp, 0.5, ctxt_temp);
-    timer.end();
-    
-    cout << "1st BTS...\n";
-    timer.start(" * ");
-    HEaaN::Ciphertext ctxt_real_BTS(context);
-    eval.bootstrap(ctxt_temp, ctxt_real_BTS, true);
-    timer.end();
-    
     std::vector<double> polynomial_1 = {
     1.34595769293910e-33, 2.45589415425004e1, 4.85095667238242e-32, -6.69660449716894e2,
     -2.44541235853840e-30, 6.67299848301339e3, 1.86874811944640e-29, -3.06036656163898e4,
@@ -158,34 +142,60 @@ int main() {
         polynomial_3[i] = polynomial_3[i] * 0.5;
     }
     
-    cout<< "1st poly evaluation ...\n";
-    timer.start(" * ");
-    evalOddPolynomial(context, eval, ctxt_real_BTS, ctxt_temp, polynomial_1, 4, 2);
-    timer.end();
     
-    cout << "2nd poly evaluation ...\n";
-    timer.start(" * ");
-    HEaaN::Ciphertext ctxt_temp1(context);
-    evalOddPolynomial(context, eval, ctxt_temp, ctxt_temp1, polynomial_2, 2, 3);
-    timer.end();
-    
-    cout << "2nd BTS ... \n";
-    timer.start(" * ");
-    eval.bootstrap(ctxt_temp1, ctxt_temp, true);
-    timer.end();
-    
-    cout << "3rd poly evaluation ...\n";
-    timer.start(" * ");
-    evalOddPolynomial(context, eval, ctxt_temp, ctxt_temp1, polynomial_3, 4, 3);
-    timer.end();
-    
-    cout << "evaluating for ReLU ... ";
-    timer.start(" * ");
-    eval.mult(ctxt_real_BTS, 0.5, ctxt_temp);
-    eval.mult(ctxt_real_BTS, ctxt_temp1, ctxt_relu);
-    eval.add(ctxt_temp, ctxt_relu, ctxt_relu);
-    eval.levelDown(ctxt_relu, 5, ctxt_relu);
-    timer.end();
+    #pragma omp parallel num_threads(1)
+    {
+        cout << "evaluating ReLU ... \n";
+
+        cout << "imaginary removing ...\n";
+        timer.start(" * ");
+        HEaaN::Ciphertext ctxt_temp(context);
+        eval.conjugate(ctxt, ctxt_temp);
+        eval.add(ctxt_temp, ctxt, ctxt_temp);
+        eval.mult(ctxt_temp, 0.5, ctxt_temp);
+        timer.end();
+
+        cout << "1st BTS...\n";
+        timer.start(" * ");
+        HEaaN::Ciphertext ctxt_real_BTS(context);
+        eval.bootstrap(ctxt_temp, ctxt_real_BTS, true);
+        timer.end();
+
+
+        //for optimization
+        for(int  i = 0 ; i < 28 ; ++i){
+            polynomial_3[i] = polynomial_3[i] * 0.5;
+        }
+
+        cout<< "1st poly evaluation ...\n";
+        timer.start(" * ");
+        evalOddPolynomial(context, eval, ctxt_real_BTS, ctxt_temp, polynomial_1, 4, 2);
+        timer.end();
+
+        cout << "2nd poly evaluation ...\n";
+        timer.start(" * ");
+        HEaaN::Ciphertext ctxt_temp1(context);
+        evalOddPolynomial(context, eval, ctxt_temp, ctxt_temp1, polynomial_2, 2, 3);
+        timer.end();
+
+        cout << "2nd BTS ... \n";
+        timer.start(" * ");
+        eval.bootstrap(ctxt_temp1, ctxt_temp, true);
+        timer.end();
+
+        cout << "3rd poly evaluation ...\n";
+        timer.start(" * ");
+        evalOddPolynomial(context, eval, ctxt_temp, ctxt_temp1, polynomial_3, 4, 3);
+        timer.end();
+
+        cout << "evaluating for ReLU ... ";
+        timer.start(" * ");
+        eval.mult(ctxt_real_BTS, 0.5, ctxt_temp);
+        eval.mult(ctxt_real_BTS, ctxt_temp1, ctxt_relu);
+        eval.add(ctxt_temp, ctxt_relu, ctxt_relu);
+        eval.levelDown(ctxt_relu, 5, ctxt_relu);
+        timer.end();
+    }
     
     return 0;
     
