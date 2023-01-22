@@ -113,28 +113,29 @@ int main() {
     
     Message dmsg;
 
-    timer.start("normal");
+//     timer.start("normal");
+//     for(int i = 0 ; i < 4 ; i++){
+//         for(int j = 0 ; j < 32 ; j++){
+//             ApproxReLU(context,eval,ctxt_bundle[i][j] , ctxt_out_bundle[i][j]);
+//         }
+//     }
+//     timer.end();
+    
+//     dec.decrypt(ctxt_out_bundle[0][0], sk, dmsg);
+//     printMessage(dmsg);
+    
+
+   
+    timer.start("method 1");
+    #pragma omp parallel for collapse(2)
     for(int i = 0 ; i < 4 ; i++){
         for(int j = 0 ; j < 32 ; j++){
-            ApproxReLU(context,eval,ctxt_bundle[i][j] , ctxt_out_bundle[i][j]);
+            ApproxReLU(context, eval, ctxt_bundle[i][j] , ctxt_out_bundle[i][j]);
         }
     }
-    timer.end();
     
     dec.decrypt(ctxt_out_bundle[0][0], sk, dmsg);
     printMessage(dmsg);
-    
-
-    /*
-    timer.start("method 1");
-    #pragma omp parallel for collapse(2)
-    for(int i = 0 ; i < n ; i++){
-        for(int j = 0 ; j < n ; j++){
-            ApproxReLU(context,eval,ctxt_bundle[i][j] , ctxt_out_bundle[i][j]);
-        }
-    }
-    timer.end();
-    */
 
     timer.start("method 2");
     ApproxReLU_bundle80(context, pack,eval, ctxt_bundle, ctxt_out_bundle);
