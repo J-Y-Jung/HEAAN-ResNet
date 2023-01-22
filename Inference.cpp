@@ -2796,7 +2796,7 @@ int main() {
 
     #pragma omp parallel for num_threads(64)
     for (int i = 0; i < 64; ++i) {
-        ApproxReLU(context, eval, ctxt_block9add_out[0][i], ctxt_block9relu1_out[0][i]);
+        ApproxReLUlast(context, eval, ctxt_block9add_out[0][i], ctxt_block9relu1_out[0][i]);
     }
     timer.end();
 
