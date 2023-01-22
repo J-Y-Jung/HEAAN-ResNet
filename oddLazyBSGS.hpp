@@ -217,7 +217,9 @@ void evalOddPolynomial(HEaaN::Context context, HEaaN::HomEvaluator eval,
 
 //Aproximated ReLU function.
 void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphertext& ctxt, HEaaN::Ciphertext& ctxt_relu, double polytime, double btstime, double etctime) {
-   
+    
+    clock_t start1, start2, start3, start4, start5, start6, start7, end1, end2, end3, end4, end5, end6, end7;
+    
     double result1;
     start1 = clock();
     HEaaN::Ciphertext ctxt_temp(context);
