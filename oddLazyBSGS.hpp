@@ -230,6 +230,8 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     end1 = clock();
     result1 = (double)(end1 - start1);
     
+    etctime += result1;
+    
     
     double result2;
     start2 = clock();
@@ -238,6 +240,7 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     end2 = clock();
     result2 = (double)(end2 - start2);
     
+    btstime += result2;
 
     std::vector<double> polynomial_1 = {
     1.34595769293910e-33, 2.45589415425004e1, 4.85095667238242e-32, -6.69660449716894e2,
@@ -276,6 +279,7 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     end3 = clock();
     result3 = (double)(end3 -start3);
     
+    polytime += result3;
     
     double result4;
     start4 = clock();
@@ -284,6 +288,8 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     end4 = clock();
     result4 = (double)(end4 - start4);
     
+    polytime += result4
+    
     
     double result5;
     start5 = clock();
@@ -291,6 +297,7 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     end5 = clock();
     result5 = (double)(end5 - start5);
    
+    btstime += result5;
     
     double result6;
     start6 = clock();
@@ -298,6 +305,7 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     end6 = clock();
     result6 = (double)(end6 - start6);
     
+    polytime += result6;
     
     double result7;
     start7 = clock();
@@ -309,8 +317,8 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     end7 = clock();
     result7 = (double)(end7-start7);
     
-    polytime += result3 + result4 +result6;
-    btstime += result2 + result5;
-    etctime += result1 + result7;
+    etctime += result7;
+    
+    return;
     
 }
