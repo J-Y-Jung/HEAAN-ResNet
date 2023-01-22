@@ -2986,12 +2986,12 @@ int main() {
         
         if (i%16 == 15) {
             cout << max_index << ",\n";
+            filesave << max_index <<",\n";
         }
         else{
             cout << max_index << ", ";
+            filesave << max_index <<", ";
         }
-        
-        filesave << max_index <<", ";
     }
     
     filesave.close();
