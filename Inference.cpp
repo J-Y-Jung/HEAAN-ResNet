@@ -2962,10 +2962,14 @@ int main() {
     ///////////// save file //////////////
     //////////////////////////////////////
     
+    int length;
+    if (num==20) length =272;
+    else length=512;
+    
     
     string filepath_last = string("/app/final/bundle")+to_string(num);
     
-    for (int i=1; i<=512; ++i){
+    for (int i=1; i<=length; ++i){
         string filepath = filepath_last + string("/result")+to_string(i)+string(".txt");
         ofstream file(filepath);
         for (int j=0; j< 10; ++j){
@@ -2981,7 +2985,7 @@ int main() {
     string savelabel = string("/app/output/bundle")+to_string(num)+".txt";
     ofstream filesave(savelabel);
     
-    for (int i = 0; i < 512; ++i) {
+    for (int i = 0; i < length; ++i) {
         int max_index = max_element(orderVec[i].begin(), orderVec[i].end()) - orderVec[i].begin();
         
         if (i%16 == 15) {
