@@ -158,6 +158,26 @@ int main() {
     }
     timer.end();
     
+    timer.start("method 3");
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_bundle1[i / 16][i % 16], ctxt_out_bundle1[i / 16][i % 16]);
+    }
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_bundle1[5 + (i / 16)][i % 16], ctxt_out_bundle1[5 + (i / 16)][i % 16]);
+    }
+    #pragma omp parallel for num_threads(80)
+    for (int i = 0; i < 80; ++i) {
+        ApproxReLU(context, eval, ctxt_bundle1[10 + (i / 16)][i % 16], ctxt_out_bundle1[10 + (i / 16)][i % 16]);
+    }
+    
+    #pragma omp parallel for
+    for (int i = 0; i < 16; ++i) {
+        ApproxReLU(context, eval, ctxt_bundle1[15][i % 16], ctxt_block3relu1_out[15][i % 16]);
+    }
+    timer.end();
+    
     ctxt_bundle1.clear();
     ctxt_bundle1.shrink_to_fit();
     ctxt_out_bundle1.clear();
@@ -184,12 +204,21 @@ int main() {
         ApproxReLU(context, eval, ctxt_bundle2[i/20][(i%20)] , ctxt_out_bundle2[i/20][(i%20)]);
     }
     
-    #pragma omp parallel for num_threads(80)
+    #pragma omp parallel for num_threads(48)
     for(int i = 0 ; i < 48 ; ++i){
-        #pragma omp parallel num_threads(80)
-        {
-            ApproxReLU(context, eval, ctxt_bundle2[i/12][20+(i%12)] , ctxt_out_bundle2[i/12][20+(i%12)]);
-        }
+        ApproxReLU(context, eval, ctxt_bundle2[i/12][20+(i%12)] , ctxt_out_bundle2[i/12][20+(i%12)]);
+    }
+    timer.end();
+    
+    timer.start("method 3");
+    #pragma omp parallel for num_threads(80)
+    for(int i = 0 ; i < 80 ; ++i){
+        ApproxReLU(context, eval, ctxt_bundle2[i/20][(i%20)] , ctxt_out_bundle2[i/20][(i%20)]);
+    }
+    
+    #pragma omp parallel for
+    for(int i = 0 ; i < 48 ; ++i){
+        ApproxReLU(context, eval, ctxt_bundle2[i/12][20+(i%12)] , ctxt_out_bundle2[i/12][20+(i%12)]);
     }
     timer.end();
     
