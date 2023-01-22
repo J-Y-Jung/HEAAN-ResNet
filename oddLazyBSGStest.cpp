@@ -6,6 +6,7 @@
 #include "kernelEncode.hpp"
 #include "imageEncode.hpp"
 #include <omp.h>
+#include <time.h>
 
 namespace {
     using namespace std;
