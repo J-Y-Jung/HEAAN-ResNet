@@ -133,6 +133,7 @@ int main() {
             ApproxReLU(context, eval, ctxt_bundle[i][j] , ctxt_out_bundle[i][j]);
         }
     }
+    timer.end();
     
     dec.decrypt(ctxt_out_bundle[0][0], sk, dmsg);
     printMessage(dmsg);
