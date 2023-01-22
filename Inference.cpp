@@ -2991,7 +2991,7 @@ int main() {
             cout << max_index << ", ";
         }
         
-        filesave << max_index <<"\n";
+        filesave << max_index <<", ";
     }
     
     filesave.close();
