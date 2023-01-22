@@ -106,7 +106,7 @@ int main() {
         << std::endl;
 
     std::cout << "Encrypt ... ";
-    enc.encrypt(msg, pack, ctxt);
+    enc.encrypt(msg, pack, ctxt, 4, 0);
     std::cout << "done" << std::endl;
     
     EnDecoder ecd(context);
