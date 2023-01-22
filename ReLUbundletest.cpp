@@ -153,7 +153,7 @@ int main() {
     for (int i = 0; i < 16; ++i) {
         #pragma omp parallel num_threads(5)
         {
-            ApproxReLU(context, eval, ctxt_bundle1[15][i % 16], ctxt_block3relu1_out[15][i % 16]);
+            ApproxReLU(context, eval, ctxt_bundle1[15][i % 16], ctxt_out_bundle1[15][i % 16]);
         }
     }
     timer.end();
