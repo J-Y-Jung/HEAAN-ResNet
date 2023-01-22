@@ -270,11 +270,11 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     }
 
 
-
     double result3;
     start3 = clock();
     evalOddPolynomial(context, eval, ctxt_real_BTS, ctxt_temp, polynomial_1, 4, 2);
     end3 = clock();
+    result3 = (double)(end3 -start3);
     
     
     double result4;
@@ -290,7 +290,7 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     eval.bootstrap(ctxt_temp1, ctxt_temp, true);
     end5 = clock();
     result5 = (double)(end5 - start5);
-    
+   
     
     double result6;
     start6 = clock();
