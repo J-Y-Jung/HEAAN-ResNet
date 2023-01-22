@@ -288,7 +288,7 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     end4 = clock();
     result4 = (double)(end4 - start4);
     
-    polytime += result4
+    polytime += result4;
     
     
     double result5;
