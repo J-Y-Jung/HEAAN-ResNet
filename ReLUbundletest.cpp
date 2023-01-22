@@ -186,7 +186,10 @@ int main() {
     
     #pragma omp parallel for num_threads(80)
     for(int i = 0 ; i < 48 ; ++i){
-        ApproxReLU(context, eval, ctxt_bundle2[i/12][20+(i%12)] , ctxt_out_bundle2[i/12][20+(i%12)]);
+        #pragma omp parallel num_threads(80)
+        {
+            ApproxReLU(context, eval, ctxt_bundle2[i/12][20+(i%12)] , ctxt_out_bundle2[i/12][20+(i%12)]);
+        }
     }
     timer.end();
     
