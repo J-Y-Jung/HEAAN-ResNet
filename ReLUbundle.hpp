@@ -580,7 +580,6 @@ void ApproxReLUlast(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Cip
     HEaaN::Ciphertext ctxt_real_BTS(context);
     
     eval.bootstrap(ctxt_temp, ctxt_real_BTS, true);
-    eval.levelDown(ctxt_real_BTS, 2, ctxt_real_BTS);
 
     std::vector<double> polynomial_1 = {
     1.34595769293910e-33, 2.45589415425004e1, 4.85095667238242e-32, -6.69660449716894e2,
