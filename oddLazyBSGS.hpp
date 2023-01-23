@@ -63,11 +63,24 @@ void oddSetUp(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphertex
 
     //first element of GS_basis is x^k
     GS_basis.push_back(evenBS_basis[log2(k)]);
-
+    /*
+    for (int i = 0; i < oddBS_basis.size(); ++i) {
+        std::cout << i << "th Ciphertext of oddBS_basis vector  - level "
+            << oddBS_basis[i].getLevel() << std::endl
+            << std::endl;
+    }
+    */
     for (int j = 1; j < l; ++j) {
         eval.mult(GS_basis[j - 1], GS_basis[j - 1], ctxt_temp);
         GS_basis.push_back(ctxt_temp);
     }
+    /*
+    for (int j = 0; j < GS_basis.size(); ++j) {
+        std::cout << j << "th Ciphertext of GS_basis vector  - level "
+            << GS_basis[j].getLevel() << std::endl
+            << std::endl;
+    }
+    */
 }
 
 //BabyStep algo in Han-Ki.
@@ -77,18 +90,26 @@ void oddBabyStep(HEaaN::Context context, HEaaN::HomEvaluator eval,
     HEaaN::Ciphertext& ctxt_result,
     const int k) {
 
-    Ciphertext ctxt_temp(context);
+    eval.mult(oddBS_basis[0], polynomial[1], ctxt_result);
+    /*
+    std::cout << "Current Ciphertext initial part of odd Baby Step  - level "
+        << ctxt_result.getLevel() << std::endl
+        << std::endl;
+        */
 
-    for (int i=0; i<k/2; ++i){
-        HEaaN::Ciphertext ctxt_temp(context);
-        eval.multWithoutRescale(oddBS_basis[i], polynomial[2*i+1], ctxt_temp);
+    HEaaN::Ciphertext ctxt_temp(context);
 
-        if (i == 0) ctxt_result = ctxt_temp;
-        else eval.add(ctxt_result, ctxt_temp, ctxt_result);
+    if (k > 2) {
+        for (int i = 1; i < k / 2; ++i) {
+            eval.mult(oddBS_basis[i], polynomial[2 * i + 1], ctxt_temp);
+            eval.add(ctxt_result, ctxt_temp, ctxt_result);
+            /*
+            std::cout << "Current Ciphertext during odd Baby Step  - level "
+                << ctxt_result.getLevel() << std::endl
+                << std::endl;
+                */
+        }
     }
-
-    eval.rescale(ctxt_result);
-
 }
 
 
@@ -247,7 +268,6 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     }
 
     evalOddPolynomial(context, eval, ctxt_real_BTS, ctxt_temp, polynomial_1, 4, 2);
-    eval.levelDown(ctxt_real_BTS, 2, ctxt_real_BTS);
     
     cout << "after 1st poly eval = " << ctxt_temp.getLevel() << "\n";
 
