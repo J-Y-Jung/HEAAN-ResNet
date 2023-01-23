@@ -105,46 +105,15 @@ int main() {
 
     cout << "\n Image Loading ..." << "\n";
     
-
-    
     vector<vector<Ciphertext>> imageVec(16, vector<Ciphertext>(3, ctxt_zero));
 
-    vector<Ciphertext> ctxtVec_zero(3, ctxt_zero);
-    
-
-    if (num==20){
-        
-        #pragma omp parallel for
-        for(int i=304; i<312; ++i){
-            int ind = i+1;
-            string str = "/app/HEAAN-ResNet/image/image_" + to_string(ind) + string(".txt");
-            vector<double> temp;
-            txtreader(temp, str);
-            imageCompiler(context, pack, enc, 5, temp, imageVec[(i%16)]);
-        }
-
-
-        string str313 = "/app/HEAAN-ResNet/image/image_" + to_string(313) + string(".txt");
-        vector<double> temp313;
-        txtreader(temp313, str313);
-        
-        for (int i=0; i<49152; ++i) temp313.push_back(0);
-
-        imageCompiler(context, pack, enc, 5, temp313, imageVec[8]);
-
-    }
-
-    else {
-        
-        #pragma omp parallel for
-        for (int i = (num-1) * 16; i < num*16; ++i) { // 313
-            int ind = i+1;
-            string str = "/app/HEAAN-ResNet/image/image_" + to_string(ind) + string(".txt");
-            vector<double> temp;
-            txtreader(temp, str);
-            imageCompiler(context, pack, enc, 5, temp, imageVec[(i%16)]);
-
-        }
+    #pragma omp parallel for
+    for (int i = (num-1) * 16; i < num*16; ++i) { // 313
+        int ind = i+1;
+        string str = "/app/HEAAN-ResNet/image/image_" + to_string(ind) + string(".txt");
+        vector<double> temp;
+        txtreader(temp, str);
+        imageCompiler(context, pack, enc, 5, temp, imageVec[(i%16)]);
 
     }
 
@@ -2962,14 +2931,11 @@ int main() {
     ///////////// save file //////////////
     //////////////////////////////////////
     
-    int length;
-    if (num==20) length =272;
-    else length=512;
     
     
     string filepath_last = string("/app/final/bundle")+to_string(num);
     
-    for (int i=1; i<=length; ++i){
+    for (int i=1; i<=512; ++i){
         string filepath = filepath_last + string("/result")+to_string(i)+string(".txt");
         ofstream file(filepath);
         for (int j=0; j< 10; ++j){
@@ -2985,7 +2951,7 @@ int main() {
     string savelabel = string("/app/output/bundle")+to_string(num)+".txt";
     ofstream filesave(savelabel);
     
-    for (int i = 0; i < length; ++i) {
+    for (int i = 0; i < 512; ++i) {
         int max_index = max_element(orderVec[i].begin(), orderVec[i].end()) - orderVec[i].begin();
         
         if (i%16 == 15) {
