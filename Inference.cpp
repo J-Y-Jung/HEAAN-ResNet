@@ -1,3 +1,5 @@
+///최종수정
+
 #pragma once
 #include <iostream>
 #include <fstream>
@@ -13,7 +15,6 @@
 #include "ReLUbundle.hpp"
 #include "MPPacking.hpp"
 #include "HEaaNTimer.hpp"
-//#include "convtools.hpp"
 #include "kernelEncode.hpp"
 #include "imageEncode.hpp"
 #include "AvgpoolFC64.hpp"
@@ -85,16 +86,11 @@ int main() {
     ptxt_init = ecd.encode(msg_zero, 0, 0);
 
 
-    ///////////////////////
-    /////////////////////
-    /////////////////////
 
-
-    timer.start("inference");
 
     ////////////////////////////////////////////////////////////
-     ///////////// 10000 test image Encoding ///////////////////
-     ////////////////////////////////////////////////////////////
+    ///////////// 10000 test image Encoding ///////////////////
+    ////////////////////////////////////////////////////////////
 
     cout << "10000 test images encoding ... \n";
 
@@ -126,20 +122,10 @@ int main() {
 
     cout << "DONE\n" << "\n";
 
-    /*
-    string str = "./image/image_" + to_string(313) + ".txt";
-    vector<double> temp;
-    txtreader(temp, str);
-    for (int i = 0; i < 49152; ++i) temp.push_back(0);
-    vector<Ciphertext> out;
-    imageCompiler(context, pack, enc, temp, out);
-    imageVec.push_back(out);
-    */
-
 
    
     // 0st conv
-    cout << "uploading for block0conv0 ...\n\n";
+    cout << "uploading for block0conv0 ...\n";
     timer.start(" * ");
     vector<double> temp0;
     vector<vector<vector<Plaintext>>> block0conv0multiplicands16_3_3_3(16, vector<vector<Plaintext>>(3, vector<Plaintext>(9, ptxt_init)));
@@ -215,13 +201,6 @@ int main() {
     cout << "block0relu0 ...\n\n";
     timer.start(" block0relu0 ");
     vector<vector<Ciphertext>> ctxt_block0relu0_out(16, vector<Ciphertext>(16, ctxt_init)); //초기화부분 추가
-    // for (int i = 0; i < 16; ++i) {
-    //     cout << "block0relu0 for (" << i << " , ;)" << "\n";
-    //     for (int ch = 0; ch < 16; ++ch) {
-    //         ApproxReLU(context, eval, ctxt_block0conv0_out[i][ch], ctxt_block0relu0_out[i][ch]);
-    //     }
-    // }
-
 
     #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 80; ++i) {
@@ -345,18 +324,6 @@ int main() {
     timer.start(" block1relu0 ");
     
     vector<vector<Ciphertext>> ctxt_block1relu0_out(16, vector<Ciphertext>(16, ctxt_init));
-
-    // for (int i = 0; i < 16; ++i) {
-    //     cout << "block1relu0 for (" << i << " , ;)" << "\n";
-    //     for (int ch = 0; ch < 16; ++ch) {
-    //         ApproxReLU(context, eval, ctxt_block1conv0_out[i][ch], ctxt_block1relu0_out[i][ch]);
-    //         eval.levelDown(ctxt_block1relu0_out[i][ch], 5, ctxt_block1relu0_out[i][ch]);
-    //         if (i == 0 && ch == 0) {
-    //             dec.decrypt(ctxt_block1relu0_out[i][ch], sk, dmsg);
-    //             printMessage(dmsg);
-    //         }
-    //     }
-    // }
 
 
     #pragma omp parallel for num_threads(80)
@@ -499,17 +466,6 @@ int main() {
     cout << "block1relu1 ..." << endl;
     timer.start(" block1relu1 ");
     vector<vector<Ciphertext>> ctxt_block1relu1_out(16, vector<Ciphertext>(16, ctxt_init));
-    // for (int i = 0; i < 16; ++i) {
-    //     cout << "block1relu1 for (" << i << " , ;)" << "\n";
-    //     for (int ch = 0; ch < 16; ++ch) {
-    //         ApproxReLU(context, eval, ctxt_block1add_out[i][ch], ctxt_block1relu1_out[i][ch]);
-    //         eval.levelDown(ctxt_block1relu1_out[i][ch], 5, ctxt_block1relu1_out[i][ch]);
-    //         if (i == 0 && ch == 0) {
-    //             dec.decrypt(ctxt_block1relu1_out[i][ch], sk, dmsg);
-    //             printMessage(dmsg);
-    //         }
-    //     }
-    // }
 
     #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 80; ++i) {
@@ -625,17 +581,6 @@ int main() {
     cout << "block2relu0 ..." << endl;
     timer.start(" block2relu0 ");
     vector<vector<Ciphertext>> ctxt_block2relu0_out(16, vector<Ciphertext>(16, ctxt_init));
-    // for (int i = 0; i < 16; ++i) {
-    //     cout << "block2relu0 for (" << i << " , ;)" << "\n";
-    //     for (int ch = 0; ch < 16; ++ch) {
-    //         ApproxReLU(context, eval, ctxt_block2conv0_out[i][ch], ctxt_block2relu0_out[i][ch]);
-    //         eval.levelDown(ctxt_block2relu0_out[i][ch], 5, ctxt_block2relu0_out[i][ch]);
-    //         if (i == 0 && ch == 0) {
-    //             dec.decrypt(ctxt_block2relu0_out[i][ch], sk, dmsg);
-    //             printMessage(dmsg);
-    //         }
-    //     }
-    // }
     
     #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 80; ++i) {
@@ -766,17 +711,7 @@ int main() {
     cout << "block2relu1 ..." << endl;
     timer.start(" block2relu1 ");
     vector<vector<Ciphertext>> ctxt_block2relu1_out(16, vector<Ciphertext>(16, ctxt_init));
-    // for (int i = 0; i < 16; ++i) {
-    //     cout << "block2relu1 for (" << i << " , ;)" << "\n";
-    //     for (int ch = 0; ch < 16; ++ch) {
-    //         ApproxReLU(context, eval, ctxt_block2add_out[i][ch], ctxt_block2relu1_out[i][ch]);
-    //         eval.levelDown(ctxt_block2relu1_out[i][ch], 5, ctxt_block2relu1_out[i][ch]);
-    //         if (i == 0 && ch == 0) {
-    //             dec.decrypt(ctxt_block2relu1_out[i][ch], sk, dmsg);
-    //             printMessage(dmsg);
-    //         }
-    //     }
-    // }
+
     #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 80; ++i) {
         ApproxReLU(context, eval, ctxt_block2add_out[i / 16][i % 16], ctxt_block2relu1_out[i / 16][i % 16]);
@@ -892,17 +827,6 @@ int main() {
     cout << "block3relu0 ..." << endl;
     timer.start(" block3relu0 ");
     vector<vector<Ciphertext>> ctxt_block3relu0_out(16, vector<Ciphertext>(16, ctxt_init));
-    // for (int i = 0; i < 16; ++i) {
-    //     cout << "block3relu0 for (" << i << " , ;)" << "\n";
-    //     for (int ch = 0; ch < 16; ++ch) {
-    //         ApproxReLU(context, eval, ctxt_block3conv0_out[i][ch], ctxt_block3relu0_out[i][ch]);
-    //         eval.levelDown(ctxt_block3relu0_out[i][ch], 5, ctxt_block3relu0_out[i][ch]);
-    //         if (i == 0 && ch == 0) {
-    //             dec.decrypt(ctxt_block3relu0_out[i][ch], sk, dmsg);
-    //             printMessage(dmsg);
-    //         }
-    //     }
-    // }
 
     #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 80; ++i) {
@@ -1041,17 +965,6 @@ int main() {
     cout << "block3relu1 ..." << endl;
     timer.start(" block3relu1 ");
     vector<vector<Ciphertext>> ctxt_block3relu1_out(16, vector<Ciphertext>(16, ctxt_init));
-    // for (int i = 0; i < 16; ++i) {
-    //     cout << "block3relu1 for (" << i << " , ;)" << "\n";
-    //     for (int ch = 0; ch < 16; ++ch) {
-    //         ApproxReLU(context, eval, ctxt_block3add_out[i][ch], ctxt_block3relu1_out[i][ch]);
-    //         eval.levelDown(ctxt_block3relu1_out[i][ch], 5, ctxt_block3relu1_out[i][ch]);
-    //         if (i == 0 && ch == 0) {
-    //             dec.decrypt(ctxt_block3relu1_out[i][ch], sk, dmsg);
-    //             printMessage(dmsg);
-    //         }
-    //     }
-    // }
 
     #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 80; ++i) {
@@ -1096,48 +1009,6 @@ int main() {
     // cout << "DONE...\n\n";
     
     // ////////////////////////////////////
-
-
-
-
-
-
-    
-
-
-    // ///////////////////////////////////////////
-    // ///////////// read RB3 file ///////////
-    // /////////////////////////////////////
-
-    // vector<vector<Ciphertext>> ctxt_block3relu1_out(16, vector<Ciphertext>(16, ctxt_init));
-
-    // for (int i = 0; i < 16; ++i) {
-
-    //     string path = "/app/afterRB3/msgRB3_" + to_string(i)+"_";
-    //     for (int j = 0; j < 16; ++j) {
-    //         vector<double> tempReal;
-    //         vector<double> tempImg;
-
-    //         string pathReal = path + to_string(j) + string("_real.txt");
-    //         string pathImg = path + to_string(j) + string("_img.txt");
-    //         txtreader(tempReal, pathReal);
-    //         txtreader(tempImg, pathImg);
-
-    //         Message msg(15);
-
-    //         for (size_t k = 0; k < 32768; ++k) {
-    //             msg[k].real(tempReal[k]);
-    //             msg[k].imag(tempImg[k]);
-    //         }
-
-    //         enc.encrypt(msg, sk, ctxt_block3relu1_out[i][j], 5, 0);
-            
-    //     }
-    // }
-
-    // Message dmsg;
-    // dec.decrypt(ctxt_block3relu1_out[0][0], sk, dmsg);
-    // printMessage(dmsg);
 
 
     // Down Sampling (Residual) Block 1
@@ -1373,16 +1244,10 @@ int main() {
     vector<vector<Ciphertext>> ctxt_block4relu0_out(4, vector<Ciphertext>(32, ctxt_init));
 
 
-    #pragma omp parallel for num_threads(80)
-    for (int i = 0; i < 80; ++i) {
-        ApproxReLU(context, eval, ctxt_block4MPP0_out[i / 20][i % 20], ctxt_block4relu0_out[i / 20][i % 20]);
-    }
-
-    #pragma omp parallel for num_threads(48)
-    for (int i = 0; i < 48; ++i) {
-        //#pragma omp parallel num_threads(5)
-        {
-            ApproxReLU(context, eval, ctxt_block4MPP0_out[i / 12][20 + (i % 12)], ctxt_block4relu0_out[i / 12][20 + (i % 12)]);
+    #pragma omp parallel for collapse(2)
+    for(int i = 0 ; i < 4 ; i++){
+        for(int j = 0 ; j < 32 ; j++){
+            ApproxReLU(context, eval, ctxt_block4MPP0_out[i][j] , ctxt_block4relu0_out[i][j]);
         }
     }
 
@@ -1503,18 +1368,14 @@ int main() {
     timer.start(" block4relu1 ");
     vector<vector<Ciphertext>> ctxt_block4relu1_out(4, vector<Ciphertext>(32, ctxt_init));
 
-    #pragma omp parallel for num_threads(80)
-    for (int i = 0; i < 80; ++i) {
-        ApproxReLU(context, eval, ctxt_block4add_out[i / 20][i % 20], ctxt_block4relu1_out[i / 20][i % 20]);
-    }
-
-    #pragma omp parallel for num_threads(48)
-    for (int i = 0; i < 48; ++i) {
-        //#pragma omp parallel num_threads(5)
-        {
-            ApproxReLU(context, eval, ctxt_block4add_out[i / 12][20 + (i % 12)], ctxt_block4relu1_out[i / 12][20 + (i % 12)]);
+    #pragma omp parallel for collapse(2)
+    for(int i = 0 ; i < 4 ; i++){
+        for(int j = 0 ; j < 32 ; j++){
+            ApproxReLU(context, eval, ctxt_block4add_out[i][j] , ctxt_block4relu1_out[i][j]);
         }
     }
+
+    
 
 
     timer.end();
@@ -1613,19 +1474,14 @@ int main() {
     cout << "block5relu0 ..." << endl;
     timer.start(" block5relu0 ");
     vector<vector<Ciphertext>> ctxt_block5relu0_out(4, vector<Ciphertext>(32, ctxt_init));
-
-    #pragma omp parallel for num_threads(80)
-    for (int i = 0; i < 80; ++i) {
-        ApproxReLU(context, eval, ctxt_block5conv0_out[i / 20][i % 20], ctxt_block5relu0_out[i / 20][i % 20]);
-    }
-
-    #pragma omp parallel for num_threads(48)
-    for (int i = 0; i < 48; ++i) {
-        //#pragma omp parallel num_threads(5)
-        {
-            ApproxReLU(context, eval, ctxt_block5conv0_out[i / 12][20 + (i % 12)], ctxt_block5relu0_out[i / 12][20 + (i % 12)]);
+    
+    #pragma omp parallel for collapse(2)
+    for(int i = 0 ; i < 4 ; i++){
+        for(int j = 0 ; j < 32 ; j++){
+            ApproxReLU(context, eval, ctxt_block5conv0_out[i][j] , ctxt_block5relu0_out[i][j]);
         }
     }
+
 
 
     timer.end();
@@ -1739,18 +1595,13 @@ int main() {
     timer.start(" block5relu1 ");
     vector<vector<Ciphertext>> ctxt_block5relu1_out(4, vector<Ciphertext>(32, ctxt_init));
 
-    #pragma omp parallel for num_threads(80)
-    for (int i = 0; i < 80; ++i) {
-        ApproxReLU(context, eval, ctxt_block5add_out[i / 20][i % 20], ctxt_block5relu1_out[i / 20][i % 20]);
-    }
-
-    #pragma omp parallel for num_threads(48)
-    for (int i = 0; i < 48; ++i) {
-        //#pragma omp parallel num_threads(5)
-        {
-            ApproxReLU(context, eval, ctxt_block5add_out[i / 12][20 + (i % 12)], ctxt_block5relu1_out[i / 12][20 + (i % 12)]);
+    #pragma omp parallel for collapse(2)
+    for(int i = 0 ; i < 4 ; i++){
+        for(int j = 0 ; j < 32 ; j++){
+            ApproxReLU(context, eval, ctxt_block5add_out[i][j] , ctxt_block5relu1_out[i][j]);
         }
     }
+
 
 
     timer.end();
@@ -1852,18 +1703,16 @@ int main() {
     timer.start(" block6relu0 ");
     vector<vector<Ciphertext>> ctxt_block6relu0_out(4, vector<Ciphertext>(32, ctxt_init));
 
-    #pragma omp parallel for num_threads(80)
-    for (int i = 0; i < 80; ++i) {
-        ApproxReLU(context, eval, ctxt_block6conv0_out[i / 20][i % 20], ctxt_block6relu0_out[i / 20][i % 20]);
-    }
-
-    #pragma omp parallel for num_threads(48)
-    for (int i = 0; i < 48; ++i) {
-        //#pragma omp parallel num_threads(5)
-        {
-            ApproxReLU(context, eval, ctxt_block6conv0_out[i / 12][20 + (i % 12)], ctxt_block6relu0_out[i / 12][20 + (i % 12)]);
+    #pragma omp parallel for collapse(2)
+    for(int i = 0 ; i < 4 ; i++){
+        for(int j = 0 ; j < 32 ; j++){
+            ApproxReLU(context, eval, ctxt_block6conv0_out[i][j] , ctxt_block6relu0_out[i][j]);
         }
     }
+
+
+
+
     timer.end();
     cout << "DONE!" << "\n";
 
@@ -1980,16 +1829,11 @@ int main() {
     cout << "block6relu1 ..." << endl;
     timer.start(" block6relu1 ");
     vector<vector<Ciphertext>> ctxt_block6relu1_out(4, vector<Ciphertext>(32, ctxt_init));
-    #pragma omp parallel for num_threads(80)
-    for (int i = 0; i < 80; ++i) {
-        ApproxReLU(context, eval, ctxt_block6add_out[i / 20][i % 20], ctxt_block6relu1_out[i / 20][i % 20]);
-    }
-
-    #pragma omp parallel for num_threads(48)
-    for (int i = 0; i < 48; ++i) {
-        //#pragma omp parallel num_threads(5)
-        {
-            ApproxReLU(context, eval, ctxt_block6add_out[i / 12][20 + (i % 12)], ctxt_block6relu1_out[i / 12][20 + (i % 12)]);
+    
+    #pragma omp parallel for collapse(2)
+    for(int i = 0 ; i < 4 ; i++){
+        for(int j = 0 ; j < 32 ; j++){
+            ApproxReLU(context, eval, ctxt_block6add_out[i][j] , ctxt_block6relu1_out[i][j]);
         }
     }
 
@@ -2046,7 +1890,7 @@ int main() {
     string path14a = "/app/HEAAN-ResNet/kernel/summands/" + string("block7conv_onebyone_summands64");
     Scaletxtreader(temp14a, path14a, cnst);
 
-    #pragma omp parallel for num_threads(64)
+    #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 64; ++i) {
         Message msg(log_slots, temp14a[i]);
         block7conv_onebyone_summands64[i]=ecd.encode(msg, 4, 0);
@@ -2158,7 +2002,7 @@ int main() {
     vector<double> temp15a;
     string path15a = "/app/HEAAN-ResNet/kernel/summands/" + string("block7conv0summands64");
     Scaletxtreader(temp15a, path15a, cnst);
-    #pragma omp parallel for num_threads(64)
+    #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 64; ++i) {
         Message msg(log_slots, temp15a[i]);
         block7conv0summands64[i]=ecd.encode(msg, 4, 0);
@@ -2235,14 +2079,13 @@ int main() {
     // dec.decrypt(ctxt_block7MPP0_out[0][0], sk, dmsg);
     // printMessage(dmsg);
 
-    // ctxt_block7MPP0_out 첫번째 : 서로 다른 img, 두번째 : ch.
 
     // AppReLU
     cout << "block7relu0 ..." << endl;
     timer.start(" block7relu0 ");
     vector<vector<Ciphertext>> ctxt_block7relu0_out(1, vector<Ciphertext>(64, ctxt_init));
 
-    #pragma omp parallel for num_threads(64)
+    #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 64; ++i) {
         ApproxReLU(context, eval, ctxt_block7MPP0_out[0][i], ctxt_block7relu0_out[0][i]);
     }
@@ -2286,7 +2129,7 @@ int main() {
     vector<double> temp16a;
     string path16a = "/app/HEAAN-ResNet/kernel/summands/" + string("block7conv1summands64");
     Scaletxtreader(temp16a, path16a, cnst);
-    #pragma omp parallel for num_threads(64)
+    #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 64; ++i) {
         Message msg(log_slots, temp16a[i]);
         block7conv1summands64[i]=ecd.encode(msg, 4, 0);
@@ -2355,7 +2198,7 @@ int main() {
     timer.start(" block7relu1 ");
     vector<vector<Ciphertext>> ctxt_block7relu1_out(1, vector<Ciphertext>(64, ctxt_init));
 
-    #pragma omp parallel for num_threads(64)
+    #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 64; ++i) {
         ApproxReLU(context, eval, ctxt_block7add_out[0][i], ctxt_block7relu1_out[0][i]);
     }
@@ -2404,7 +2247,7 @@ int main() {
     vector<double> temp17a;
     string path17a = "/app/HEAAN-ResNet/kernel/summands/" + string("block8conv0summands64");
     Scaletxtreader(temp17a, path17a, cnst);
-    #pragma omp parallel for num_threads(64)
+    #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 64; ++i) {
         Message msg(log_slots, temp17a[i]);
         block8conv0summands64[i]=ecd.encode(msg, 4, 0);
@@ -2443,7 +2286,7 @@ int main() {
     timer.start(" block8relu0 ");
     vector<vector<Ciphertext>> ctxt_block8relu0_out(1, vector<Ciphertext>(64, ctxt_init));
 
-    #pragma omp parallel for num_threads(64)
+    #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 64; ++i) {
         ApproxReLU(context, eval, ctxt_block8conv0_out[0][i], ctxt_block8relu0_out[0][i]);
     }
@@ -2486,7 +2329,7 @@ int main() {
     vector<double> temp18a;
     string path18a = "/app/HEAAN-ResNet/kernel/summands/" + string("block8conv1summands64");
     Scaletxtreader(temp18a, path18a, cnst);
-    #pragma omp parallel for num_threads(64)
+    #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 64; ++i) {
         Message msg(log_slots, temp18a[i]);
         block8conv1summands64[i]=ecd.encode(msg, 4, 0);
@@ -2555,7 +2398,7 @@ int main() {
     cout << "block8relu1 ..." << endl;
     timer.start(" block8relu1 ");
     vector<vector<Ciphertext>> ctxt_block8relu1_out(1, vector<Ciphertext>(64, ctxt_init));
-    #pragma omp parallel for num_threads(64)
+    #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 64; ++i) {
         ApproxReLU(context, eval, ctxt_block8add_out[0][i], ctxt_block8relu1_out[0][i]);
     }
@@ -2613,7 +2456,7 @@ int main() {
     vector<double> temp19a;
     string path19a = "/app/HEAAN-ResNet/kernel/summands/" + string("block9conv0summands64");
     Scaletxtreader(temp19a, path19a, cnst);
-    #pragma omp parallel for num_threads(64)
+    #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 64; ++i) {
         Message msg(log_slots, temp19a[i]);
         block9conv0summands64[i]=ecd.encode(msg, 4, 0);
@@ -2652,7 +2495,7 @@ int main() {
     timer.start(" block9relu0 ");
     vector<vector<Ciphertext>> ctxt_block9relu0_out(1, vector<Ciphertext>(64, ctxt_init));
 
-    #pragma omp parallel for num_threads(64)
+    #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 64; ++i) {
         ApproxReLU(context, eval, ctxt_block9conv0_out[0][i], ctxt_block9relu0_out[0][i]);
     }
@@ -2763,7 +2606,7 @@ int main() {
     timer.start(" block9relu1 ");
     vector<vector<Ciphertext>> ctxt_block9relu1_out(1, vector<Ciphertext>(64, ctxt_init));
 
-    #pragma omp parallel for num_threads(64)
+    #pragma omp parallel for num_threads(80)
     for (int i = 0; i < 64; ++i) {
         ApproxReLU(context, eval, ctxt_block9add_out[0][i], ctxt_block9relu1_out[0][i]);
     }
@@ -2967,7 +2810,7 @@ int main() {
     filesave.close();
     cout << "]\n";
 
-    cout <<"Time to bye....\n\n";
+    cout <<"Goodbye....\n";
     
     return 0;
 }
