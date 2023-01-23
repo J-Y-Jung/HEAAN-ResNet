@@ -289,7 +289,6 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     eval.add(ctxt_temp, ctxt_relu, ctxt_relu);
     
     cout << "final level = " << ctxt_relu.getLevel() << "\n";
-    eval.levelDown(ctxt_relu, 5, ctxt_relu);
     
     return;
     
