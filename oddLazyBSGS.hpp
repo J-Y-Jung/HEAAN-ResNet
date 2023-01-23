@@ -233,7 +233,6 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     
     HEaaN::Ciphertext ctxt_real_BTS(context);
     eval.bootstrap(ctxt_temp, ctxt_real_BTS, true);
-    eval.levelDown(ctxt_real_BTS, 2, ctxt_real_BTS);
     
     cout << "after 1st BTS = " << ctxt_real_BTS.getLevel() << "\n";
 
@@ -269,6 +268,7 @@ void ApproxReLU(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphert
     }
 
     evalOddPolynomial(context, eval, ctxt_real_BTS, ctxt_temp, polynomial_1, 4, 2);
+    eval.levelDown(ctxt_real_BTS, 2, ctxt_real_BTS);
     
     cout << "after 1st poly eval = " << ctxt_temp.getLevel() << "\n";
 
