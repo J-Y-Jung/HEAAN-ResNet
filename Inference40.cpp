@@ -1111,12 +1111,11 @@ int main() {
     cout << "block3 DONE!\n\n";
     
     // ////////////////save//////////////
-    // cout<< "saving block3add info... \n\n";
-    // string pathtemp3msg4 = pathtemp3 + string("msg/add/");
+    cout<< "saving block3add info... \n\n";
+    string pathsave = string("/app/block3/");
     
-    // saveMsgBundle(dec, sk, ctxt_block3relu1_out, pathtemp3msg4);
-    // saveCtxtBundle(ctxt_block3relu1_out, pathtemp3ctxt);
-    // cout << "DONE...\n\n";
+    saveMsgBundle(dec, sk, ctxt_block3relu1_out, pathsave);
+    cout << "DONE...\n\n";
     
     // ////////////////////////////////////
 
