@@ -131,8 +131,8 @@ int main() {
     timer.end();
     
     
-    vector<vector<Ciphertext>> ctxt_vec1(80, ctxt));
-    vector<vector<Ciphertext>> ctxt_out_vec1(80, ctxt_init));
+    vector<vector<Ciphertext>> ctxt_vec1(80, ctxt);
+    vector<vector<Ciphertext>> ctxt_out_vec1(80, ctxt_init);
     
     timer.start("method 2");
     #pragma omp parallel for num_threads(80)
@@ -148,10 +148,10 @@ int main() {
     
     
     vector<vector<Ciphertext>> ctxt_vec2(40, ctxt));
-    vector<vector<Ciphertext>> ctxt_out_vec2(40, ctxt_init));
+    vector<vector<Ciphertext>> ctxt_out_vec2(40, ctxt_init);
         
     timer.start("method 3");
-    #pragma omp parallel for collapse(2) num_threads(40)
+    #pragma omp parallel for num_threads(40)
     for (int i=0; i<40; ++i){
         ApproxReLU(context, eval, ctxt_vec2[i], ctxt_out_vec2[i]);
     }
@@ -169,7 +169,7 @@ int main() {
     vector<vector<Ciphertext>> ctxt_out_bundle1(16, vector<Ciphertext>(16, ctxt_init));
     
     timer.start("method 1");
-    #pragma omp parallel for collapse(40)
+    #pragma omp parallel for collapse(2) num_threads(4)
     for(int i = 0 ; i < 16 ; i++){
         for(int j = 0 ; j < 16 ; j++){
             ApproxReLU(context, eval, ctxt_bundle1[i][j] , ctxt_out_bundle1[i][j]);
