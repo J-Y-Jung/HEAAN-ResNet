@@ -122,13 +122,54 @@ int main() {
 //     printMessage(dmsg);
     
     
+    cout << "Test for parallel relu ... \n\n";
+    timer.start("method 1");
+    #pragma omp parallel num_threads(1)
+    {
+        ApproxReLU(context, eval, ctxt, ctxt_init);
+    }
+    timer.end();
+    
+    
+    vector<vector<Ciphertext>> ctxt_vec1(80, ctxt));
+    vector<vector<Ciphertext>> ctxt_out_vec1(80, ctxt_init));
+    
+    timer.start("method 2");
+    #pragma omp parallel for num_threads(80)
+    for (int i=0; i<80; ++i){
+        ApproxReLU(context, eval, ctxt_vec1[i], ctxt_out_vec1[i]);
+    }
+    timer.end();
+    
+    ctxt_vec1.clear();
+    ctxt_vec1.shrink_to_fit();
+    ctxt_out_vec1.clear();
+    ctxt_out_vec1.shrink_to_fit();
+    
+    
+    vector<vector<Ciphertext>> ctxt_vec2(40, ctxt));
+    vector<vector<Ciphertext>> ctxt_out_vec2(40, ctxt_init));
+        
+    timer.start("method 3");
+    #pragma omp parallel for collapse(2) num_threads(40)
+    for (int i=0; i<40; ++i){
+        ApproxReLU(context, eval, ctxt_vec2[i], ctxt_out_vec2[i]);
+    }
+    timer.end();
+    
+    ctxt_vec2.clear();
+    ctxt_vec2.shrink_to_fit();
+    ctxt_out_vec2.clear();
+    ctxt_out_vec2.shrink_to_fit();
+ 
+    
     cout << "Test for evaluating ReLU for (16, 16) ctxt bundle...\n\n";
     
     vector<vector<Ciphertext>> ctxt_bundle1(16, vector<Ciphertext>(16, ctxt));
     vector<vector<Ciphertext>> ctxt_out_bundle1(16, vector<Ciphertext>(16, ctxt_init));
     
     timer.start("method 1");
-    #pragma omp parallel for collapse(2)
+    #pragma omp parallel for collapse(40)
     for(int i = 0 ; i < 16 ; i++){
         for(int j = 0 ; j < 16 ; j++){
             ApproxReLU(context, eval, ctxt_bundle1[i][j] , ctxt_out_bundle1[i][j]);
@@ -137,44 +178,39 @@ int main() {
     timer.end();
     
     timer.start("method 2");
-    #pragma omp parallel for num_threads(80)
-    for (int i = 0; i < 80; ++i) {
-        ApproxReLU(context, eval, ctxt_bundle1[i / 16][i % 16], ctxt_out_bundle1[i / 16][i % 16]);
+    #pragma omp parallel for num_threads(40)
+    for (int i = 0; i < 40; ++i) {
+        ApproxReLU(context, eval, ctxt_bundle1[i / 5][i % 5], ctxt_out_bundle1[i / 5][i % 5]);
     }
-    #pragma omp parallel for num_threads(80)
-    for (int i = 0; i < 80; ++i) {
-        ApproxReLU(context, eval, ctxt_bundle1[5 + (i / 16)][i % 16], ctxt_out_bundle1[5 + (i / 16)][i % 16]);
+
+    #pragma omp parallel for num_threads(40)
+    for (int i = 0; i < 40; ++i) {
+        ApproxReLU(context, eval, ctxt_bundle1[8+(i /5)][(i%5)], ctxt_out_bundle1[8+(i /5)][(i%5)]);
     }
-    #pragma omp parallel for num_threads(80)
-    for (int i = 0; i < 80; ++i) {
-        ApproxReLU(context, eval, ctxt_bundle1[10 + (i / 16)][i % 16], ctxt_out_bundle1[10 + (i / 16)][i % 16]);
+
+    #pragma omp parallel for num_threads(40)
+    for (int i = 0; i < 40; ++i) {
+        ApproxReLU(context, eval, ctxt_bundle1[i / 5][5+(i%5)], ctxt_out_bundle1[i / 5][5+(i%5)]);
     }
-    #pragma omp parallel for num_threads(80)
+
+    #pragma omp parallel for num_threads(40)
+    for (int i = 0; i < 40; ++i) {
+        ApproxReLU(context, eval, ctxt_bundle1[8+(i /5)][5+(i%5)], ctxt_out_bundle1[8+(i /5)][5+(i%5)]);
+    }
+
+    #pragma omp parallel for num_threads(40)
+    for (int i = 0; i < 40; ++i) {
+        ApproxReLU(context, eval, ctxt_bundle1[i / 5][10+(i%5)], ctxt_out_bundle1[i / 5][10+(i%5)]);
+    }
+
+    #pragma omp parallel for num_threads(40)
+    for (int i = 0; i < 40; ++i) {
+        ApproxReLU(context, eval, ctxt_bundle1[8+(i /5)][10+(i%5)], ctxt_out_bundle1[8+(i /5)][10+(i%5)]);
+    }
+
+    #pragma omp parallel for num_threads(40)
     for (int i = 0; i < 16; ++i) {
-        #pragma omp parallel num_threads(5)
-        {
-            ApproxReLU(context, eval, ctxt_bundle1[15][i % 16], ctxt_out_bundle1[15][i % 16]);
-        }
-    }
-    timer.end();
-    
-    timer.start("method 3");
-    #pragma omp parallel for num_threads(80)
-    for (int i = 0; i < 80; ++i) {
-        ApproxReLU(context, eval, ctxt_bundle1[i / 16][i % 16], ctxt_out_bundle1[i / 16][i % 16]);
-    }
-    #pragma omp parallel for num_threads(80)
-    for (int i = 0; i < 80; ++i) {
-        ApproxReLU(context, eval, ctxt_bundle1[5 + (i / 16)][i % 16], ctxt_out_bundle1[5 + (i / 16)][i % 16]);
-    }
-    #pragma omp parallel for num_threads(80)
-    for (int i = 0; i < 80; ++i) {
-        ApproxReLU(context, eval, ctxt_bundle1[10 + (i / 16)][i % 16], ctxt_out_bundle1[10 + (i / 16)][i % 16]);
-    }
-    
-    #pragma omp parallel for
-    for (int i = 0; i < 16; ++i) {
-        ApproxReLU(context, eval, ctxt_bundle1[15][i % 16], ctxt_out_bundle1[15][i % 16]);
+        ApproxReLU(context, eval, ctxt_bundle1[i][15], ctxt_out_bundle1[i][15]);
     }
     timer.end();
     
@@ -190,7 +226,7 @@ int main() {
     vector<vector<Ciphertext>> ctxt_out_bundle2(4, vector<Ciphertext>(32, ctxt_init));
     
     timer.start("method 1");
-    #pragma omp parallel for collapse(2)
+    #pragma omp parallel for collapse(2) num_threads(40)
     for(int i = 0 ; i < 4 ; i++){
         for(int j = 0 ; j < 32 ; j++){
             ApproxReLU(context, eval, ctxt_bundle2[i][j] , ctxt_out_bundle2[i][j]);
@@ -199,67 +235,34 @@ int main() {
     timer.end();
     
     timer.start("method 2");
-    #pragma omp parallel for num_threads(80)
-    for(int i = 0 ; i < 80 ; ++i){
-        ApproxReLU(context, eval, ctxt_bundle2[i/20][(i%20)] , ctxt_out_bundle2[i/20][(i%20)]);
+    #pragma omp parallel for num_threads(40)
+    for (int i = 0; i < 40; ++i) {
+        ApproxReLU(context, eval, ctxt_bundle2[i / 10][i % 10], ctxt_out_bundle2[i / 20][i % 10]);
     }
-    
-    #pragma omp parallel for num_threads(48)
-    for(int i = 0 ; i < 48 ; ++i){
-        ApproxReLU(context, eval, ctxt_bundle2[i/12][20+(i%12)] , ctxt_out_bundle2[i/12][20+(i%12)]);
+
+    #pragma omp parallel for num_threads(40)
+    for (int i = 0; i < 40; ++i) {
+        ApproxReLU(context, eval, ctxt_bundle2[i / 10][10+(i % 10)], ctxt_out_bundle2[i / 10][10+(i % 10)]);
+    }
+
+    #pragma omp parallel for num_threads(40)
+    for (int i = 0; i < 40; ++i) {
+        ApproxReLU(context, eval, ctxt_bundle2[i / 10][20+(i % 10)], ctxt_out_bundle2[i / 10][20+(i % 10)]);
+    }
+
+    #pragma omp parallel for num_threads(40)
+    for (int i = 0; i < 8; ++i) {
+        #pragma omp parallel num_threads(5)
+        {
+            ApproxReLU(context, eval, ctxt_bundle2[i / 2][30+(i %2)], ctxt_out_bundle2[i / 2][30+ (i% 2)]);
+        }
     }
     timer.end();
-    
-    timer.start("method 3");
-    #pragma omp parallel for num_threads(80)
-    for(int i = 0 ; i < 80 ; ++i){
-        ApproxReLU(context, eval, ctxt_bundle2[i/20][(i%20)] , ctxt_out_bundle2[i/20][(i%20)]);
-    }
-    
-    #pragma omp parallel for
-    for(int i = 0 ; i < 48 ; ++i){
-        ApproxReLU(context, eval, ctxt_bundle2[i/12][20+(i%12)] , ctxt_out_bundle2[i/12][20+(i%12)]);
-    }
-    timer.end();
-    
     
     ctxt_bundle2.clear();
     ctxt_bundle2.shrink_to_fit();
     ctxt_out_bundle2.clear();
     ctxt_out_bundle2.shrink_to_fit();
-
-    
-    cout << "Test for evaluating ReLU for (1, 64) ctxt bundle...\n\n";
-    
-    vector<vector<Ciphertext>> ctxt_bundle3(1, vector<Ciphertext>(64, ctxt));
-    vector<vector<Ciphertext>> ctxt_out_bundle3(1, vector<Ciphertext>(64, ctxt_init));
-    
-    timer.start("method 1");
-    #pragma omp parallel for
-    for(int j = 0 ; j < 64 ; j++){
-        ApproxReLU(context, eval, ctxt_bundle3[0][j] , ctxt_out_bundle3[0][j]);
-    }
-    timer.end();
-    
-    timer.start("method 2");
-    #pragma omp parallel for num_threads(80)
-    for(int j = 0 ; j < 64 ; j++){
-        ApproxReLU(context, eval, ctxt_bundle3[0][j] , ctxt_out_bundle3[0][j]);
-    }
-    timer.end();
-    
-    timer.start("method 3");
-    #pragma omp parallel for num_threads(64)
-    for(int j = 0 ; j < 64 ; j++){
-        ApproxReLU(context, eval, ctxt_bundle3[0][j] , ctxt_out_bundle3[0][j]);
-    }
-    timer.end();
-    
-    ctxt_bundle3.clear();
-    ctxt_bundle3.shrink_to_fit();
-    ctxt_out_bundle3.clear();
-    ctxt_out_bundle3.shrink_to_fit();
-    
 
     return 0;
 
