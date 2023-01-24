@@ -147,7 +147,7 @@ int main() {
     ctxt_out_vec1.shrink_to_fit();
     
     
-    vector<Ciphertext> ctxt_vec2(40, ctxt));
+    vector<Ciphertext> ctxt_vec2(40, ctxt);
     vector<Ciphertext> ctxt_out_vec2(40, ctxt_init);
         
     timer.start("method 3");
