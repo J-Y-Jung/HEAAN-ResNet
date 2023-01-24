@@ -40,9 +40,13 @@ int main() {
 
     SecretKey sk(context);
     KeyPack pack(context);
+    
+    
 
     KeyGenerator keygen(context, sk, pack);
-
+    
+    timer.start("preprocessing ... ");
+    
     cout << "Generate encryption key ... " << endl;
     keygen.genEncryptionKey();
     cout << "done" << endl << endl;
@@ -61,7 +65,6 @@ int main() {
     cout << "Generate HomEvaluator (including pre-computing constants for "
         "bootstrapping) ..."
         << endl;
-    timer.start("* ");
     HomEvaluator eval(context, pack);
     timer.end();
 
