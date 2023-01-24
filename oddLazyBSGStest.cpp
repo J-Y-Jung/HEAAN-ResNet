@@ -5,6 +5,7 @@
 #include "examples.hpp"
 #include "kernelEncode.hpp"
 #include "imageEncode.hpp"
+#include "evalrelu.hpp"
 #include <omp.h>
 #include <time.h>
 
@@ -101,19 +102,77 @@ int main() {
 
     HEaaN::Ciphertext ctxt(context);
 
-    std::cout << "Shell ciphertext - level " << ctxt.getLevel()
-        << std::endl
-        << std::endl;
-
     std::cout << "Encrypt ... ";
     enc.encrypt(msg, pack, ctxt, 4, 0);
     std::cout << "done" << std::endl;
     
-    EnDecoder ecd(context);
-    
     Ciphertext ctxt_relu(context);
     
+    timer.start(" lazyBSGS ");
     ApproxReLU(context, eval, ctxt, ctxt_relu);
+    timer.end();
+    
+    timer.start(" lazyBSGS ");
+    ApproxReLU(context, eval, ctxt, ctxt_relu);
+    timer.end();
+    
+    timer.start(" lazyBSGS ");
+    ApproxReLU(context, eval, ctxt, ctxt_relu);
+    timer.end();
+    
+    timer.start(" lazyBSGS ");
+    ApproxReLU(context, eval, ctxt, ctxt_relu);
+    timer.end();
+    
+    timer.start(" lazyBSGS ");
+    ApproxReLU(context, eval, ctxt, ctxt_relu);
+    timer.end();
+    
+    timer.start(" lazyBSGS ");
+    ApproxReLU(context, eval, ctxt, ctxt_relu);
+    timer.end();
+    
+    timer.start(" lazyBSGS ");
+    ApproxReLU(context, eval, ctxt, ctxt_relu);
+    timer.end();
+    
+    timer.start(" lazyBSGS ");
+    ApproxReLU(context, eval, ctxt, ctxt_relu);
+    timer.end();
+    
+    
+    timer.start(" BSGS ");
+    ApproxReLU1(context, eval, ctxt, ctxt_relu);
+    timer.end();
+    
+    timer.start(" BSGS ");
+    ApproxReLU1(context, eval, ctxt, ctxt_relu);
+    timer.end();
+    
+    timer.start(" BSGS ");
+    ApproxReLU1(context, eval, ctxt, ctxt_relu);
+    timer.end();
+    
+    timer.start(" BSGS ");
+    ApproxReLU1(context, eval, ctxt, ctxt_relu);
+    timer.end();
+    
+    timer.start(" BSGS ");
+    ApproxReLU1(context, eval, ctxt, ctxt_relu);
+    timer.end();
+    
+    timer.start(" BSGS ");
+    ApproxReLU1(context, eval, ctxt, ctxt_relu);
+    timer.end();
+    
+    timer.start(" BSGS ");
+    ApproxReLU1(context, eval, ctxt, ctxt_relu);
+    timer.end();
+    
+    timer.start(" BSGS ");
+    ApproxReLU1(context, eval, ctxt, ctxt_relu);
+    timer.end();
+    
 
     return 0;
     
