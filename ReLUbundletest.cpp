@@ -131,8 +131,8 @@ int main() {
     timer.end();
     
     
-    vector<vector<Ciphertext>> ctxt_vec1(80, ctxt);
-    vector<vector<Ciphertext>> ctxt_out_vec1(80, ctxt_init);
+    vector<Ciphertext> ctxt_vec1(80, ctxt);
+    vector<Ciphertext> ctxt_out_vec1(80, ctxt_init);
     
     timer.start("method 2");
     #pragma omp parallel for num_threads(80)
@@ -147,8 +147,8 @@ int main() {
     ctxt_out_vec1.shrink_to_fit();
     
     
-    vector<vector<Ciphertext>> ctxt_vec2(40, ctxt));
-    vector<vector<Ciphertext>> ctxt_out_vec2(40, ctxt_init);
+    vector<Ciphertext> ctxt_vec2(40, ctxt));
+    vector<Ciphertext> ctxt_out_vec2(40, ctxt_init);
         
     timer.start("method 3");
     #pragma omp parallel for num_threads(40)
