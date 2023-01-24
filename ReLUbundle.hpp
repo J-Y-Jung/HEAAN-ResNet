@@ -168,9 +168,17 @@ void evalOddPolynomial(HEaaN::Context context, HEaaN::HomEvaluator eval,
     std::vector<HEaaN::Ciphertext> GS_basis;
 
     oddSetUp(context, eval, ctxt, oddBS_basis, evenBS_basis, GS_basis, k, l);
-
+    
+    evenBS_basis.clear();
+    evenBS_basis.shrink_to_fit();
+    
     HEaaN::Ciphertext ctxt_temp(context);
     oddGiantStep(context, eval, oddBS_basis, GS_basis, polynomial, ctxt_temp, k, l);
+    
+    oddBS_basis.clear();
+    oddBS_basis.shrink_to_fit();
+    GS_basis.clear();
+    GS_basis.shrink_to_fit();
 
     eval.relinearize(ctxt_temp, ctxt_poly);
 
