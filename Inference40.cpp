@@ -106,7 +106,7 @@ int main() {
     
     vector<vector<Ciphertext>> imageVec(16, vector<Ciphertext>(3, ctxt_zero));
 
-    #pragma omp parallel for num_threads(40)
+    #pragma omp parallel for
     for (int i = (num-1) * 16; i < num*16; ++i) { // 313
         int ind = i+1;
         string str = "/app/HEAAN-ResNet/image/image_" + to_string(ind) + string(".txt");
@@ -134,7 +134,7 @@ int main() {
     vector<vector<vector<Plaintext>>> block0conv0multiplicands16_3_3_3(16, vector<vector<Plaintext>>(3, vector<Plaintext>(9, ptxt_init)));
     string path0 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block0conv0multiplicands16_3_3_3");
     Scaletxtreader(temp0, path0, cnst);
-    #pragma omp parallel num_threads(40)
+
     {
         kernel_ptxt(context, temp0, block0conv0multiplicands16_3_3_3, 5, 1, 1, 16, 3, 3, ecd);
     }
@@ -279,7 +279,6 @@ int main() {
     vector<vector<vector<Plaintext>>> block1conv0multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path1 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block1conv0multiplicands16_16_3_3");
     txtreader(temp1, path1);
-    #pragma omp parallel num_threads(40)
     {
     kernel_ptxt(context, temp1, block1conv0multiplicands16_16_3_3, 5, 1, 1, 16, 16, 3, ecd);
     }
@@ -402,7 +401,6 @@ int main() {
     vector<vector<vector<Plaintext>>> block1conv1multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path2 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block1conv1multiplicands16_16_3_3");
     txtreader(temp2, path2);
-    #pragma omp parallel num_threads(40)
     {
     kernel_ptxt(context, temp2, block1conv1multiplicands16_16_3_3, 5, 1, 1, 16, 16, 3, ecd);
     }
@@ -570,7 +568,6 @@ int main() {
     vector<vector<vector<Plaintext>>> block2conv0multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path3 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block2conv0multiplicands16_16_3_3");
     txtreader(temp3, path3);
-    #pragma omp parallel num_threads(40)
     {
     kernel_ptxt(context, temp3, block2conv0multiplicands16_16_3_3, 5, 1, 1, 16, 16, 3, ecd);
     }
@@ -696,7 +693,6 @@ int main() {
     vector<vector<vector<Plaintext>>> block2conv1multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path4 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block2conv1multiplicands16_16_3_3");
     txtreader(temp4, path4);
-    #pragma omp parallel num_threads(40)
     {
     kernel_ptxt(context, temp4, block2conv1multiplicands16_16_3_3, 5, 1, 1, 16, 16, 3, ecd);
     }
@@ -859,7 +855,6 @@ int main() {
     vector<vector<vector<Plaintext>>> block3conv0multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path5 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block3conv0multiplicands16_16_3_3");
     txtreader(temp5, path5);
-    #pragma omp parallel num_threads(40)
     {
     kernel_ptxt(context, temp5, block3conv0multiplicands16_16_3_3, 5, 1, 1, 16, 16, 3, ecd);
     }
@@ -978,7 +973,6 @@ int main() {
     vector<vector<vector<Plaintext>>> block3conv1multiplicands16_16_3_3(16, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path6 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block3conv1multiplicands16_16_3_3");
     txtreader(temp6, path6);
-    #pragma omp parallel num_threads(40)
     {
     kernel_ptxt(context, temp6, block3conv1multiplicands16_16_3_3, 5, 1, 1, 16, 16, 3, ecd);
     }
@@ -1143,9 +1137,8 @@ int main() {
     vector<vector<vector<Plaintext>>> block4conv_onebyone_multiplicands32_16_1_1(32, vector<vector<Plaintext>>(16, vector<Plaintext>(1, ptxt_init)));
     string path7 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block4conv_onebyone_multiplicands32_16_1_1");
     txtreader(temp7, path7);
-    #pragma omp parallel num_threads(40)
     {
-    kernel_ptxt(context, temp7, bloc4conv_onebyone_multiplicands32_16_1_1, 5, 1, 2, 32, 16, 1, ecd);
+    kernel_ptxt(context, temp7, block4conv_onebyone_multiplicands32_16_1_1, 5, 1, 2, 32, 16, 1, ecd);
     }
     temp7.clear();
     temp7.shrink_to_fit();
@@ -1264,7 +1257,6 @@ int main() {
     vector<vector<vector<Plaintext>>> block4conv0multiplicands32_16_3_3(32, vector<vector<Plaintext>>(16, vector<Plaintext>(9, ptxt_init)));
     string path8 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block4conv0multiplicands32_16_3_3");
     txtreader(temp8, path8);
-    #pragma omp parallel num_threads(40)
     {
     kernel_ptxt(context, temp8, block4conv0multiplicands32_16_3_3, 5, 1, 2, 32, 16, 3, ecd);
     }
@@ -1421,7 +1413,6 @@ int main() {
     vector<vector<vector<Plaintext>>> block4conv1multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
     string path9 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block4conv1multiplicands32_32_3_3");
     txtreader(temp9, path9);
-    #pragma omp parallel num_threads(40)
     {
     kernel_ptxt(context, temp9, block4conv1multiplicands32_32_3_3, 5, 2, 1, 32, 32, 3, ecd);
     }
@@ -1573,7 +1564,6 @@ int main() {
     vector<vector<vector<Plaintext>>> block5conv0multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
     string path10 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block5conv0multiplicands32_32_3_3");
     txtreader(temp10, path10);
-    #pragma omp parallel num_threads(40)
     {
     kernel_ptxt(context, temp10, block5conv0multiplicands32_32_3_3, 5, 2, 1, 32, 32, 3, ecd);
     }
@@ -1689,7 +1679,6 @@ int main() {
     vector<vector<vector<Plaintext>>> block5conv1multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
     string path11 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block5conv1multiplicands32_32_3_3");
     txtreader(temp11, path11);
-    #pragma omp parallel num_threads(40)
     {
     kernel_ptxt(context, temp11, block5conv1multiplicands32_32_3_3, 5, 2, 1, 32, 32, 3, ecd);
     }
@@ -1836,7 +1825,6 @@ int main() {
     vector<vector<vector<Plaintext>>> block6conv0multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
     string path12 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block6conv0multiplicands32_32_3_3");
     txtreader(temp12, path12);
-    #pragma omp parallel num_threads(40)
     {
     kernel_ptxt(context, temp12, block6conv0multiplicands32_32_3_3, 5, 2, 1, 32, 32, 3, ecd);
     }
@@ -1952,7 +1940,6 @@ int main() {
     vector<vector<vector<Plaintext>>> block6conv1multiplicands32_32_3_3(32, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
     string path13 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block6conv1multiplicands32_32_3_3");
     txtreader(temp13, path13);
-    #pragma omp parallel num_threads(40)
     {
     kernel_ptxt(context, temp13, block6conv1multiplicands32_32_3_3, 5, 2, 1, 32, 32, 3, ecd);
     }
@@ -2109,7 +2096,6 @@ int main() {
     vector<vector<vector<Plaintext>>> block7conv_onebyone_multiplicands64_32_1_1(64, vector<vector<Plaintext>>(32, vector<Plaintext>(1, ptxt_init)));
     string path14 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block7conv_onebyone_multiplicands64_32_1_1");
     txtreader(temp14, path14);
-    #pragma omp parallel num_threads(40)
     {
     kernel_ptxt(context, temp14, block7conv_onebyone_multiplicands64_32_1_1, 5, 2, 2, 64, 32, 1, ecd);
     }
@@ -2224,7 +2210,6 @@ int main() {
     vector<vector<vector<Plaintext>>> block7conv0multiplicands64_32_3_3(64, vector<vector<Plaintext>>(32, vector<Plaintext>(9, ptxt_init)));
     string path15 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block7conv0multiplicands64_32_3_3");
     txtreader(temp15, path15);
-    #pragma omp parallel num_threads(40)
     {
     kernel_ptxt(context, temp15, block7conv0multiplicands64_32_3_3, 5, 2, 2, 64, 32, 3, ecd);
     }
@@ -2361,7 +2346,6 @@ int main() {
     vector<vector<vector<Plaintext>>> block7conv1multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
     string path16 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block7conv1multiplicands64_64_3_3");
     txtreader(temp16, path16);
-    #pragma omp parallel num_threads(40)
     {
         kernel_ptxt(context, temp16, block7conv1multiplicands64_64_3_3, 5, 4, 1, 64, 64, 3, ecd);
     }
@@ -2488,7 +2472,6 @@ int main() {
     vector<vector<vector<Plaintext>>> block8conv0multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
     string path17 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block8conv0multiplicands64_64_3_3");
     txtreader(temp17, path17);
-    #pragma omp parallel num_threads(40)
     {
     kernel_ptxt(context, temp17, block8conv0multiplicands64_64_3_3, 5, 4, 1, 64, 64, 3, ecd);
     }
@@ -2579,7 +2562,6 @@ int main() {
     vector<vector<vector<Plaintext>>> block8conv1multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
     string path18 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block8conv1multiplicands64_64_3_3");
     txtreader(temp18, path18);
-    #pragma omp parallel num_threads(40)
     {
     kernel_ptxt(context, temp18, block8conv1multiplicands64_64_3_3, 5, 4, 1, 64, 64, 3, ecd);
     }
@@ -2716,7 +2698,6 @@ int main() {
     vector<vector<vector<Plaintext>>> block9conv0multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
     string path19 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block9conv0multiplicands64_64_3_3");
     txtreader(temp19, path19);
-    #pragma omp parallel num_threads(40)
     {
     kernel_ptxt(context, temp19, block9conv0multiplicands64_64_3_3, 5, 4, 1, 64, 64, 3, ecd);
     }
@@ -2806,7 +2787,6 @@ int main() {
     vector<vector<vector<Plaintext>>> block9conv1multiplicands64_64_3_3(64, vector<vector<Plaintext>>(64, vector<Plaintext>(9, ptxt_init)));
     string path20 = "/app/HEAAN-ResNet/kernel/multiplicands/" + string("block9conv1multiplicands64_64_3_3");
     txtreader(temp20, path20);
-    #pragma omp parallel num_threads(40)
     kernel_ptxt(context, temp20, block9conv1multiplicands64_64_3_3, 5, 4, 1, 64, 64, 3, ecd);
 
     temp20.clear();
