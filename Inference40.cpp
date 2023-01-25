@@ -1,5 +1,3 @@
-///최종수정
-
 #pragma once
 #include <iostream>
 #include <fstream>
@@ -3052,22 +3050,22 @@ int main() {
     
     
     
-    string filepath_last = string("/app/final/bundle")+to_string(num);
+    // string filepath_last = string("/app/final/bundle")+to_string(num);
     
-    for (int i=1; i<=512; ++i){
-        string filepath = filepath_last + string("/result")+to_string(i)+string(".txt");
-        ofstream file(filepath);
-        for (int j=0; j< 10; ++j){
-            file << orderVec[i-1][j] << "\n";
-        }
+    // for (int i=1; i<=512; ++i){
+    //     string filepath = filepath_last + string("/result")+to_string(i)+string(".txt");
+    //     ofstream file(filepath);
+    //     for (int j=0; j< 10; ++j){
+    //         file << orderVec[i-1][j] << "\n";
+    //     }
         
-        file.close();
-    }
+    //     file.close();
+    // }
 
     
     cout << "[ ";
     
-    string savelabel = string("/app/output/bundle")+to_string(num)+".txt";
+    string savelabel = string("/app/output/batch")+to_string(num)+".txt";
     ofstream filesave(savelabel);
     
     for (int i = 0; i < 512; ++i) {
