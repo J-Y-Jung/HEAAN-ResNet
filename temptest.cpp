@@ -156,7 +156,7 @@ int main() {
         }
     }
 
-    cout << "after block4 downconv level = " << ctxt_block4conv_onebyone_out.getLevel() <<"\n";
+    cout << "after block4 downconv level = " << ctxt_block4conv_onebyone_out[0][0].getLevel() <<"\n";
 
 
     block4conv_onebyone_multiplicands32_16_1_1.clear();
@@ -333,7 +333,7 @@ int main() {
     ctxt_block4MPP0_in.clear();
     ctxt_block4MPP0_in.shrink_to_fit();
 
-    cout << "mpp out level = " << ctxt_block4MPP0_in[0][0].getLevel() << "\n";
+    cout << "mpp out level = " << ctxt_block4MPP0_out[0][0].getLevel() << "\n";
 
 
     
@@ -344,7 +344,7 @@ int main() {
     timer.end();
 
     
-    cout << "mpp out level = " << ctxt_block4MPP0_in[0][0].getLevel() << "\n";
+    cout << "mpp out level = " << ctxt_block4MPP0_out[0][0].getLevel() << "\n";
 
     block4conv0summands32.clear();
     block4conv0summands32.shrink_to_fit();
@@ -2075,7 +2075,7 @@ int main() {
     
     cout << "[ ";
     
-    string savelabel = string("/app/output/bundle")+to_string(num)+".txt";
+    string savelabel = string("/app/output/bundle")+to_string(1)+".txt";
     ofstream filesave(savelabel);
     
     for (int i = 0; i < 512; ++i) {
