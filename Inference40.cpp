@@ -1358,7 +1358,7 @@ int main() {
 
     #pragma omp parallel for num_threads(40)
     for (int i = 0; i < 40; ++i) {
-        ApproxReLU(context, eval, ctxt_block4MPP0_out[i / 10][i % 10], ctxt_block4relu0_out[i / 20][i % 10]);
+        ApproxReLU(context, eval, ctxt_block4MPP0_out[i / 10][i % 10], ctxt_block4relu0_out[i / 10][i % 10]);
     }
 
     #pragma omp parallel for num_threads(40)
@@ -1500,7 +1500,7 @@ int main() {
 
     #pragma omp parallel for num_threads(40)
     for (int i = 0; i < 40; ++i) {
-        ApproxReLU(context, eval, ctxt_block4add_out[i / 10][i % 10], ctxt_block4relu1_out[i / 20][i % 10]);
+        ApproxReLU(context, eval, ctxt_block4add_out[i / 10][i % 10], ctxt_block4relu1_out[i / 10][i % 10]);
     }
 
     #pragma omp parallel for num_threads(40)
@@ -1625,7 +1625,7 @@ int main() {
     
     #pragma omp parallel for num_threads(40)
     for (int i = 0; i < 40; ++i) {
-        ApproxReLU(context, eval, ctxt_block5conv0_out[i / 10][i % 10], ctxt_block5relu0_out[i / 20][i % 10]);
+        ApproxReLU(context, eval, ctxt_block5conv0_out[i / 10][i % 10], ctxt_block5relu0_out[i / 10][i % 10]);
     }
 
     #pragma omp parallel for num_threads(40)
@@ -1763,7 +1763,7 @@ int main() {
 
     #pragma omp parallel for num_threads(40)
     for (int i = 0; i < 40; ++i) {
-        ApproxReLU(context, eval, ctxt_block5add_out[i / 10][i % 10], ctxt_block5relu1_out[i / 20][i % 10]);
+        ApproxReLU(context, eval, ctxt_block5add_out[i / 10][i % 10], ctxt_block5relu1_out[i / 10][i % 10]);
     }
 
     #pragma omp parallel for num_threads(40)
@@ -1885,7 +1885,7 @@ int main() {
 
     #pragma omp parallel for num_threads(40)
     for (int i = 0; i < 40; ++i) {
-        ApproxReLU(context, eval, ctxt_block6conv0_out[i / 10][i % 10], ctxt_block6relu0_out[i / 20][i % 10]);
+        ApproxReLU(context, eval, ctxt_block6conv0_out[i / 10][i % 10], ctxt_block6relu0_out[i / 10][i % 10]);
     }
 
     #pragma omp parallel for num_threads(40)
@@ -2030,7 +2030,7 @@ int main() {
 
     #pragma omp parallel for num_threads(40)
     for (int i = 0; i < 40; ++i) {
-        ApproxReLU(context, eval, ctxt_block6add_out[i / 10][i % 10], ctxt_block6relu1_out[i / 20][i % 10]);
+        ApproxReLU(context, eval, ctxt_block6add_out[i / 10][i % 10], ctxt_block6relu1_out[i / 10][i % 10]);
     }
 
     #pragma omp parallel for num_threads(40)
