@@ -2061,26 +2061,6 @@ int main() {
 
 
 
-    
-    ////////////////save//////////////
-    cout<< "saving block6add info... \n\n";
-    string savetemp = string("/app/block6/");
-    
-    saveMsgBundle(dec, sk, ctxt_block6relu1_out, savetemp);
-
-    cout << "save check ...\n";
-    vector<vector<Ciphertext>> check(4, vector<Ciphertext>(32, ctxt_init));
-    loadMsg(enc, sk, check, savetemp);
-
-    dec.decrypt(check[0][0], sk, dmsg);
-    printMessage(dmsg);
-
-
-    cout << "DONE...\n\n";
-    
-    ////////////////////////////////////
-
-
 
     // Down Sampling (Residual) Block 2
     // DSB 2
