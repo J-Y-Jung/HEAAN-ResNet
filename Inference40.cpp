@@ -2310,7 +2310,7 @@ int main() {
 
     #pragma omp parallel for num_threads(40)
     for (int i = 40; i < 64; ++i) {
-        ApproxReLU(context, eval, ctxt_block7MPP0_out[0][40+i], ctxt_block7relu0_out[0][40+i]);
+        ApproxReLU(context, eval, ctxt_block7MPP0_out[0][i], ctxt_block7relu0_out[0][i]);
     }
 
 
@@ -2431,7 +2431,7 @@ int main() {
 
     #pragma omp parallel for num_threads(40)
     for (int i = 40; i < 64; ++i) {
-        ApproxReLU(context, eval, ctxt_block7add_out[0][40+i], ctxt_block7relu1_out[0][40+i]);
+        ApproxReLU(context, eval, ctxt_block7add_out[0][i], ctxt_block7relu1_out[0][i]);
     }
 
 
@@ -2527,7 +2527,7 @@ int main() {
 
     #pragma omp parallel for num_threads(40)
     for (int i = 40; i < 64; ++i) {
-        ApproxReLU(context, eval, ctxt_block8conv0_out[0][40+i], ctxt_block8relu0_out[0][40+i]);
+        ApproxReLU(context, eval, ctxt_block8conv0_out[0][i], ctxt_block8relu0_out[0][i]);
     }
 
     timer.end();
@@ -2648,7 +2648,7 @@ int main() {
 
     #pragma omp parallel for num_threads(40)
     for (int i = 40; i < 64; ++i) {
-        ApproxReLU(context, eval, ctxt_block8add_out[0][40+i], ctxt_block8relu1_out[0][40+i]);
+        ApproxReLU(context, eval, ctxt_block8add_out[0][i], ctxt_block8relu1_out[0][i]);
     }
 
     timer.end();
@@ -2753,7 +2753,7 @@ int main() {
 
     #pragma omp parallel for num_threads(40)
     for (int i = 40; i < 64; ++i) {
-        ApproxReLU(context, eval, ctxt_block9conv0_out[0][40+i], ctxt_block9relu0_out[0][40+i]);
+        ApproxReLU(context, eval, ctxt_block9conv0_out[0][i], ctxt_block9relu0_out[0][i]);
     }
 
     timer.end();
@@ -2870,7 +2870,7 @@ int main() {
 
     #pragma omp parallel for num_threads(40)
     for (int i = 40; i < 64; ++i) {
-        ApproxReLU(context, eval, ctxt_block9add_out[0][40+i], ctxt_block9relu1_out[0][40+i]);
+        ApproxReLU(context, eval, ctxt_block9add_out[0][i], ctxt_block9relu1_out[0][i]);
     }
 
     timer.end();
