@@ -15,6 +15,7 @@
 #include <random>
 #include <omp.h>
 #include "HEaaN/heaan.hpp"
+#include "imageEncode.hpp"
 
 namespace {
     using namespace HEaaN;
@@ -85,24 +86,19 @@ void saveMessage(const HEaaN::Message &msg, const string filepath) {
     string filepathImag = filepath + string("_imag.txt");
     
     ofstream fileReal(filepathReal);
-    fileReal.precision(7);
+    fileReal.precision(10);
 
     for (size_t j=0; j< msg_size; ++j){
-
-        if (j%32 ==31) fileReal << msg[j].real() << ",\n";
-        else fileReal << msg[j].real() << ", ";
+        fileReal << msg[j].real() << "\n";
     }
 
     fileReal.close();
     
     ofstream fileImag(filepathImag);
-    fileImag.precision(7);
+    fileImag.precision(10);
 
     for (size_t j=0; j< msg_size; ++j){
-
-        if (j%32 ==31) fileImag << msg[j].imag() << ",\n";
-        else fileImag << msg[j].imag() << ", ";
-
+        fileImag << msg[j].imag() << "\n";
     }
     
     fileImag.close();
@@ -186,6 +182,41 @@ void saveCtxtBundle(vector<vector<Ciphertext>>& ctxt_bundle, const string filepa
     return;
 
 }
+
+
+void loadMsg(Encryptor enc, SecretKey sk, vector<vector<Ciphertext>>& ctxt_bundle, const string filepath){
+    
+    int n1 = ctxt_bundle.size();
+    int n2 = ctxt_bundle[0].size();
+    
+   for (int i = 0; i < n1; ++i) {
+
+       string path = filepath + to_string(i)+"_";
+       for (int j = 0; j < n2; ++j) {
+           vector<double> tempReal;
+           vector<double> tempImg;
+
+           string pathReal = path + to_string(j) + string("_real.txt");
+           string pathImg = path + to_string(j) + string("_imag.txt");
+           txtreader(tempReal, pathReal);
+           txtreader(tempImg, pathImg);
+
+           Message msg(15);
+
+           for (size_t k = 0; k < 32768; ++k) {
+               msg[k].real(tempReal[k]);
+               msg[k].imag(tempImg[k]);
+           }
+
+           enc.encrypt(msg, sk, ctxt_bundle[i][j], 5, 0);
+           
+       }
+   }
+
+   return;
+}
+
+
 
 std::string presetNamer(const HEaaN::ParameterPreset preset) {
     switch (preset) {
