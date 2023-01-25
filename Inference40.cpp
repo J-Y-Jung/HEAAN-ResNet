@@ -2064,15 +2064,23 @@ int main() {
 
 
     
-    // ////////////////save//////////////
-    // cout<< "saving block6add info... \n\n";
-    // string pathtemp6msg4 = pathtemp6 + string("msg/add/");
+    ////////////////save//////////////
+    cout<< "saving block6add info... \n\n";
+    string savetemp = string("/app/block6/");
     
-    // saveMsgBundle(dec, sk, ctxt_block6relu1_out, pathtemp6msg4);
-    // saveCtxtBundle(ctxt_block6relu1_out, pathtemp6ctxt);
-    // cout << "DONE...\n\n";
+    saveMsgBundle(dec, sk, ctxt_block6relu1_out, savetemp);
+
+    cout << "save check ...\n";
+    vector<vector<Ciphertext> check(4, vector<Ciphertext>(32, ctxt_init));
+    loadMsg(enc, sk, check, savetemp);
+
+    dec.decrypt(check[0][0], sk, dmsg);
+    printMessage(dmsg);
+
+
+    cout << "DONE...\n\n";
     
-    // ////////////////////////////////////
+    ////////////////////////////////////
 
 
 
@@ -2107,7 +2115,12 @@ int main() {
     Scaletxtreader(temp14a, path14a, cnst);
 
     #pragma omp parallel for num_threads(40)
-    for (int i = 0; i < 64; ++i) {
+    for (int i = 0; i < 40; ++i) {
+        Message msg(log_slots, temp14a[i]);
+        block7conv_onebyone_summands64[i]=ecd.encode(msg, 4, 0);
+    }
+    #pragma omp parallel for num_threads(40)
+    for (int i = 40; i < 64; ++i) {
         Message msg(log_slots, temp14a[i]);
         block7conv_onebyone_summands64[i]=ecd.encode(msg, 4, 0);
     }
