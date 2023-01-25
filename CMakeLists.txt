@@ -36,9 +36,6 @@ find_package(HEaaN REQUIRED)
 add_executable(relutest ReLUbundletest.cpp) 
 target_link_libraries(relutest PUBLIC HEaaN::HEaaN)
 
-add_executable(temp temptest.cpp) 
-target_link_libraries(temp PUBLIC HEaaN::HEaaN)
-
 ## add_executable(conv Conv.cpp) 
 ## target_link_libraries(conv PUBLIC HEaaN::HEaaN)
 
