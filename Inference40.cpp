@@ -2071,7 +2071,7 @@ int main() {
     saveMsgBundle(dec, sk, ctxt_block6relu1_out, savetemp);
 
     cout << "save check ...\n";
-    vector<vector<Ciphertext> check(4, vector<Ciphertext>(32, ctxt_init));
+    vector<vector<Ciphertext>> check(4, vector<Ciphertext>(32, ctxt_init));
     loadMsg(enc, sk, check, savetemp);
 
     dec.decrypt(check[0][0], sk, dmsg);
