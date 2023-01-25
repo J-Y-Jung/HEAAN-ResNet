@@ -15,7 +15,6 @@
 #include <random>
 #include <omp.h>
 #include "HEaaN/heaan.hpp"
-#include "imageEncode.hpp"
 
 namespace {
     using namespace HEaaN;
@@ -27,6 +26,23 @@ std::default_random_engine gen{std::random_device()()};
 inline long double randNum() {
     std::uniform_real_distribution<long double> dist(-1.0L, 1.0L);
     return dist(gen);
+}
+
+void txtreadercomma(vector<double>& kernel, const string filename) {
+
+    string line;
+    ifstream input_file(filename);
+    char delimiter = ',';
+
+    while (getline(input_file, line, delimiter)) {
+        double temp = stod(line);
+        kernel.push_back(temp);
+    }
+
+
+    input_file.close();
+    return;
+
 }
 
 void fillRandomComplex(HEaaN::Message &msg) {
@@ -198,8 +214,8 @@ void loadMsg(Encryptor enc, SecretKey sk, vector<vector<Ciphertext>>& ctxt_bundl
 
            string pathReal = path + to_string(j) + string("_real.txt");
            string pathImg = path + to_string(j) + string("_imag.txt");
-           txtreader(tempReal, pathReal);
-           txtreader(tempImg, pathImg);
+           txtreadercomma(tempReal, pathReal);
+           txtreadercomma(tempImg, pathImg);
 
            Message msg(15);
 
