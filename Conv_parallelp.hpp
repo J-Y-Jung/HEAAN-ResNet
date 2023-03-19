@@ -21,7 +21,7 @@ namespace {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-std::vector<HEaaN::Ciphertext> Conv_parallel(HEaaN::Context context, HEaaN::KeyPack pack,
+std::vector<HEaaN::Ciphertext> Conv_parallelp(HEaaN::Context context, HEaaN::KeyPack pack,
     HEaaN::HomEvaluator eval, int imgsize, int gap, int stride, int input_channel, int output_channel,
     std::vector<HEaaN::Ciphertext>& ctxt_bundle,
     std::vector<std::vector<std::vector<HEaaN::Plaintext>>>& kernel_o) {
