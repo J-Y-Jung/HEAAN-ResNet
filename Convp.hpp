@@ -28,15 +28,6 @@ Ciphertext auxiliaryFtn1p(HomEvaluator eval, Context context, vector<Ciphertext>
     for (int inputid = 0; inputid < input_channel; ++inputid) {
 
         HEaaN::Ciphertext ctxt_out_cache(context);
-
-        int level1 = ctxtVec[inputid].getLevel();
-        int level2 = ptxtVec[inputid][0].getLevel();
-        if (level1 > level2) {
-            eval.levelDown(ctxtVec[inputid], level2, ctxtVec[inputid]);
-        }
-        else if (level1 < level2) {
-            ptxtVec[inputid][0].setLevel(level1);
-        }
         eval.mult(ctxtVec[inputid], ptxtVec[inputid][0], ctxt_out_cache);
 
         if (inputid == 0) {
@@ -59,31 +50,12 @@ Ciphertext auxiliaryFtn9p(HomEvaluator eval, Context context, vector<vector<Ciph
     for (int inputid = 0; inputid < input_channel; ++inputid) {
 
         Ciphertext ctxt_out_cache(context);
-
-
-
-        int level1 = ctxtVec[inputid][0].getLevel();
-        int level2 = ptxtVec[inputid][0].getLevel();
-        if (level1 > level2) {
-            eval.levelDown(ctxtVec[inputid][0], level2, ctxtVec[inputid][0]);
-        }
-        else if (level1 < level2) {
-            ptxtVec[inputid][0].setLevel(level1);
-        }
-
         eval.mult(ctxtVec[inputid][0], ptxtVec[inputid][0], ctxt_out_cache);
 
         Ciphertext mult_cache(context);
+        
         for (int i = 1; i < 9; ++i) {
-            int level1 = ctxtVec[inputid][i].getLevel();
-            int level2 = ptxtVec[inputid][i].getLevel();
-            if (level1 > level2) {
-                eval.levelDown(ctxtVec[inputid][i], level2, ctxtVec[inputid][i]);
-            }
-            else if (level1 < level2) {
-                ptxtVec[inputid][i].setLevel(level1);
-            }
-            eval.multWithoutRescale(ctxtVec[inputid][i], ptxtVec[inputid][i], mult_cache);
+            eval.mult(ctxtVec[inputid][i], ptxtVec[inputid][i], mult_cache);
             eval.add(ctxt_out_cache, mult_cache, ctxt_out_cache);
         }
 
