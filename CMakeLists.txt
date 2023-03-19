@@ -45,6 +45,9 @@ find_package(HEaaN REQUIRED)
 ## add_executable(oddLazyBSGS oddLazyBSGStest.cpp) 
 ## target_link_libraries(oddLazyBSGS PUBLIC HEaaN::HEaaN)
 
+add_executable(nolazyrescale Inference40p.cpp) 
+target_link_libraries(nolazyrescale PUBLIC HEaaN::HEaaN)
+
 add_executable(inference Inference40.cpp) 
 target_link_libraries(inference PUBLIC HEaaN::HEaaN)
 
