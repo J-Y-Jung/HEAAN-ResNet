@@ -43,7 +43,7 @@ vector<HEaaN::Ciphertext> Avgpool(HEaaN::Context context, HEaaN::KeyPack pack, H
 	return ctxt;
 }
 
-vector<HEaaN::Ciphertext> FC64(HEaaN::Context context, HEaaN::KeyPack pack, HEaaN::HomEvaluator eval, 
+vector<HEaaN::Ciphertext> FC64p(HEaaN::Context context, HEaaN::KeyPack pack, HEaaN::HomEvaluator eval, 
                               vector<HEaaN::Ciphertext> &ctxt, vector<vector<HEaaN::Plaintext>> &ptxt, vector<HEaaN::Plaintext> &bias) {
     HEaaN::Ciphertext zero_ct(context);
     vector<HEaaN::Ciphertext> v(64, zero_ct);
