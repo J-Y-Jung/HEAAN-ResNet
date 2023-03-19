@@ -425,7 +425,7 @@ void ApproxReLUlast(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Cip
     
 }
 
-void ReLUnotLazy(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphertext& ctxt, HEaaN::Ciphertext& ctxt_relu) {
+void ReLUnotlazy(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Ciphertext& ctxt, HEaaN::Ciphertext& ctxt_relu) {
     
 
     HEaaN::Ciphertext ctxt_temp(context);
