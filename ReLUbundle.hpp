@@ -191,7 +191,7 @@ void oddGSnotlazy(HEaaN::Context context, HEaaN::HomEvaluator eval,
         }
 
         oddGSnotlazy(context, eval, oddBS_basis, GS_basis, remainder, ctxt_remainder, k, l);
-        eval.mult(context, eval, GS_basis[a], ctxt_quotient_relin, ctxt_result);
+        eval.mult(GS_basis[a], ctxt_quotient_relin, ctxt_result);
         eval.add(ctxt_result, ctxt_remainder, ctxt_result);
       
     }
