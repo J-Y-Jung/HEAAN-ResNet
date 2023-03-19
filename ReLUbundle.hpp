@@ -178,20 +178,19 @@ void oddGSnotlazy(HEaaN::Context context, HEaaN::HomEvaluator eval,
         std::vector<double> quotient = vectorSlice(polynomial, deg_div, polynomial.size());
         std::vector<double> remainder = vectorSlice(polynomial, 0, deg_div);
 
-        HEaaN::Ciphertext ctxt_quotient_relin(context);
+        HEaaN::Ciphertext ctxt_quotient(context);
         HEaaN::Ciphertext ctxt_remainder(context);
 
         if (quotient.size() <= k) {
-            oddGSnotlazy(context, eval, oddBS_basis, GS_basis, quotient, ctxt_quotient_relin, k, l);
+            oddGSnotlazy(context, eval, oddBS_basis, GS_basis, quotient, ctxt_quotient, k, l);
         }
 
         else {
-            HEaaN::Ciphertext ctxt_quotient(context);
             oddGSnotlazy(context, eval, oddBS_basis, GS_basis, quotient, ctxt_quotient, k, l);
         }
 
         oddGSnotlazy(context, eval, oddBS_basis, GS_basis, remainder, ctxt_remainder, k, l);
-        eval.mult(GS_basis[a], ctxt_quotient_relin, ctxt_result);
+        eval.mult(GS_basis[a], ctxt_quotient, ctxt_result);
         eval.add(ctxt_result, ctxt_remainder, ctxt_result);
       
     }
@@ -468,7 +467,8 @@ void ReLUnotlazy(HEaaN::Context context, HEaaN::HomEvaluator eval, HEaaN::Cipher
     }
 
     evalNotLazy(context, eval, ctxt_real_BTS, ctxt_temp, polynomial_1, 4, 2);
-
+    eval.levelDown(ctxt_real_BTS, 6, ctxt_real_BTS);
+    
     HEaaN::Ciphertext ctxt_temp1(context);
     evalNotLazy(context, eval, ctxt_temp, ctxt_temp1, polynomial_2, 2, 3);
 
