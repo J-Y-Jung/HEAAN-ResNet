@@ -15,7 +15,7 @@
 #include "HEaaNTimer.hpp"
 #include "kernelEncode.hpp"
 #include "imageEncode.hpp"
-#include "AvgpoolFC64.hpp"
+#include "AvgpoolFC64p.hpp"
 
 namespace {
     using namespace HEaaN;
