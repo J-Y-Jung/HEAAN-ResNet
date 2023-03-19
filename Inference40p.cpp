@@ -2971,7 +2971,7 @@ int main() {
 
     vector<Ciphertext> ctxt_result;
     timer.start(" FC64 layer * ");
-    ctxt_result = FC64(context, pack, eval, ctxt_avgp_out, fclayermultiplicands10_64, fclayersummands10);
+    ctxt_result = FC64p(context, pack, eval, ctxt_avgp_out, fclayermultiplicands10_64, fclayersummands10);
     timer.end();
 
     std::cout << "FC64 result..." << std::endl;
