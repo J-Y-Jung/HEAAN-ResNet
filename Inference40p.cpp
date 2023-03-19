@@ -9,13 +9,13 @@
 #include "HEaaN/heaan.hpp" 
 #include "examples.hpp" 
 #include "Convp.hpp"
-#include "Conv_parallel.hpp"
+#include "Conv_parallelp.hpp"
 #include "ReLUbundle.hpp"
 #include "MPPacking.hpp"
 #include "HEaaNTimer.hpp"
 #include "kernelEncode.hpp"
 #include "imageEncode.hpp"
-#include "AvgpoolFC64.hpp"
+#include "AvgpoolFC64p.hpp"
 
 namespace {
     using namespace HEaaN;
