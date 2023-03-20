@@ -8,43 +8,18 @@ how to add cpp files:
 how to build the project: 
 
 
-cmake -B (원하는 디렉토리 이름)                  
-cmake --build (원하는 디렉토리 이름)      
-cd (원하는 디렉토리 이름)/bin              
-./(실행 파일 이름)
+cmake -B (directory)                  
+cmake --build (directory)      
+cd (directory)/bin              
+./(filename)
 
-## (사소한) ideas
-1. Packing : (용동) amortized time을 위해 하나의 이미지의 3ch을 4ch로 하나의 ctxt에 packing하지 않고, 3개의 ctxt에 packing하여 slot을 더 밀도 있게 사용함. conv에 불필요한 rot & sum을 없앨 수 있음. 4ch일 때보다 rotation 2번 아낄 수 있음
-2. FC64 : (준영) amortized time을 위해 최대 96개의 이미지를 한번에 모아서 계산 960<1024(1 block, 32\*32) - 이제는 쓰이지 않음
-3. rotsum : (준영) 결과가 원하는 인덱스에 오도록 하고 싶을 경우 rotation 1번 아낄 수 있음
-4. MPP : (용동) DSB에서 MPP 순서를 바꾸면 MPP 횟수는 더 늘어나지만, 연산량 최적화 가능해 보임
-
-## CryptoLab 미팅 때 확인해야 할 것들
-1. Thread 사용량 (BTS 몇 thread로 구동?, multi-thread 할당하는 법?, 최대 몇 thread 지원? 등등)
--> 최대로 사용 가능한 thread를 사용하도록 되어있을 것이다. 반복문에서 thread 할당하는 법은 간단하다. 구글링!
-2. Bootstrapping 조작 가능 범위? (상수곱을 S2C와 통합 가능한가?, BTS의 evalmod와 ReLU의 앞부분을 통합해서 계산 가능한가?, 큰 성능 저하 없이 prime크기나 BTS 이후의 precision을 지정 가능한가?)
-3. BTS 구현 방식? (SOTA? EvalRound등으로 구현되었는지) 
-4. 만약 정식 HEaaN을 사용할 필요가 있다면, 문법이 얼마나 달라지는지?
-5. 초기 enc 이후 level이 왜 full로 차있지 않고 BTS 이후의 레벨에서 시작하는지?
-6. rescale counter !=0일때 미리 rotation 할수 없는지?
-
-## Issues
-
-1. ctxt * msg 가 너무 오래 걸림. 인코딩과 리스케일링이 시간을 상당히 많이 잡아먹음. 커널 인코딩은 전부 전처리 단계에서 하는 것이 맞는 것 같음. HEaaN::EnDecoder를 사용하여 전부 ptxt(인코딩된 형태)로 바꾼 후 ctxt * ptxt 로 계산하되, 가능한 한 multWithoutRescale로 연산 후 나중에 한꺼번에 rescale해야 함.
-
-(M1 맥북 기준: ctxt * msg : <300ms, ctxt * ptxt : <100ms, multWithoutRescale : <10ms)
-
-현재 convtools, AvgpoolFC64 등을 전부 ctxt * ptxt 연산, hoisted rescaling을 사용하도록 변경 중 (준영)
-
-11/16 : Conv에서 ctxt * ptxt 연산으로 수정 완료. hoisting 구현 완료. 여전히 전체 시간에서 convolution이 차지하는 비율이 커서 불만족스럽지만 일단 구현해보기로 결정. (용동)
-
-AvgpoolFC64 ctxt * ptxt 연산으로 수정 완료. FC64의 경우 현재 구현이 sum(rot(mult(ct, pt), idx)) 형태로 되어 있어서 hoisting 아쉽게도 사용 불가. 
-
-convtools의 함수들을 ptxt를 출력하도록 변경. 함수명도 바뀜 (Weight2Msg -> weightToPtxt). 입력받는 변수들도 변경이 있음 (미리 정의된 HEaaN::EnDecoder를 넣어줘야함)
+## ideas
+1. Packing :  amortized time을 위해 하나의 이미지의 3ch을 4ch로 하나의 ctxt에 packing하지 않고, 3개의 ctxt에 packing하여 slot을 더 밀도 있게 사용함. conv에 불필요한 rot & sum을 없앨 수 있음. 4ch일 때보다 rotation 2번 아낄 수 있음
+2. MPP : DSB에서 MPP 순서를 바꾸면 MPP 횟수는 더 늘어나지만, 연산량 최적화 가능해 보임
 
 <hr/>
 
-#### Conv (용동)
+#### Conv 
 
 Conv : 3 by 3 convolution만 구현 완료. 인자로 context, pack, eval, imgsize=32, gap, stride, input channel, output channel, ctxt_bundle(input channel개 만큼), kernel_bundle을 받습니다.
 
@@ -52,7 +27,7 @@ MPPacking : gap이 벌어진 ctxt들(4개 혹은 16개)을 다시 묶어주는 �
 
 <hr/>
 
-#### DSB (Down Sampling Block) (용동)
+#### DSB (Down Sampling Block) 
 
 DSB.cpp 구동 확인 완료.
 
@@ -64,13 +39,13 @@ DSB.cpp 구동 확인 완료.
 
 <hr/>
 
-#### RB (Residual Block) (용동)
+#### RB (Residual Block) 
 
 완성 (설명 추가 예정)
 
 <hr/>
 
-#### convtools (준영)
+#### convtools 
 
 vector<vector<double>>형태의 커널 값을 원하는 convolution의 ptxt로 패킹해주는 함수.
 
@@ -86,7 +61,7 @@ TODO: heaan message 저장 기능을 추가하여 precomputing 해놓기
 
 <hr/>
 
-#### rotsum (준영)
+#### rotsum 
 
 RotSum2Idx : 원하는 간격(power of 2)으로 원하는 원소 갯수(power of 2)만큼 rotation-sum 한 후 올바른 결과값이 지정한 Index에 해당하는 슬롯에 오도록 하는 함수. FC, Conv후 결과물을 합칠 때 사용 가능.
 
@@ -94,7 +69,7 @@ RotSum2Idx : 원하는 간격(power of 2)으로 원하는 원소 갯수(power of
 
 <hr/>
 
-#### Avgpool + FC64 (준영)
+#### Avgpool + FC64 
 
 Avgpool : 8*8개의 각 픽셀 값들을 모두 더함 (1/64 는 곱하지 않음).
   
@@ -172,7 +147,7 @@ conv 레이어를 통과시킬 때, multiplicands 를 filter 로 보고 summands
   5.Putty 명렁어
   
   > sudo docker cp /home/(WinSCP 폴더이름)/파일.hpp dockerID:/app/examples 
-  폴더째로 넣으려 하면 안되는 듯 합니다... 번거롭지만 잘 안되신다면 파일 하나씩 넣어보세요.(용동)
+  폴더째로 넣으려 하면 안되는 듯 합니다... 번거롭지만 잘 안되신다면 파일 하나씩 넣어보세요.
   
   > sudo docker cp /home/(WinSCP 폴더이름)/파일test.cpp dockerID:/app/examples
   
