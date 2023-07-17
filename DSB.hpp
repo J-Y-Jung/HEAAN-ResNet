@@ -12,14 +12,13 @@ using namespace HEaaN;
     
 std::vector<std::vector<Ciphertext>> DSB(Context context, KeyPack pack,
     HomEvaluator eval, int DSB_count, std::vector<std::vector<Ciphertext>> ctxt_bundle, 
-    // 첫번째 index는 서로 다른 이미지 index. 기본 처음에는 16. 첫번째 DSB에서는 16개로 받음. 두번째는 4개. 두번째 : ch
     std::vector<std::vector<std::vector<Plaintext>>> kernel_bundle, 
     std::vector<std::vector<std::vector<Plaintext>>> kernel_bundle2, 
     std::vector<std::vector<std::vector<Plaintext>>> kernel_residual_bundle) {
     ///////////////////////// SetUp ////////////////////////////////
     std::cout << "DSB start" << "\n";
     
-    HEaaNTimer timer(false); //추가
+    HEaaNTimer timer(false); 
     // int num_ctxt;
     // num_ctxt = ctxt_bundle.size();
 
@@ -29,53 +28,50 @@ std::vector<std::vector<Ciphertext>> DSB(Context context, KeyPack pack,
     // int num_kernel_bundle2;
     // num_kernel_bundle2 = kernel_bundle2.size();
     
-    //HEaaN::Ciphertext ctxt(context); //추가 결과 위해서
-    //std::vector<HEaaN::Ciphertext> vector1(32,ctxt); //추가
-    //std::vector<std::vector<HEaaN::Ciphertext>> ctxt_conv_out_bundle; //추가
+    //HEaaN::Ciphertext ctxt(context); 
+    //std::vector<HEaaN::Ciphertext> vector1(32,ctxt); 
+    //std::vector<std::vector<HEaaN::Ciphertext>> ctxt_conv_out_bundle; 
 
 
     
     ///////////////////////// Main flow /////////////////////////////////////////
     std::cout << "First Conv-(main flow) ..." << std::endl;
     HEaaN::Ciphertext ctxt(context);
-    std::vector<HEaaN::Ciphertext> vector1(32,ctxt); //추가
+    std::vector<HEaaN::Ciphertext> vector1(32,ctxt); 
     std::vector<std::vector<HEaaN::Ciphertext>> ctxt_conv_out_bundle;
     //#pragma omp parallel
     //#pragma omp for
     
-    //for (int i = 0; i < 16; ++i) { // 서로 다른 img 16->4로수정
+    //for (int i = 0; i < 16; ++i) { 
     //    std::vector<Ciphertext> ctxt_conv_out_cache;
         //printf("thread %d : %d (in parallel)\n", omp_get_thread_num(), i);
     //    ctxt_conv_out_cache = Conv(context, pack, eval, 32, 1, 2, 16, 32, ctxt_bundle[i], kernel_bundle);
         //printf("thread is done %d : %d (in parallel)\n", omp_get_thread_num(), i);
         //ctxt_conv_out_bundle.push_back(ctxt_conv_out_cache);
-    //    ctxt_conv_out_bundle.push_back(ctxt_conv_out_cache); //추가
+    //    ctxt_conv_out_bundle.push_back(ctxt_conv_out_cache); 
 
     //}
     //std::cout << "DONE!" << "\n";
 
     
 
-    /* 여기서 나온 ctxt_conv_out_bundle은 첫번째는 0이상 16미만의 서로다른 img 개수 인덱스,
-    두번째는 0이상 32미만의 channel index
-    */
-
+    
     
     /*
     // MPP input bundle making
     //std::vector<std::vector<std::vector<Ciphertext>>> ctxt_MPP_in;
     timer.start("MPP input");
     std::cout << "MPP-(main flow, First Conv) ..." << std::endl;
-    HEaaN::Ciphertext ctxt2(context); //추가
-    std::vector<HEaaN::Ciphertext> vector2(32,ctxt2); //추가
-    std::vector<std::vector<HEaaN::Ciphertext>> vector3(32,vector2); //추가 초기화 위해서 만듬.
-    std::vector<std::vector<std::vector<Ciphertext>>> ctxt_MPP_in(4,vector3); //추가
-    //std::vector<std::vector<HEaaN::Ciphertext>> ctxt_MPP_in_allch_bundle(4,vector2);//추가
+    HEaaN::Ciphertext ctxt2(context); 
+    std::vector<HEaaN::Ciphertext> vector2(32,ctxt2); 
+    std::vector<std::vector<HEaaN::Ciphertext>> vector3(32,vector2); 
+    std::vector<std::vector<std::vector<Ciphertext>>> ctxt_MPP_in(4,vector3);
+    //std::vector<std::vector<HEaaN::Ciphertext>> ctxt_MPP_in_allch_bundle(4,vector2);
     #pragma omp parallel
     #pragma omp for
     for (int i = 0; i < 4; ++i) {
         std::vector<std::vector<Ciphertext>> ctxt_MPP_in_allch_bundle;
-        //std::vector<Ciphertext> ctxt_MPP_in_cache(32,ctxt3); //추가
+        //std::vector<Ciphertext> ctxt_MPP_in_cache(32,ctxt3); 
         for (int ch = 0; ch < 32; ++ch) {
             std::vector<Ciphertext> ctxt_MPP_in_cache;
             ctxt_MPP_in_cache.push_back(ctxt_conv_out_bundle[i+0][ch]);
@@ -87,7 +83,7 @@ std::vector<std::vector<Ciphertext>> DSB(Context context, KeyPack pack,
         ctxt_MPP_in[i] = ctxt_MPP_in_allch_bundle;
     }
     timer.end();
-    // ctxt_MPP_in 첫번째 : 4개씩 묶음 index 0이상 4미만, 두번째 : ch, 세번째 : ctxt 4개에 대한 index
+   
     
 
     /*
@@ -114,7 +110,7 @@ std::vector<std::vector<Ciphertext>> DSB(Context context, KeyPack pack,
         ctxt_MPP_out_bundle.push_back(ctxt_MPP_out);
     }
     std::cout << "DONE!" << "\n";
-    // ctxt_MPP_out_bundle 첫번째 : 서로 다른 img, 두번째 : ch.
+    // ctxt_MPP_out_bundle
 
     
     // /////////////// Decryption ////////////////
@@ -128,13 +124,13 @@ std::vector<std::vector<Ciphertext>> DSB(Context context, KeyPack pack,
     // AppReLU
     std::cout << "AppReLU-(main flow) ..." << std::endl;
     std::vector<std::vector<Ciphertext>> ctxt_relu_out_bundle;
-    //#pragma omp parallel //추가 
-    //#pragma omp for //추가
+    //#pragma omp parallel 
+    //#pragma omp for 
     for (int i = 0; i < 4; ++i) {
-        //HEaaN::Ciphertext ctxt3(context); //추가
+        //HEaaN::Ciphertext ctxt3(context); 
         std::vector<Ciphertext> ctxt_relu_out_allch_bundle;
-        //#pragma omp parallel //추가
-        //#pragma omp for //추가
+        //#pragma omp parallel
+        //#pragma omp for 
         for (int ch = 0; ch < 32; ++ch) {
             std::cout << "(i = " << i << ", " << "ch = " << ch << ")" << "\n";
             Ciphertext ctxt_relu_out(context);
@@ -160,10 +156,9 @@ std::vector<std::vector<Ciphertext>> DSB(Context context, KeyPack pack,
     // Convolution
     std::cout << "Residual Conv-(residual flow) ..." << std::endl;
     std::vector<std::vector<Ciphertext>> ctxt_residual_out_bundle;
-    for (int i = 0; i < 16; ++i) { // 서로 다른 img
+    for (int i = 0; i < 16; ++i) { 
         std::vector<Ciphertext> ctxt_residual_out_cache;
         ctxt_residual_out_cache = Conv(context, pack, eval, 32, 1, 2, 16, 32, ctxt_bundle[i], kernel_residual_bundle);
-        //에러나면 push_back 해야 할 수도 있음
         ctxt_residual_out_bundle.push_back(ctxt_residual_out_cache);
     }
     std::cout << "DONE!" << "\n";
