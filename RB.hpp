@@ -10,7 +10,7 @@
 
 std::vector<std::vector<HEaaN::Ciphertext>> RB(HEaaN::Context context, HEaaN::KeyPack pack,
 HEaaN::HomEvaluator eval, int DSB_count, std::vector<std::vector<HEaaN::Ciphertext>> ctxt_bundle, 
-// 첫번째 index는 서로 다른 이미지 index. 기본 처음에는 16. 첫번째 RB에서는 16개로 받음. 두번째 : ch
+
 std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_bundle, 
 std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_bundle2) {
     ///////////////////////// SetUp ////////////////////////////////
@@ -28,15 +28,13 @@ std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_bundle2) {
     ///////////////////////// Main flow /////////////////////////////////////////
     std::cout << "First Conv-(main flow) ..." << std::endl;
     std::vector<std::vector<HEaaN::Ciphertext>> ctxt_conv_out_bundle;
-    for (int i = 0; i < 16; ++i) { // 서로 다른 img
+    for (int i = 0; i < 16; ++i) { 
         std::vector<HEaaN::Ciphertext> ctxt_conv_out_cache;
         ctxt_conv_out_cache = Conv(context, pack, eval, 32, 1, 1, 16, 16, ctxt_bundle[i], kernel_bundle);
         ctxt_conv_out_bundle.push_back(ctxt_conv_out_cache);
     }
     std::cout << "DONE!" << "\n";
-    /* 여기서 나온 ctxt_conv_out_bundle은 첫번째는 0이상 16미만의 서로다른 img 개수 인덱스,
-    두번째는 0이상 32미만의 channel index
-    */
+    
     // MPP input bundle making
     // std::cout << "MPP-(main flow, First Conv) ..." << std::endl;
     // std::vector<std::vector<std::vector<HEaaN::Ciphertext>>> ctxt_MPP_in;
@@ -52,7 +50,7 @@ std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_bundle2) {
     //     }
     //     ctxt_MPP_in.push_back(ctxt_MPP_in_allch_bundle);
     // }
-    // // ctxt_MPP_in 첫번째 : 4개씩 묶음 index 0이상 4미만, 두번째 : ch, 세번째 : ctxt 4개에 대한 index
+    // 
     // // MPP
     // std::vector<std::vector<HEaaN::Ciphertext>> ctxt_MPP_out_bundle;
     // for (int i = 0; i < 4; ++i) {
@@ -65,7 +63,7 @@ std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_bundle2) {
     //     ctxt_MPP_out_bundle.push_back(ctxt_MPP_out);
     // }
     // std::cout << "DONE!" << "\n";
-    // ctxt_MPP_out_bundle 첫번째 : 서로 다른 img, 두번째 : ch.
+    // ctxt_MPP_out_bundle
 
     // /////////////// Decryption ////////////////
     // HEaaN::Message dmsg0;
@@ -104,10 +102,10 @@ std::vector<std::vector<std::vector<HEaaN::Plaintext>>> kernel_bundle2) {
     // // Convolution
     // std::cout << "Residual Conv-(residual flow) ..." << std::endl;
     // std::vector<std::vector<HEaaN::Ciphertext>> ctxt_residual_out_bundle;
-    // for (int i = 0; i < 16; ++i) { // 서로 다른 img
+    // for (int i = 0; i < 16; ++i) { 
     //     std::vector<HEaaN::Ciphertext> ctxt_residual_out_cache;
     //     ctxt_residual_out_cache = Conv(context, pack, eval, 32, 1, 2, 16, 32, ctxt_bundle[i], kernel_residual_bundle);
-    //     //에러나면 push_back 해야 할 수도 있음
+    //     
     //     ctxt_residual_out_bundle.push_back(ctxt_residual_out_cache);
     // }
     // std::cout << "DONE!" << "\n";
