@@ -11,7 +11,6 @@ using namespace std;
 
 std::vector<std::vector<HEaaN::Ciphertext>> RB(HEaaN::Context context, HEaaN::KeyPack pack,
 HEaaN::HomEvaluator eval, int DSB_count, std::vector<std::vector<HEaaN::Ciphertext>>& ctxt_bundle, 
-// 첫번째 index는 서로 다른 이미지 index. 기본 처음에는 16. 첫번째 RB에서는 16개로 받음. 두번째 : ch
 std::vector<std::vector<std::vector<HEaaN::Plaintext>>>& kernel_bundle, 
 std::vector<std::vector<std::vector<HEaaN::Plaintext>>>& kernel_bundle2,
 vector<Plaintext>& BN1_add,
@@ -34,7 +33,7 @@ vector<Plaintext>& BN2_add) {
     ///////////////////////// Main flow /////////////////////////////////////////
     std::cout << "First Conv-(main flow) ..." << std::endl;
     std::vector<std::vector<HEaaN::Ciphertext>> ctxt_conv_out_bundle;
-    for (int i = 0; i < 16/pow(4, DSB_count); ++i) { // 서로 다른 img
+    for (int i = 0; i < 16/pow(4, DSB_count); ++i) { 
         //std::cout << "i = " << i << std::endl;
         std::vector<HEaaN::Ciphertext> ctxt_conv_out_cache;
         ctxt_conv_out_cache = Conv(context, pack, eval, 32, 1, 1, 16*pow(2, DSB_count), 16*pow(2, DSB_count), ctxt_bundle[i], kernel_bundle);
@@ -47,9 +46,7 @@ vector<Plaintext>& BN2_add) {
     cout << "DONE!" << "\n";
 
 
-    /* 여기서 나온 ctxt_conv_out_bundle은 첫번째는 0이상 16미만의 서로다른 img 개수 인덱스,
-    두번째는 0이상 32미만의 channel index
-    */
+    
 
 
 
