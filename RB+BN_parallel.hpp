@@ -13,7 +13,7 @@ namespace {
 
 std::vector<std::vector<HEaaN::Ciphertext>> RB_parallel(HEaaN::Context context, HEaaN::KeyPack pack,
     HEaaN::HomEvaluator eval, int DSB_count, std::vector<std::vector<HEaaN::Ciphertext>>& ctxt_bundle,
-    // 첫번째 index는 서로 다른 이미지 index. 기본 처음에는 16. 첫번째 RB에서는 16개로 받음. 두번째 : ch
+    //
     std::vector<std::vector<std::vector<HEaaN::Plaintext>>>& kernel_bundle,
     std::vector<std::vector<std::vector<HEaaN::Plaintext>>>& kernel_bundle2,
     vector<Plaintext>& BN1_add,
@@ -42,7 +42,7 @@ std::vector<std::vector<HEaaN::Ciphertext>> RB_parallel(HEaaN::Context context, 
     std::vector<std::vector<HEaaN::Ciphertext>> ctxt_conv_out_bundle(size1, std::vector<HEaaN::Ciphertext>(size2, ctxt_init));
 
     #pragma omp parallel for
-    for (int i = 0; i < size1; ++i) { // 서로 다른 img
+    for (int i = 0; i < size1; ++i) { 
         //std::cout << "i = " << i << std::endl;
         ctxt_conv_out_bundle[i] = Conv(context, pack, eval, 32, 1, 1, size2, size2, ctxt_bundle[i], kernel_bundle);
     }
@@ -53,9 +53,7 @@ std::vector<std::vector<HEaaN::Ciphertext>> RB_parallel(HEaaN::Context context, 
     cout << "DONE!" << "\n";
 
 
-    /* 여기서 나온 ctxt_conv_out_bundle은 첫번째는 0이상 16미만의 서로다른 img 개수 인덱스,
-    두번째는 0이상 32미만의 channel index
-    */
+    
 
 
 
