@@ -131,7 +131,7 @@ int main() {
             Message kernel_msg(log_slots);
             Plaintext kernel(context);
             for (int k = 0; k < 9; ++k) {
-                int idx = 0; //int가 없어서 오류.
+                int idx = 0; 
                 for (; idx < length; ++idx) {
                     kernel_msg[idx].real(2.0);
                     kernel_msg[idx].imag(0.0);
@@ -160,8 +160,8 @@ int main() {
     
 
     std::vector<std::vector<std::vector<Plaintext>>> kernel_o2(32);
-    #pragma omp parallel //추가 
-    #pragma omp for //추가
+    #pragma omp parallel 
+    #pragma omp for 
     for (int o = 0; o < 32; ++o) { // output channel 32
         std::vector<std::vector<Plaintext>> kernel_i2(32);
         for (int i = 0; i < 32; ++i) {   // input channel 32
@@ -194,8 +194,8 @@ int main() {
     }
     
     std::vector<std::vector<std::vector<Plaintext>>> kernel_o3(32);
-    #pragma omp parallel //추가 
-    #pragma omp for //추가
+    #pragma omp parallel  
+    #pragma omp for 
     for (int o = 0; o < 32; ++o) { // output channel 32
         std::vector<std::vector<Plaintext>> kernel_i3(16);
         for (int i = 0; i < 16; ++i) {   // input channel 16
