@@ -9,7 +9,6 @@ using namespace std;
 
 vector<vector<Ciphertext>> DSB(Context context, KeyPack pack,
 HomEvaluator eval, int DSB_count, vector<vector<Ciphertext>>& ctxt_bundle, 
-// 첫번째 index는 서로 다른 이미지 index. 기본 처음에는 16. 첫번째 DSB에서는 16개로 받음. 두번째는 4개. 두번째 : ch
 vector<vector<vector<Plaintext>>>& kernel_bundle, 
 vector<vector<vector<Plaintext>>>& kernel_bundle2, 
 vector<vector<vector<Plaintext>>>& kernel_residual_bundle,
@@ -32,16 +31,14 @@ vector<Plaintext>& BN3_add) {
     cout << "First Conv-(main flow) ..." << endl;
     cout << "level of ctxt is " << ctxt_bundle[0][0].getLevel() << "\n";
     vector<vector<Ciphertext>> ctxt_conv_out_bundle;
-    for (int i = 0; i < 16/pow(4, DSB_count); ++i) { // 서로 다른 img
+    for (int i = 0; i < 16/pow(4, DSB_count); ++i) { 
         vector<Ciphertext> ctxt_conv_out_cache;
         ctxt_conv_out_cache = Conv(context, pack, eval, 32, 1, 2, 16*pow(2, DSB_count), 32*pow(2, DSB_count), ctxt_bundle[i], kernel_bundle);
         ctxt_conv_out_bundle.push_back(ctxt_conv_out_cache);
     }
     cout << "level of ctxt is " << ctxt_conv_out_bundle[0][0].getLevel() << "\n";
     cout << "DONE!" << "\n";
-    /* 여기서 나온 ctxt_conv_out_bundle은 첫번째는 0이상 16미만의 서로다른 img 개수 인덱스,
-    두번째는 0이상 32미만의 channel index
-    */
+    
 
     // MPP input bundle making
     cout << "MPP-(main flow, First Conv) ..." << endl;
@@ -62,7 +59,6 @@ vector<Plaintext>& BN3_add) {
     ctxt_conv_out_bundle.clear();
     ctxt_conv_out_bundle.shrink_to_fit();
 
-    // ctxt_MPP_in 첫번째 : 4개씩 묶음 index 0이상 4미만, 두번째 : ch, 세번째 : ctxt 4개에 대한 index
     // MPP
     vector<vector<Ciphertext>> ctxt_MPP_out_bundle;
     for (int i = 0; i < 4/pow(4, DSB_count); ++i) {
@@ -92,7 +88,6 @@ vector<Plaintext>& BN3_add) {
     // }
     cout << "DONE!" << "\n";
 
-    // ctxt_MPP_out_bundle 첫번째 : 서로 다른 img, 두번째 : ch.
 
     // AppReLU
     cout << "AppReLU-(main flow) ..." << endl;
@@ -135,10 +130,9 @@ vector<Plaintext>& BN3_add) {
     // Convolution
     cout << "Residual Conv-(residual flow) ..." << endl;
     vector<vector<Ciphertext>> ctxt_residual_out_bundle;
-    for (int i = 0; i < 16/pow(4, DSB_count); ++i) { // 서로 다른 img
+    for (int i = 0; i < 16/pow(4, DSB_count); ++i) { 
         vector<Ciphertext> ctxt_residual_out_cache;
         ctxt_residual_out_cache = Conv(context, pack, eval, 32, 1, 2, 16*pow(2, DSB_count), 32*pow(2, DSB_count), ctxt_bundle[i], kernel_residual_bundle);
-        //에러나면 push_back 해야 할 수도 있음
         ctxt_residual_out_bundle.push_back(ctxt_residual_out_cache);
     };
     cout << "DONE!" << "\n";
