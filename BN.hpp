@@ -4,7 +4,7 @@
 #include "heaan.hpp"
 #include <cmath>
 
-// ctxt의 data에 대해서 확인해야 함.
+
 void BN(const double mu , const double std , const double gamma, const double beta ,
         HEaaN::Ciphertext ctxt , HEaaN::HomEvaluator eval, HEaaN::Ciphertext context){
     double epsilon = 0.0001;
