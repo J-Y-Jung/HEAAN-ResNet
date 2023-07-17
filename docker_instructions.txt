@@ -1,0 +1,15 @@
+
+
+#########################
+
+sudo docker load -i heaan-native-docker.tar.gz
+sudo docker run -it heaan-ubuntu-20.04-native:latest
+
+
+######################
+
+sudo docker exec -it *************** /bin/bash
+
+
+##########################
+git clone https://github.com/J-Y-Jung/HEAAN-ResNet.git
