@@ -36,7 +36,7 @@ int main() {
 
 
 
-    // // bin 폴더 안에 bin 데이터셋 파일 있어야 함
+    // 
     // auto dataset = cifar::read_dataset<vector, vector, uint8_t, uint8_t>();
     // cout << isprint(dataset.test_images[16][16]) << "\n";
 
